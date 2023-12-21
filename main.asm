@@ -83,6 +83,7 @@ STA $681C       ;/
 ; Ability Quick Select
 ; Uses table based on the accumulator value given before the quick_select_ability subroutine
 REP #$30
+;normal
 LDA !p1controller_hold
 AND #$0090
 ORA !p1controller_frame
@@ -91,6 +92,7 @@ BNE +
 LDA #$0000
 JSR quick_select_ability
 +
+;plasma
 LDA !p1controller_hold
 AND #$0090
 ORA !p1controller_frame
@@ -99,6 +101,7 @@ BNE +
 LDA #$0001
 JSR quick_select_ability
 +
+;wheel
 LDA !p1controller_hold
 AND #$0090
 ORA !p1controller_frame
@@ -107,6 +110,9 @@ BNE +
 LDA #$0002
 JSR quick_select_ability
 +
+;jet
+LDA !p1controller_held
+AND #$
 
 
 ; RoMK chapter select
