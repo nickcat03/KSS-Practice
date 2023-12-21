@@ -9,7 +9,9 @@
 
 ; include other files
 incsrc "defines.asm"
-incsrc "everyframe.asm"
+incsrc "main.asm"
+incsrc "subroutines.asm"
+incsrc "tables.asm"
 
 ; make sure the ROM is expanded to the full 1MBit
 ORG !_F+$1FFFFF
