@@ -21,7 +21,7 @@
 !animation_timer      = $6E4C
 
 ; ability information RAM addresses
-!ability                = $749E
+!ability                = $749F
 !ability_info1          = $7496
 !ability_info2          = $74A0
 !ability_info3          = $74A2
@@ -38,6 +38,7 @@
 
 ; subroutines
 !update_romk_vram           = $07E55D
+!assign_ability_data        = $029C71
 
 ; useless subroutines that ill keep here anyway cuz theyre nice to have somewhere
 !debug_reload_display           = $DBE7

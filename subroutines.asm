@@ -48,22 +48,28 @@ make_100_file:
 
 
 quick_select_ability:
-    STZ !temp_pointer           ; use temporary counter to keep track of loop
-    ASL A               
-    TAX
-    LDA ability_pointers,X      ; get start of table for given ability
-    TAY
-    LDX #$0000
-    - LDA write_ability_to,X    ; get address to be written to
-    TAX                         
-    LDA $0000,Y                 ; store ability data
-    STA $0000,X                 ; write to address that ability data correlates to
-    INY                         ; increase Y to continue through the table of addresses to write
-    INY
-    INC !temp_pointer           ; increase counter
-    INC !temp_pointer
-    LDA !temp_pointer           
-    TAX                         ; assign counter to X so it could be used to find the next address to write to
-    CMP #$0013
-    BCC -
+    LDY #$0002
+    JSL !assign_ability_data
     RTS
+
+    ; old code that was used before using game function:
+
+    ;STZ !temp_pointer           ; use temporary counter to keep track of loop
+    ;ASL A               
+    ;TAX
+    ;LDA ability_pointers,X      ; get start of table for given ability
+    ;TAY
+    ;LDX #$0000
+    ;- LDA write_ability_to,X    ; get address to be written to
+    ;TAX                         
+    ;LDA $0000,Y                 ; store ability data
+    ;STA $0000,X                 ; write to address that ability data correlates to
+    ;INY                         ; increase Y to continue through the table of addresses to write
+    ;INY
+    ;INC !temp_pointer           ; increase counter
+    ;INC !temp_pointer
+    ;LDA !temp_pointer           
+    ;TAX                         ; assign counter to X so it could be used to find the next address to write to
+    ;CMP #$0013
+    ;BCC -
+    ;RTS

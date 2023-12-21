@@ -81,39 +81,95 @@ STA $681C       ;/
 +
 
 ; Ability Quick Select
-; Uses table based on the accumulator value given before the quick_select_ability subroutine
 REP #$30
-;normal
-LDA !p1controller_hold
-AND #$0090
-ORA !p1controller_frame
-CMP #$2090
-BNE +
-LDA #$0000
-JSR quick_select_ability
-+
-;plasma
-LDA !p1controller_hold
-AND #$0090
-ORA !p1controller_frame
-CMP #$0290
-BNE +
-LDA #$0001
-JSR quick_select_ability
-+
-;wheel
-LDA !p1controller_hold
-AND #$0090
-ORA !p1controller_frame
-CMP #$0190
-BNE +
-LDA #$0002
-JSR quick_select_ability
-+
-;jet
-LDA !p1controller_held
-AND #$
+common_abilities:
+    LDA !p1controller_hold
+    AND #$00B0
+    CMP #$00B0
+    BEQ cycle_abilities
+    ; normal
+    LDA !p1controller_hold
+    AND #$0090
+    ORA !p1controller_frame
+    CMP #$2090
+    BNE +
+    LDA #$0000
+    JSR quick_select_ability
+    +
+    ; plasma
+    LDA !p1controller_hold
+    AND #$0090
+    ORA !p1controller_frame
+    CMP #$0290
+    BNE +
+    LDA #$000C
+    JSR quick_select_ability
+    +
+    ; wheel
+    LDA !p1controller_hold
+    AND #$0090
+    ORA !p1controller_frame
+    CMP #$0190
+    BNE +
+    LDA #$000D
+    JSR quick_select_ability
+    +
+    ; jet
+    LDA !p1controller_hold
+    AND #$0090
+    ORA !p1controller_frame
+    CMP #$0890
+    BNE +
+    LDA #$0007
+    JSR quick_select_ability
+    +
+    ; hammer
+    LDA !p1controller_hold
+    AND #$0090
+    ORA !p1controller_frame
+    CMP #$0490
+    BNE +
+    LDA #$0012
+    JSR quick_select_ability
+    +
+cycle_abilities:
+    ; if holding L, cycle through all abilities
+    LDA !p1controller_hold
+    AND #$00B0
+    ORA !p1controller_repeat
+    CMP #$01B0          ; check if right is pressed
+    BNE +
+    LDA !ability
+    CMP #$0018          ; check if ability is at max number (prevent crash)
+    BNE ++
+    STZ !ability        ; set ability to normal to loop back around
+    BRA .assign_ability
+    ++ CMP #$0014
+    BNE ++
+    LDA #$0016          ; check if Sleep is next in the list to skip it
+    STA !ability
+    BRA .assign_ability
+    ++ INC !ability     ; increase ability number 
+    BRA .assign_ability
+    + CMP #$02B0        ; check if left is pressed
+    BNE +
+    LDA !ability
+    CMP #$0000          ; check if ability is at min number (prevent crash)
+    BNE ++
+    LDA #$0018          ; set ability to Crash to loop back around
+    STA !ability
+    BRA .assign_ability
+    ++ CMP #$0016       ; check if Sleep is next in the list to skip it
+    BNE ++
+    LDA #$0014
+    STA !ability
+    BRA .assign_ability
+    ++ DEC !ability
 
+    .assign_ability:
+        LDA !ability
+        JSR quick_select_ability
+    +
 
 ; RoMK chapter select
 LDA !subgame
