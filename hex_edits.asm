@@ -1,3 +1,8 @@
+; Make file deletion instant
+; LDA #$00B4 -> LDA #$0000
+ORG !_F+$078736
+    dw $0000
+
 ; No game over in Arena
 ; CMP #$0006 -> CMP #$00FF
 ORG !_F+$0387F4

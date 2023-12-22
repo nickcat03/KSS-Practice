@@ -4,8 +4,8 @@
 !_F = $800000
 
 ; give the cartridge more SRAM
-;ORG !_F+$00FFD8
-;        db $05
+ORG !_F+$00FFD8
+        db $07
 
 ; include other files
 incsrc "defines.asm"

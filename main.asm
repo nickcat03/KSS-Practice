@@ -4,6 +4,16 @@ ORG !_F+$008A0D
 
 ORG !_F+$00F11A         ; Custom code start
 
+; Make file deletion a single menu
+LDA !file_delete_menu
+AND #$80F6
+ORA !game_mode 
+CMP #$80F6
+BNE +
+LDA #$811A
+STA !file_delete_menu 
++
+
 ; GCO bosses always defeated 
 SEP #$20
 LDA !sb_gco_boss_status
@@ -108,11 +118,11 @@ CMP #$0005                  ; only run in subgame menu
 BNE ++
 LDA !p1controller_repeat
 CMP #$0100                  ; if pressing right, increase chapter
-BNE +++                      ; if not, check for left press
+BNE +++                     ; if not, check for left press
 INC !romk_chapter
 BRA ++++
-+++ CMP #$0200               ; if pressing left, decrease chapter
-BNE +++                      ; if not, leave routine
++++ CMP #$0200              ; if pressing left, decrease chapter
+BNE +++                     ; if not, leave routine
 DEC !romk_chapter
 ++++ LDA !romk_chapter
 STA !romk_chapter_to_be_loaded 
@@ -146,6 +156,8 @@ AND #$0840              ; holding Up+X
 ORA !game_mode          ; check if game is on file select screen
 CMP #$0840
 BNE +
+;LDA !selected_file
+;JSL !erase_file    ; erase previous data to ensure checksum is correct
 SEP #$30
 LDX #$00                ; set default offset
 LDA !selected_file
@@ -157,9 +169,80 @@ LDX #$4F                ; set file 2 offset if selected
 BRA ++++
 +++ LDX #$9E            ; set file 3 offset if selected
 ++ 
-++++ JSR make_100_file ; set file data
+++++ JSR make_100_file       ; set 100% file data
 + REP #$30
 
+; Save State 
+LDA !p1controller_hold
+AND #$2000
+ORA !p1controller_frame
+CMP #$2020
+BNE +
+LDX #$0000          ; Start data copy
+LDY #$5000
+LDA #$1FFF
+MVN $40,$40
+LDX #$3000
+LDY #$7FFF
+LDA #$07FF
+MVN $00,$40
+LDA #$8080          ; VRAM 
+STA $2115
+STZ $2116
+LDA #$4141
+LDY #$FFFF 
+PHB
+PHP
+STZ $4302
+STA $4304
+STY $4305
+LDA #$4301
+STA $4300
+LDA $0039
+STA $4301
+LDA #$0001
+STA $420B
+PLP 
+PLB 
+LDA #$0000          ; Reset
+MVN $00,$00
++
+
+; Restore State
+LDA !p1controller_hold
+AND #$2000
+ORA !p1controller_frame
+CMP #$2010
+BNE +
+LDX #$5000          ; Start data copy
+LDY #$0000
+LDA #$1FFF 
+MVN $40,$40
+LDX #$7FFF
+LDY #$3000
+LDA #$07FF
+MVN $40,$00
+LDA #$0080          ; VRAM 
+STA $2115
+STZ $2116
+LDA #$0041
+LDY #$FFFF
+PHB 
+PHP 
+STZ $4302
+STA $4304
+STY $4305
+LDA #$0001 
+STA $4300
+LDA $0018
+STA $4301
+LDA #$0001
+STA $420B
+PLP 
+PLB 
+LDA #$0000          ; Reset
+MVN $00,$00
++
 
 
 

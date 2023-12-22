@@ -14,6 +14,7 @@
 !romk_chapter               = $7A67
 !romk_chapter_to_be_loaded  = $7B25
 !cutscene_loaded            = $33C6
+!file_delete_menu           = $679E
 
 ; subgame addresses
 !sb_gco_boss_status         = $7AE5
@@ -74,7 +75,8 @@
 ; subroutines
 !update_romk_vram           = $07E55D
 !assign_ability_data        = $029C71
-!finalize_cutscene          = $00CF98   ;$CF4EA8 ;$01E73F 
+!finalize_cutscene          = $00CF98
+!erase_file                 = $00EBD7
 
 ; useless subroutines that ill keep here anyway cuz theyre nice to have somewhere
 !debug_reload_display           = $DBE7
