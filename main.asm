@@ -6,12 +6,14 @@ ORG !_F+$00F11A         ; Custom code start
 
 ; Make file deletion a single menu
 LDA !file_delete_menu
-AND #$80F6
-ORA !game_mode 
 CMP #$80F6
 BNE +
+LDA !game_mode 
+CMP #$0000
+BNE ++
 LDA #$811A
 STA !file_delete_menu 
+++
 +
 
 ; GCO bosses always defeated 
