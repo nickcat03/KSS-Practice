@@ -4,6 +4,25 @@ ORG !_F+$008A0D
 
 ORG !_F+$00F11A         ; Custom code start
 
+; GCO bosses always defeated 
+SEP #$20
+LDA !sb_gco_boss_status
+AND #%00001111          ;Ensure that GCO bosses always remain active (the half with all 1's) while SB bosses are not affected
+STA !sb_gco_boss_status
+REP #$20
+
+;Ability code
+; If holding L + R, cycle through all abilities
+; If not holding, select a commonly used ability
+LDA !p1controller_hold
+AND #$00B0
+CMP #$00B0
+BEQ +
+JSR common_abilities
+BRA ++
++ JSR cycle_abilities
+++
+
 ; Run this code if health = 0
 LDA !kirby_hp
 CMP #$0000              ; check if health is 0
@@ -26,6 +45,7 @@ STA !store_wheelie_rider_state  ;/
 LDA #$0013 
 STA !respawn_timer
 INC !kirby_hp             ; increase health so this routine runs a single time only (this approach is not good and needs to be changed ASAP)
+INC !lives                ; increase life count so it never goes to 0
 ++
 +
 
@@ -36,7 +56,6 @@ ORA !p1controller_frame
 CMP #$4030              ; L pressed
 BNE +
 STZ !kirby_hp           ; set health to 0
-INC !lives              ; increase life count so it never goes to 0
 +
 
 ; Restore abilities after death
@@ -80,96 +99,7 @@ LDA #$86C4      ;|
 STA $681C       ;/
 +
 
-; Ability Quick Select
-REP #$30
-common_abilities:
-    LDA !p1controller_hold
-    AND #$00B0
-    CMP #$00B0
-    BEQ cycle_abilities
-    ; normal
-    LDA !p1controller_hold
-    AND #$0090
-    ORA !p1controller_frame
-    CMP #$2090
-    BNE +
-    LDA #$0000
-    JSR quick_select_ability
-    +
-    ; plasma
-    LDA !p1controller_hold
-    AND #$0090
-    ORA !p1controller_frame
-    CMP #$0290
-    BNE +
-    LDA #$000C
-    JSR quick_select_ability
-    +
-    ; wheel
-    LDA !p1controller_hold
-    AND #$0090
-    ORA !p1controller_frame
-    CMP #$0190
-    BNE +
-    LDA #$000D
-    JSR quick_select_ability
-    +
-    ; jet
-    LDA !p1controller_hold
-    AND #$0090
-    ORA !p1controller_frame
-    CMP #$0890
-    BNE +
-    LDA #$0007
-    JSR quick_select_ability
-    +
-    ; hammer
-    LDA !p1controller_hold
-    AND #$0090
-    ORA !p1controller_frame
-    CMP #$0490
-    BNE +
-    LDA #$0012
-    JSR quick_select_ability
-    +
-cycle_abilities:
-    ; if holding L, cycle through all abilities
-    LDA !p1controller_hold
-    AND #$00B0
-    ORA !p1controller_repeat
-    CMP #$01B0          ; check if right is pressed
-    BNE +
-    LDA !ability
-    CMP #$0018          ; check if ability is at max number (prevent crash)
-    BNE ++
-    STZ !ability        ; set ability to normal to loop back around
-    BRA .assign_ability
-    ++ CMP #$0014
-    BNE ++
-    LDA #$0016          ; check if Sleep is next in the list to skip it
-    STA !ability
-    BRA .assign_ability
-    ++ INC !ability     ; increase ability number 
-    BRA .assign_ability
-    + CMP #$02B0        ; check if left is pressed
-    BNE +
-    LDA !ability
-    CMP #$0000          ; check if ability is at min number (prevent crash)
-    BNE ++
-    LDA #$0018          ; set ability to Crash to loop back around
-    STA !ability
-    BRA .assign_ability
-    ++ CMP #$0016       ; check if Sleep is next in the list to skip it
-    BNE ++
-    LDA #$0014
-    STA !ability
-    BRA .assign_ability
-    ++ DEC !ability
 
-    .assign_ability:
-        LDA !ability
-        JSR quick_select_ability
-    +
 
 ; RoMK chapter select
 LDA !subgame
