@@ -8,7 +8,7 @@
 ; menus and various selectable items
 !selected_file              = $6D56
 !timer_for_various_file_select_things   = $6724
-!game_mode                  = $623E
+!game_mode                  = $7390
 !subgame                    = $32EA
 !subgame_menu_cursor        = $7B23
 !romk_chapter               = $7A67
@@ -74,6 +74,7 @@
 ; subroutines
 !update_romk_vram           = $07E55D
 !assign_ability_data        = $029C71
+!finalize_cutscene          = $00CF98   ;$CF4EA8 ;$01E73F 
 
 ; useless subroutines that ill keep here anyway cuz theyre nice to have somewhere
 !debug_reload_display           = $DBE7
