@@ -16,6 +16,15 @@
 !cutscene_loaded            = $33C6
 !file_delete_menu           = $679E
 
+;Milky Way Wishes 
+!mww_current_planet         = $7A6B
+!kirby_x_pos                = $6988
+!kirby_y_pos                = $6A02
+!abilities_saved_1          = $7B1B
+!abilities_saved_2          = $7B1C 
+!abilities_saved_3          = $7B1D
+!number_of_abilities        = $7B1E
+
 ; subgame addresses
 !sb_gco_boss_status         = $7AE5
 
@@ -63,7 +72,7 @@
 !ability_info3          = $74A2
 !wheelie_rider_state    = $7568
 
-; blank addresses used for storing ability information
+; blank addresses used for storing information
 !store_ability              = $7BF0
 !store_ability_info1        = $7BF2
 !store_ability_info2        = $7BF4
@@ -71,12 +80,18 @@
 !store_wheelie_rider_state  = $7BF8
 !respawn_timer              = $7BFA
 !temp_pointer               = $7BFC
+!mww_ability_route          = $7BFE
+!mww_planet_rta             = $7C00
 
 ; subroutines
 !update_romk_vram           = $07E55D
 !assign_ability_data        = $029C71
 !finalize_cutscene          = $00CF98
 !erase_file                 = $00EBD7
+
+;tables 
+!mww_planet_x_pos           = $CAA6F5
+!mww_planet_y_pos           = $CAA709
 
 ; useless subroutines that ill keep here anyway cuz theyre nice to have somewhere
 !debug_reload_display           = $DBE7

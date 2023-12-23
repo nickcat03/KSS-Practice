@@ -136,7 +136,7 @@ JSL !update_romk_vram       ; jump to game code for updating vram based on chapt
 ; RoMK cutscene skip
 LDA !p1controller_frame
 AND #$1000
-ORA !cutscene_loaded    ;(should be #$1000)
+ORA !cutscene_loaded    ;(should be #$0000)
 ORA !subgame            ;(should be #$0004)
 CMP #$1004
 BNE +
@@ -151,6 +151,20 @@ BRA +++
 ++ INC $33C6
 +++
 + REP #$20
+
+; MWW World Map code
+SEP #$30
+LDA !subgame
+CMP #$05                            ; check if in MWW
+BNE merge
+LDA !game_mode
+CMP #$06                            ; check if on world map screen
+BNE merge
+JSR mww_cycle_planets
+JSR mww_assign_starting_abilities
+JSR mww_toggle_ability_route
+merge:
+    REP #$30
 
 ; Instant 100% file
 LDA !p1controller_hold
@@ -249,5 +263,5 @@ MVN $00,$00
 
 
 return_to_main_routine:
-    LDA #$3000          ; run code that was replaced
+    LDA #$3000          ; run code that was replaced by JSR instruction
     RTS

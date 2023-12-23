@@ -20,9 +20,10 @@ ORG !_F+$07DA3E
     db $80
 
 ; Never display subgame cutscene after inactivity
+; This makes RNG manip impossible so maybe remove this
 ; BNE -> BRA
-ORG !_F+$07DD67
-    db $80
+;ORG !_F+$07DD67
+;    db $80
 
 ; Never decrease RoMK timer 
 ; DEC $73A0 -> NOP

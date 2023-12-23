@@ -11,6 +11,7 @@ ORG !_F+$00FFD8
 incsrc "defines.asm"
 incsrc "hex_edits.asm"
 incsrc "main.asm"
+incsrc "mww_map.asm"
 incsrc "abilities.asm"
 incsrc "subroutines.asm"
 incsrc "tables.asm"
