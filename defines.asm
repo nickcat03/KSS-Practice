@@ -1,4 +1,5 @@
-;$7BF0 - $7EEF is free RAM space
+; $7BF0 - $7EEF is free RAM space
+; But for some reason they randomly get FF00 written to them?
 
 ; controller registers
 !p1controller_hold        = $32C4
@@ -73,15 +74,15 @@
 !wheelie_rider_state    = $7568
 
 ; blank addresses used for storing information
-!store_ability              = $7BF0
-!store_ability_info1        = $7BF2
-!store_ability_info2        = $7BF4
-!store_ability_info3        = $7BF6
-!store_wheelie_rider_state  = $7BF8
-!respawn_timer              = $7BFA
-!temp_pointer               = $7BFC
-!mww_ability_route          = $7BFE
-!mww_planet_rta             = $7C00
+!store_ability              = $7B50
+!store_ability_info1        = $7B52
+!store_ability_info2        = $7B54
+!store_ability_info3        = $7B56
+!store_wheelie_rider_state  = $7B58
+!respawn_timer              = $7B5A
+!temp_pointer               = $7B5C
+!mww_ability_route          = $7B5E
+!mww_planet_rta             = $7B60
 
 ; subroutines
 !update_romk_vram           = $07E55D
