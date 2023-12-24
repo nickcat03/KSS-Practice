@@ -199,27 +199,13 @@ LDY #$5000
 LDA #$1FFF
 MVN $40,$40
 LDX #$3000
-LDY #$7FFF
+LDY #$7000
 LDA #$07FF
-MVN $00,$40
-LDA #$8080          ; VRAM 
-STA $2115
-STZ $2116
-LDA #$4141
-LDY #$FFFF 
-PHB
-PHP
-STZ $4302
-STA $4304
-STY $4305
-LDA #$4301
-STA $4300
-LDA $0039
-STA $4301
-LDA #$0001
-STA $420B
-PLP 
-PLB 
+MVN $40,$00
+
+;REP #$30           ; start vram transfer
+;LDA #$
+
 LDA #$0000          ; Reset
 MVN $00,$00
 +
@@ -234,32 +220,15 @@ LDX #$5000          ; Start data copy
 LDY #$0000
 LDA #$1FFF 
 MVN $40,$40
-LDX #$7FFF
+LDX #$7000
 LDY #$3000
 LDA #$07FF
-MVN $40,$00
-LDA #$0080          ; VRAM 
-STA $2115
-STZ $2116
-LDA #$0041
-LDY #$FFFF
-PHB 
-PHP 
-STZ $4302
-STA $4304
-STY $4305
-LDA #$0001 
-STA $4300
-LDA $0018
-STA $4301
-LDA #$0001
-STA $420B
-PLP 
-PLB 
+MVN $00,$40
 LDA #$0000          ; Reset
 MVN $00,$00
 +
 
+; VRAM tileset on screen is from 9000 - 9FFF
 
 
 return_to_main_routine:
