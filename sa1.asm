@@ -188,47 +188,7 @@ BRA ++++
 ++++ JSR make_100_file       ; set 100% file data
 + REP #$30
 
-; Save State 
-LDA !p1controller_hold
-AND #$2000
-ORA !p1controller_frame
-CMP #$2020
-BNE +
-LDX #$0000          ; Start data copy
-LDY #$5000
-LDA #$1FFF
-MVN $40,$40
-LDX #$3000
-LDY #$7000
-LDA #$07FF
-MVN $40,$00
 
-;REP #$30           ; start vram transfer
-;LDA #$
-
-LDA #$0000          ; Reset
-MVN $00,$00
-+
-
-; Restore State
-LDA !p1controller_hold
-AND #$2000
-ORA !p1controller_frame
-CMP #$2010
-BNE +
-LDX #$5000          ; Start data copy
-LDY #$0000
-LDA #$1FFF 
-MVN $40,$40
-LDX #$7000
-LDY #$3000
-LDA #$07FF
-MVN $00,$40
-LDA #$0000          ; Reset
-MVN $00,$00
-+
-
-; VRAM tileset on screen is from 9000 - 9FFF
 
 
 return_to_main_routine:

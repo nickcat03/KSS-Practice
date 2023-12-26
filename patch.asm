@@ -16,6 +16,8 @@ incsrc "abilities.asm"
 incsrc "subroutines.asm"
 incsrc "tables.asm"
 ;incsrc "room_reload.asm"
+;incsrc "hblank.asm"
+incsrc "vblank.asm"
 
 ; make sure the ROM is expanded to the full 1MBit
 ORG !_F+$1FFFFF

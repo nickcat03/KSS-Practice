@@ -1,0 +1,16 @@
+; Jump to blank ROM space from main routine
+ORG !_F+$01E922
+    JSL $00FD00
+    NOP #3
+
+ORG !_F+$00FC00        ; Custom code start
+
+
+
+hblank_return_to_main_routine:
+    LDA $32EA
+    ASL
+    ADC $32EA          ; run code that was replaced by JSR instruction
+                       ; When adding in the custom HUD, edit this code so that $32EA is instead always #$0000 for spring breeze HUD
+    TAX          
+    RTL
