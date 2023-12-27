@@ -7,4 +7,4 @@ copy original.sfc patched.sfc
 asar patch.asm patched.sfc
 
 :: Pause to keep the command prompt window open (optional)
-:: pause
+pause
