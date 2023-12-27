@@ -83,6 +83,7 @@
 !temp_pointer               = $7B5C
 !mww_ability_route          = $7B5E
 !mww_planet_rta             = $7B60
+!transferring_data          = $7B62
 
 ; subroutines
 !update_romk_vram           = $07E55D

@@ -1,29 +1,23 @@
 ; Jump to blank ROM space from main routine
-;ORG !_F+$008430
 ORG !_F+$0081B7
-;ORG !_F+$008A63
-;ORG !_F+$0083BF
-;ORG !_F+$0083DD
-;ORG !_F+$008307
-;ORG !_F+$01EA10
-;ORG !_F+$01EA14
-;ORG !_F+$008269
     JSR $FE00
-;    NOP #2
+
+ORG !_F+$0082C6             
+    JSR check_for_blank 
 
 ORG !_F+$00FE00        ; Custom code start
 
 REP #$30
 LDA !p1controller_hold
-AND #$2000
+AND #$0020
 ORA !p1controller_frame
-CMP #$2020              ; L + Select = save state
+CMP #$8020              ; L + Select = save state
 BNE +
 JSR save_state 
 + LDA !p1controller_hold
-AND #$2000
+AND #$0010
 ORA !p1controller_frame
-CMP #$2010              ; R + Select = load state
+CMP #$8010              ; R + Select = load state
 BNE +
 JSR restore_state
 + 
@@ -36,10 +30,17 @@ vblank_return_to_main_routine:
 
 ; Save and Restore code
 save_state:
-    .enable_vblank: 
+    .enable_vblank:
         SEP #$20
 
+        LDA #$01
+        STA !transferring_data 
+
         STZ $4200           ; NMI disable
+        STZ $4300           ; Disable indirect HDMA
+
+        LDA #$00
+        TSB $0D9F
 
         - LDA $4212
         BPL -
@@ -87,25 +88,30 @@ save_state:
 
         LDA #$81
         STA $4200           ; NMI enable
+        LDA #$40
+        STA $4300           ; Enable indirect HDMA
         LDA #$0F 
         STA $2100           ; Exit force blank
 
+    STZ !transferring_data
     REP #$30
     RTS
 
 restore_state: 
-
-
     .enable_vblank:
-    SEP #$20
+        SEP #$20
 
-    STZ $4200           ; NMI disable
+        LDA #$01
+        STA !transferring_data 
 
-    - LDA $4212         ; Wait until vblank
-    BPL -
+        STZ $4200           ; NMI disable
+        STZ $4300           ; Disable indirect HDMA
 
-    LDA #$80
-    STA $2100           ; Force blank
+        - LDA $4212
+        BPL -
+
+        LDA #$80
+        STA $2100           ; Force blank
 
     .restore_sram_sa1
         REP #$20
@@ -147,8 +153,21 @@ restore_state:
 
         LDA #$81
         STA $4200           ; NMI enable
+        LDA #$40
+        STA $4300           ; Enable indirect HDMA
         LDA #$0F 
         STA $2100           ; Exit force blank
 
+    STZ !transferring_data
     REP #$30
+    RTS
+
+check_for_blank:            ; Don't allow HDMA transfers to run while force blanking
+    LDA !transferring_data
+    CMP #$01
+    BRA +
+    TXA
+    STA $420C
+    RTS
+    + STZ $4300           ; Disable indirect HDMA
     RTS
