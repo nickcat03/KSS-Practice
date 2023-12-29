@@ -47,19 +47,19 @@ save_state:
         LDA #$07FF
         MVN $40,$00
                            
-        LDX #$0500          ; Copy CGRAM $000500-$0006F0 to $408000-$4081F0
-        LDY #$8000          ; CGRAM is mirrored to workram $000500-$0006F0
-        LDA #$01F0
-        MVN $40,$00
+        LDX #$0100          ; Palette data, what enemies spawn, basically the first part of workram (except for the first 100 bytes)
+        LDY #$5000          ; Copy WRAM $7F0000-$7F6FFF to $408000-$40EFFF
+        LDA #$2EFF
+        MVN $40,$7E
 
-        LDX #$0000          ; Copy level data
-        LDY #$8200
-        LDA #$1FFF
+        LDX #$0000          ; Level data. This includes the room layout, tileset, tile graphics, etc.
+        LDY #$8000          ; Copy WRAM $7F0000-$7F6FFF to $408000-$40EFFF
+        LDA #$6FFF
         MVN $40,$7F
 
-        ;LDX #$0000          ; test copy =
-        ;LDY #$8400
-        ;LDA #$5FFF
+        ;LDX #$0900          ; test copy 
+        ;LDY #$8600
+        ;LDA #$0FFF
         ;MVN $40,$7E
 
         LDA #$0000          ; Reset
@@ -97,24 +97,25 @@ restore_state:
         LDY #$0000          ; Copy SaveRAM $400000-$401FFF to $402000-$403FFF
         LDA #$1FFF 
         MVN $40,$40
+
         LDX #$4000
         LDY #$3000          ; Copy SA-1 IRAM $003000-$0037FF to $404000-$4047FF
         LDA #$07FF
         MVN $00,$40
-                            ; cgram is mirrored to workram $000500-$0006F0
-        LDX #$8000          ; Copy CGRAM $000500-$0006F0 to $408000-$4081F0
-        LDY #$0500
-        LDA #$01F0
-        MVN $00,$40
+                            
+        LDX #$5000          ; Palette data, what enemies spawn, basically the first part of workram (except for the first 100 bytes)
+        LDY #$0100          ; Copy WRAM $7E0100-$7E2FFF to $405000-$407FFF
+        LDA #$2EFF
+        MVN $7E,$40
 
-        LDX #$8200          ; Copy level data
-        LDY #$0000
-        LDA #$1FFF
+        LDX #$8000          ; Level data. This includes the room layout, tileset, tile graphics, etc.
+        LDY #$0000          ; Copy WRAM $7F0000-$7F6FFF to $408000-$40EFFF
+        LDA #$6FFF
         MVN $7F,$40
 
-        ;LDX #$8400          ; test copy
-        ;LDY #$0000
-        ;LDA #$5FFF
+        ;LDX #$8600          ; test copy 
+        ;LDY #$0900
+        ;LDA #$0FFF
         ;MVN $7E,$40
 
         LDA #$0000          ; Reset
@@ -175,7 +176,4 @@ disable_vblank:
 
 ; Possible sprite tables (all workram addresses)
 
-; $007A0 - 007FF
-; $03600 - something
-; $08000 - something
-; $17912 - $1836D
+; $009A0
