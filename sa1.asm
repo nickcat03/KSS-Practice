@@ -42,32 +42,6 @@ BRA ++
 + JSR cycle_abilities
 ++
 
-; Run this code if health = 0
-LDA !kirby_hp
-CMP #$0000              ; check if health is 0
-BNE +
-LDA !respawn_timer      ; check if Kirby is in the middle of respawning
-CMP #$0000
-BNE ++
-LDA #$0001
-STA !animation_timer    ; set animation timer to 1 so fadeout is instant
-LDA !ability                    ;\ store Kirby's ability information to other RAM addresses so they can be reloaded
-STA !store_ability              ;|
-LDA !ability_info1              ;|
-STA !store_ability_info1        ;|
-LDA !ability_info2              ;|
-STA !store_ability_info2        ;|
-LDA !ability_info3              ;|
-STA !store_ability_info3        ;|
-LDA !wheelie_rider_state        ;|
-STA !store_wheelie_rider_state  ;/
-LDA #$0013 
-STA !respawn_timer
-INC !kirby_hp             ; increase health so this routine runs a single time only (this approach is not good and needs to be changed ASAP)
-INC !lives                ; increase life count so it never goes to 0
-++
-+
-
 ; Button combo for room reset
 LDA !p1controller_hold
 AND #$4010              ; R+Y held
@@ -77,30 +51,13 @@ BNE +
 STZ !kirby_hp           ; set health to 0
 +
 
-; Restore abilities after death
-LDA !respawn_timer
-CMP #$0000              ; if timer is 0, do not decrease it
-BEQ +
-DEC !respawn_timer
-+ CMP #$0001            ; if timer is 1, execute the code 
+; Run this code if health = 0
+LDA !kirby_hp
+CMP #$0000              ; check if health is 0
 BNE +
-;LDA !store_ability              ;\ set Kirby's ability back
-;STA !ability                    ;|
-;LDA !store_ability_info1        ;|
-;STA !ability_info1              ;|
-;LDA !store_ability_info2        ;|
-;STA !ability_info2              ;|
-;LDA !store_ability_info3        ;|
-;STA !ability_info3              ;|
-;LDA !store_wheelie_rider_state  ;|
-;STA !wheelie_rider_state        ;/
-+
-
-; If timer somehow goes over 13, reset it back to 0. If it goes off randomly during gameplay, the game could potentially crash.
-LDA !respawn_timer
-CMP #$0013
-BCC +
-STZ !respawn_timer
+INC !lives                ; increase life count so it never goes to 0
+LDA #$0001
+STA $6E4C
 +
 
 ; Instant Helper removal

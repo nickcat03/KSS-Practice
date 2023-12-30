@@ -48,3 +48,19 @@ ORG !_F+$1EBFB5
     db $80
 ORG !_F+$1EF1EF
     db $80
+
+; Avoid losing abilities when dying:
+; Never lose ability
+; LDA #$0000 -> BRA 1F, NOP
+ORG !_F+$03A1FE
+    db $80, $1F, $EA
+; Keep Helper
+; LDA #$FFFF -> RTL 
+ORG !_F+$038727
+    RTL
+; Keep Wheelie Rider state
+; STZ $7569 -> NOP x3
+ORG !_F+$03A081
+    NOP #3
+; Make death instant 
+; STA [$14],Y
