@@ -16,6 +16,7 @@
 !romk_chapter_to_be_loaded  = $7B25
 !cutscene_loaded            = $33C6
 !file_delete_menu           = $679E
+!current_music              = $33CA
 
 ;Milky Way Wishes 
 !mww_current_planet         = $7A6B
@@ -30,11 +31,15 @@
 !sb_gco_boss_status         = $7AE5
 
 ; status elements (health, lives, etc)
-!kirby_hp       = $737C
-!helper_hp      = $737E
-!lives          = $737A
-!score          = $7376
-!romk_timer     = $73A0
+!kirby_hp           = $737C
+!helper_hp          = $737E
+!lives              = $737A
+!score              = $7376
+!romk_timer         = $73A0
+!boss_inv_frames    = $78FC
+!boss_hp            = $7A19
+!boss_max_hp        = $7A1B
+!boss_hp_meter      = $7A1D
 
 ; various timers
 !animation_timer      = $6E4C
@@ -83,12 +88,15 @@
 !temp_pointer               = $7B5C
 !mww_ability_route          = $7B5E
 !mww_planet_rta             = $7B60
+!QSQL_timer                 = $7B62
 
 ; subroutines
+!reset_game                 = $BCE7
 !update_romk_vram           = $07E55D
 !assign_ability_data        = $029C71
 !finalize_cutscene          = $00CF98
 !erase_file                 = $00EBD7
+!load_music                 = $00CF98
 
 ;tables 
 !mww_planet_x_pos           = $CAA6F5

@@ -1,8 +1,13 @@
 ; Jump to blank ROM space from main routine
 ORG !_F+$008A0D
-    JSR $F11A
+    JSR $F200
 
-ORG !_F+$00F11A         ; Custom code start
+ORG !_F+$00F11A         ; Crash handling code 
+handle_crash:
+    REP #$30
+    JMP !reset_game
+
+ORG !_F+$00F200         ; Custom code start
 
 ; Make file deletion a single menu
 LDA !file_delete_menu
@@ -16,7 +21,16 @@ STA !file_delete_menu
 ++
 +
 
-; GCO bosses always defeated 
+; Crash handling code. Make RAM a jump instruction so if the game ends up jumping there, reset the game\
+LDA #$EAEA
+STA $6000
+STA $6002
+LDA #$1A5C
+STA $6004
+LDA #$00F1
+STA $6006
+
+; GCO bosses never defeated 
 SEP #$20
 LDA !sb_gco_boss_status
 AND #%00001111          ;Ensure that GCO bosses always remain active (the half with all 1's) while SB bosses are not affected
@@ -77,16 +91,16 @@ BEQ +
 DEC !respawn_timer
 + CMP #$0001            ; if timer is 1, execute the code 
 BNE +
-LDA !store_ability              ;\ set Kirby's ability back
-STA !ability                    ;|
-LDA !store_ability_info1        ;|
-STA !ability_info1              ;|
-LDA !store_ability_info2        ;|
-STA !ability_info2              ;|
-LDA !store_ability_info3        ;|
-STA !ability_info3              ;|
-LDA !store_wheelie_rider_state  ;|
-STA !wheelie_rider_state        ;/
+;LDA !store_ability              ;\ set Kirby's ability back
+;STA !ability                    ;|
+;LDA !store_ability_info1        ;|
+;STA !ability_info1              ;|
+;LDA !store_ability_info2        ;|
+;STA !ability_info2              ;|
+;LDA !store_ability_info3        ;|
+;STA !ability_info3              ;|
+;LDA !store_wheelie_rider_state  ;|
+;STA !wheelie_rider_state        ;/
 +
 
 ; If timer somehow goes over 13, reset it back to 0. If it goes off randomly during gameplay, the game could potentially crash.

@@ -1,35 +1,3 @@
-; Jump to blank ROM space from main routine
-ORG !_F+$0081B7
-    JSR $FE00
-
-
-ORG !_F+$00FE00        ; Custom code start
-
-REP #$30
-check_save_input:
-    LDA !p1controller_hold
-    CMP #$2010
-    BNE check_load_input
-    LDA !p1controller_frame
-    CMP #$2000              ; R + Select = save state
-    BNE check_load_input
-    JSR save_state 
-
-check_load_input:
-    LDA !p1controller_hold
-    CMP #$2020
-    BNE vblank_return_to_main_routine
-    LDA !p1controller_frame
-    CMP #$2000              ; L + Select = load state
-    BNE vblank_return_to_main_routine
-    JSR restore_state
-
-vblank_return_to_main_routine:
-    REP #$30
-    LDA #$3000
-    RTS
-
-
 ; Save and Restore code
 save_state:
     JSR enable_vblank
@@ -51,6 +19,11 @@ save_state:
         LDY #$5000          ; Copy WRAM $7F0000-$7F6FFF to $408000-$40EFFF
         LDA #$2EFF
         MVN $40,$7E
+
+        LDX #$B000
+        LDY #$0000
+        LDA #$4FFF
+        MVN $42,$7E
 
         LDX #$0000          ; Level data. This includes the room layout, tileset, tile graphics, etc.
         LDY #$8000          ; Copy WRAM $7F0000-$7F6FFF to $408000-$40EFFF
@@ -74,14 +47,14 @@ save_state:
         STX $4302       
         LDA #$41        
         STA $4304       
-        LDX #$FFFF      
+        LDX #$FFFF
         STX $4305       
         LDA #$39        
         STA $4301       
         LDA #$81        
         STA $4300       
         LDA #$01        
-        STA $420B       
+        STA $420B            
 
     JSR disable_vblank
 
@@ -89,6 +62,15 @@ save_state:
 
 restore_state: 
     JSR enable_vblank
+
+    .restore_music
+        SEP #$20
+        LDA $4043CA             ; music from the savestate
+        CMP !current_music
+        BEQ +
+        STA !current_music
+        JSL !load_music
+        +
 
     .restore_sram_sa1
         REP #$20
@@ -107,6 +89,11 @@ restore_state:
         LDY #$0100          ; Copy WRAM $7E0100-$7E2FFF to $405000-$407FFF
         LDA #$2EFF
         MVN $7E,$40
+
+        LDX #$0000
+        LDY #$B000
+        LDA #$4FFF
+        MVN $7E,$42
 
         LDX #$8000          ; Level data. This includes the room layout, tileset, tile graphics, etc.
         LDY #$0000          ; Copy WRAM $7F0000-$7F6FFF to $408000-$40EFFF
@@ -129,7 +116,7 @@ restore_state:
         STX $4302       ;Set Source address lower 16-bits
         LDA #$41        ;Source bank
         STA $4304       ;Set Source address upper 8-bits
-        LDX #$FFFF      ;# of bytes to copy (16k)
+        LDX #$FFFF      ;# of bytes to copy 
         STX $4305       ;Set DMA transfer size
         LDA #$18        ;$2118 is the destination, so
         STA $4301       ;  set lower 8-bits of destination to $18
@@ -137,6 +124,68 @@ restore_state:
         STA $4300       ;  using write mode 1 (meaning write a word to $2118/$2119)
         LDA #$01        ;The registers we've been setting are for channel 0
         STA $420B       ;  so Start DMA transfer on channel 0 (LSB of $420B)
+
+    JSR disable_vblank
+
+    RTS
+
+auto_save_on_room_load:
+    REP #$20            ; Since we are loading in the new room, only copy Save and SA-1 RAM
+
+    LDX #$0000          ; Data copy starts
+    LDY #$2000          ; Copy SaveRAM $400000-$401FFF to $402000-$403FFF
+    LDA #$1FFF
+    MVN $43,$40 
+
+    LDX #$3000          ; Copy SA-1 IRAM $003000-$0037FF to $404000-$4047FF
+    LDY #$4000
+    LDA #$07FF
+    MVN $43,$00
+
+    LDA #$0000          ; Reset
+    MVN $00,$00
+
+    RTS
+
+restore_current_room:
+
+    JSR enable_vblank
+    REP #$30
+
+    ;JSL $03A1BE              ; kills helper?? but not really?
+    ;JSL $03A071             ; responsible for clearing abilities on death
+    ;JSL $009A8E
+    ;JSL $009232
+    ;JSR $90E9
+    ;JSL $009A78
+    ;JSL $018698
+    ;JSL $018000
+    ;JSL $01806E
+    ;JSL $01FBCB
+    ;JSL $01F6F7    ; RTS at the end 
+    ;JSL $01A288
+    SEP #$20
+    JSR disable_vblank
+    RTS
+
+restore_current_room_2:   
+
+    JSR enable_vblank
+
+    REP #$20            ; Restore automatic copy of current room data
+
+    LDX #$2000          ; Data copy starts
+    LDY #$0000          ; Copy SaveRAM $400000-$401FFF to $402000-$403FFF
+    LDA #$1FFF
+    MVN $40,$43 
+
+    LDX #$4000          ; Copy SA-1 IRAM $003000-$0037FF to $404000-$4047FF
+    LDY #$3000
+    LDA #$07FF
+    MVN $00,$43
+
+    LDA #$0000          ; Reset
+    MVN $00,$00
 
     JSR disable_vblank
 
@@ -171,9 +220,7 @@ disable_vblank:
     STA $4200           ; NMI enable
     LDA #$0F 
     STA $2100           ; Exit force blank
+    LDA #$0A
+    STA !QSQL_timer     ; Set amount of frames until next QSQL is allowed
     REP #$30
     RTS
-
-; Possible sprite tables (all workram addresses)
-
-; $009A0
