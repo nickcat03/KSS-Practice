@@ -1,2 +1,4 @@
 *.sfc
 asar
+asar.exe
+/dll

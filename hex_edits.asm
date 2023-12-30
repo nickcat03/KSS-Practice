@@ -3,6 +3,11 @@
 ORG !_F+$078736
     dw $0000
 
+; Spring Breeze bosses always have New File health
+; BNE $XX -> NOP NOP 
+ORG !_F+$00ED96
+    NOP #2
+
 ; No game over in Arena
 ; CMP #$0006 -> CMP #$00FF
 ORG !_F+$0387F4
@@ -38,3 +43,4 @@ ORG !_F+$1EBFB5
     db $80
 ORG !_F+$1EF1EF
     db $80
+
