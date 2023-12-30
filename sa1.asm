@@ -30,13 +30,6 @@ STA $6004
 LDA #$00F1
 STA $6006
 
-; GCO bosses never defeated 
-SEP #$20
-LDA !sb_gco_boss_status
-AND #%00001111          ;Ensure that GCO bosses always remain active (the half with all 1's) while SB bosses are not affected
-STA !sb_gco_boss_status
-REP #$20
-
 ;Ability code
 ; If holding L + R, cycle through all abilities
 ; If not holding, select a commonly used ability

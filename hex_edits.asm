@@ -8,6 +8,11 @@ ORG !_F+$078736
 ORG !_F+$00ED96
     NOP #2
 
+; GCO bosses always respawn 
+; BEQ -> BRA 
+ORG !_F+$2AA800
+    db $80
+
 ; No game over in Arena
 ; CMP #$0006 -> CMP #$00FF
 ORG !_F+$0387F4
@@ -43,4 +48,3 @@ ORG !_F+$1EBFB5
     db $80
 ORG !_F+$1EF1EF
     db $80
-
