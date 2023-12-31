@@ -89,6 +89,8 @@
 !mww_ability_route          = $7B5E
 !mww_planet_rta             = $7B60
 !QSQL_timer                 = $7B62
+!QSQL_transfer_mode         = $7B64
+!QSQL_offset                = $7B66
 
 ; subroutines
 !reset_game                 = $BCE7
@@ -97,6 +99,7 @@
 !finalize_cutscene          = $00CF98
 !erase_file                 = $00EBD7
 !load_music                 = $00CF98
+!update_tileset             = $0087CB
 
 ;tables 
 !mww_planet_x_pos           = $CAA6F5

@@ -20,9 +20,10 @@ ORG !_F+$0387F4
 
 ; Checkpoints in all rooms
 ; At a later point, this should have the option of being disabled by holding a button upon dying
+; (For the time being, I commented it out as the new room reload routine is better for this purpose)
 ; BEQ -> BRA
-ORG !_F+$01813D
-    db $80
+;ORG !_F+$01813D
+;    db $80
 
 ; Always have MWW cursor highlight "Continue"
 ; BEQ -> BRA
@@ -62,5 +63,3 @@ ORG !_F+$038727
 ; STZ $7569 -> NOP x3
 ORG !_F+$03A081
     NOP #3
-; Make death instant 
-; STA [$14],Y

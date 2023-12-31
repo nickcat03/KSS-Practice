@@ -22,13 +22,13 @@ STA !file_delete_menu
 +
 
 ; Crash handling code. Make RAM a jump instruction so if the game ends up jumping there, reset the game\
-LDA #$EAEA
-STA $6000
-STA $6002
-LDA #$1A5C
-STA $6004
-LDA #$00F1
-STA $6006
+;LDA #$EAEA
+;STA $6000
+;STA $6002
+;LDA #$1A5C
+;STA $6004
+;LDA #$00F1
+;STA $6006
 
 ;Ability code
 ; If holding L + R, cycle through all abilities
@@ -44,9 +44,9 @@ BRA ++
 
 ; Button combo for room reset
 LDA !p1controller_hold
-AND #$4010              ; R+Y held
+AND #$0020
 ORA !p1controller_frame
-CMP #$4030              ; L pressed
+CMP #$4020
 BNE +
 STZ !kirby_hp           ; set health to 0
 +

@@ -1,12 +1,12 @@
 ; Jump to blank ROM space from main routine
 ORG !_F+$0081B7
-    JSR $FD00
+    JSR $FC00
 
 
-ORG !_F+$00FD00        ; Custom code start
+ORG !_F+$00FC00        ; Custom code start
 
 REP #$30
-LDA !QSQL_timer             ; make sure that a save or load hasn't occured in the last 30 frames
+LDA !QSQL_timer             ; make sure that a save or load hasn't occured in the last however many frames
 CMP #$0000
 BNE countdown_QSQL_timer
 check_save_input:
@@ -29,9 +29,11 @@ check_load_input:
 
 check_roomload_input:
     LDA !p1controller_hold
-    CMP #$0030
+    AND #$0010
+    ORA !p1controller_frame
+    CMP #$4010
     BNE vblank_return_to_main_routine
-    ;JSR restore_current_room
+    JSR restore_current_room
     BRA vblank_return_to_main_routine
 
 countdown_QSQL_timer:
