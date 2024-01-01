@@ -62,10 +62,10 @@ STA $6E4C
 
 ; Instant Helper removal
 LDA !p1controller_hold
-AND #$4010      ;R+Y held
+AND #$00A0      ;L+A held
 ORA !wheelie_rider_state
 ORA !p1controller_frame
-CMP #$6010      ;Check if Select is pressed and that Kirby is not riding Wheelie 
+CMP #$20A0      ;Check if Select is pressed and that Kirby is not riding Wheelie 
 BNE +
 LDA #$8C74      ;\ Assign RAM values for when Helper gets removed by Suppin Beam.
 STA $6340       ;| I have no idea how this works, but I'm glad it does :)

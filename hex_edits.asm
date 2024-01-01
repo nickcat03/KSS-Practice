@@ -14,7 +14,7 @@ ORG !_F+$00ED96
 ORG !_F+$2AA800
     db $80
 ; Battle Windows 
-ORG !_F+$2ADDE4 ;D55DE4
+ORG !_F+$2ADDE4 
     db $80
 ; Ghameleo Arm  
 ORG !_F+$2AC303
@@ -22,7 +22,6 @@ ORG !_F+$2AC303
 ; Wham Bam
 ORG !_F+$2AD1E5
     db $80
-
 
 ; No game over in Arena
 ; CMP #$0006 -> CMP #$00FF

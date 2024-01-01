@@ -100,6 +100,7 @@
 !erase_file                 = $00EBD7
 !load_music                 = $00CF98
 !update_tileset             = $0087CB
+!update_tileset_kirby_pos   = $0085EA
 
 ;tables 
 !mww_planet_x_pos           = $CAA6F5

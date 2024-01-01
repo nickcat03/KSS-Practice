@@ -1,4 +1,5 @@
 ; Save and Restore code
+; DMA to VRAM could possibly be replaced with routine at $0087CB which loads tiles from WRAM (at least for autosaving)
 save_state:
 
     JSR enable_vblank
@@ -87,6 +88,8 @@ restore_state:
         JSL !load_music
         +
 
+    ;JSL $00D29E    ; subroutine for loading in SFX?
+
     .restore_sram_sa1
         REP #$20
 
@@ -158,35 +161,53 @@ auto_save_on_room_load:
     ;JSR enable_vblank
     REP #$30
 
-    LDX #$0000          ; Data copy starts
-    LDY #$2000          ; Copy SaveRAM $400000-$401FFF to $402000-$403FFF
-    LDA #$1FFF
-    MVN $43,$40 
+    .mvn_instructions:
+        REP #$20
 
-    LDX #$3000          ; Copy SA-1 IRAM $003000-$0037FF to $404000-$4047FF
-    LDY #$4000
-    LDA #$07FF
-    MVN $43,$00
+        LDX #$0000          ; Data copy starts
+        LDY #$2000          ; Copy SaveRAM $400000-$401FFF to $402000-$403FFF
+        LDA #$1FFF
+        MVN $43,$40 
 
-    LDA #$0000          ; Reset
-    MVN $00,$00
+        LDX #$3000          ; Copy SA-1 IRAM $003000-$0037FF to $404000-$4047FF
+        LDY #$4000
+        LDA #$07FF
+        MVN $43,$00
 
-    ;.dma_instructions:
-    ;    SEP #$20
-    ;    LDX #$0000      ; Only copy tilemap
-    ;    STX $2116
-    ;    LDX #$4800      
-    ;    STX $4302       
-    ;    LDA #$43        
-    ;    STA $4304       
-    ;    LDX #$FFFF
-    ;    STX $4305       
-    ;    LDA #$39       
-    ;   STA $4301       
-    ;    LDA #$81        
-    ;    STA $4300       
-    ;    LDA #$01        
-    ;    STA $420B  
+        LDX #$1000          ; Elevators
+        LDY #$6000          
+        LDA #$036F
+        MVN $43,$7E
+
+        LDX #$14A0          ; Consumable items
+        LDY #$6370          
+        LDA #$0060
+        MVN $43,$7E
+
+        LDX #$0000          ; Level data. This includes the room layout, tileset, tile graphics, etc.
+        LDY #$8000          ; Copy WRAM $7F0000-$7F6FFF to $408000-$40EFFF
+        LDA #$6FFF
+        MVN $43,$7F
+
+        LDA #$0000          ; Reset
+        MVN $00,$00
+
+    .dma_instructions:
+        SEP #$20
+        LDX #$4800
+        STX $2116
+        LDX #$4800      ;Source Offset into source bank
+        STX $4302       ;Set Source address lower 16-bits
+        LDA #$43        ;Source bank
+        STA $4304       ;Set Source address upper 8-bits
+        LDX #$0FFF      ;# of bytes to copy 
+        STX $4305       ;Set DMA transfer size
+        LDA #$39        ;$2118 is the destination, so
+        STA $4301       ;  set lower 8-bits of destination to $18
+        LDX #$3981        ;Set DMA transfer mode: auto address increment
+        STX $4300       ;  using write mode 1 (meaning write a word to $2118/$2119)
+        LDA #$01        ;The registers we've been setting are for channel 0
+        STA $420B       ;  so Start DMA transfer on channel 0 (LSB of $420B)
 
     ;JSR disable_vblank
 
@@ -205,37 +226,64 @@ restore_current_room:
 
     REP #$20            ; Restore automatic copy of current room data
 
-    LDX #$2000          ; Data copy starts
-    LDY #$0000          ; Copy SaveRAM $400000-$401FFF to $402000-$403FFF
-    LDA #$1FFF
-    MVN $40,$43 
+    .restore_music
+        SEP #$20
+        LDA $4343CA             ; music from the savestate
+        CMP !current_music
+        BEQ +
+        STA !current_music
+        JSL !load_music
+        +
 
-    LDX #$4000          ; Copy SA-1 IRAM $003000-$0037FF to $404000-$4047FF
-    LDY #$3000
-    LDA #$07FF
-    MVN $00,$43
 
-    LDA #$0000          ; Reset
-    MVN $00,$00
 
-    ;JSL !update_tileset
+    .mvn_instructions:
+        REP #$20
 
-    ;.dma_instructions:
-    ;    SEP #$20
-    ;    LDX #$0000
-    ;    STX $2116
-    ;    LDX #$4802      ;Source Offset into source bank
-    ;    STX $4302       ;Set Source address lower 16-bits
-    ;    LDA #$43        ;Source bank
-    ;    STA $4304       ;Set Source address upper 8-bits
-    ;    LDX #$FFFF      ;# of bytes to copy 
-    ;    STX $4305       ;Set DMA transfer size
-    ;    LDA #$18        ;$2118 is the destination, so
-    ;    STA $4301       ;  set lower 8-bits of destination to $18
-    ;    LDA #$01        ;Set DMA transfer mode: auto address increment
-    ;    STA $4300       ;  using write mode 1 (meaning write a word to $2118/$2119)
-    ;    LDA #$01        ;The registers we've been setting are for channel 0
-    ;    STA $420B       ;  so Start DMA transfer on channel 0 (LSB of $420B)
+        LDX #$2000          ; Data copy starts
+        LDY #$0000          ; Copy SaveRAM $400000-$401FFF to $402000-$403FFF
+        LDA #$1FFF 
+        MVN $40,$43
+
+        LDX #$4000
+        LDY #$3000          ; Copy SA-1 IRAM $003000-$0037FF to $404000-$4047FF
+        LDA #$07FF
+        MVN $00,$43
+
+        LDX #$6000          ; Entity info such as what items were eaten, elevators, etc.
+        LDY #$1000          
+        LDA #$036F
+        MVN $7E,$43
+
+        LDX #$6370          ; Consumable items
+        LDY #$14A0          
+        LDA #$0060
+        MVN $7E,$43
+
+        LDX #$8000          ; Level data. This includes the room layout, tileset, tile graphics, etc.
+        LDY #$0000          ; Copy WRAM $7F0000-$7F6FFF to $408000-$40EFFF
+        LDA #$6FFF
+        MVN $7F,$43
+
+        LDA #$0000          ; Reset
+        MVN $00,$00
+
+    .dma_instructions:
+        SEP #$20
+        LDX #$4800      ;
+        STX $2116       ; Write to VRAM $9000
+        LDX #$4802      ;
+        STX $4302       ;
+        LDA #$43        ;
+        STA $4304       ; $434802 source bank
+        LDX #$0FFF      ; 
+        STX $4305       ; DMA transfer size
+        LDA #$18        ;
+        STA $4301       ; Writing to VRAM
+        LDX #$1801      ;
+        STX $4300       ; using write mode 1 (meaning write a word to $2118/$2119)
+        LDA #$01        ;
+        STA $420B       ; Start transfer
 
     JSR disable_vblank
 
@@ -310,3 +358,8 @@ ORG !_F+$00FF00
         REP #$20
         STZ $2209
         JMP $8CA0           ; Jump back to main routine
+
+
+
+; workram $14D0 items collected
+; workram $1200 elevators
