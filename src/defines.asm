@@ -116,6 +116,10 @@
 !update_tileset             = $0087CB
 !update_tileset_kirby_pos   = $0085EA
 ;!play_sfx                   = $00D255
+!reload_room                = $01806B
+!reload_entities            = $00D9FB
+!reload_coordinates         = $008E41
+!reload_full                = $01819C
 
 ;tables 
 !mww_planet_x_pos           = $CAA6F5

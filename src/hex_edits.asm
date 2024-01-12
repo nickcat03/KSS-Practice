@@ -13,6 +13,10 @@ ORG !_F+$008C04
 ;ORG !_F+$00D538
 ;    NOP #2
 
+; For testing room reloads. Do not include in release
+;ORG !_F+$008A01
+;    NOP #2
+
 ; Spring Breeze bosses always have New File health
 ; BNE $XX -> NOP NOP 
 ORG !_F+$00ED96

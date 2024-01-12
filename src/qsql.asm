@@ -236,81 +236,105 @@ auto_save_on_room_load:
 
 restore_current_room:   
 
+    INC $3010
     JSR enable_vblank
 
-    REP #$20            ; Restore automatic copy of current room data
+    REP #$30
 
-    .restore_music
-        SEP #$20
-        LDA $4343CA             ; music from the savestate
-        CMP !current_music
-        BEQ +
-        STA !current_music
-        JSL !load_music
-        +
+    JSL $018071
+    JSL !reload_entities
+    LDA #$0002
+    STA $6010
+    LDA #$FFFF
+    STA $623E
+    LDA #$0001
+    LDX $330C
+    LDY $3310
+    JSL $008E2F
+
+
+    ;LDA $330C
+    ;STA !kirby_x_pos
+    ;LDA $3310
+    ;STA !kirby_y_pos
+
+    ;LDA #$000A 
+    ;LDX #$FFFE 
+    ;LDY #$0080
+    ;JSL !reload_full
+    ;JSL !reload_room
+    ;
+
+
+    ;REP #$20            ; Restore automatic copy of current room data
+
+    ;.restore_music
+    ;    SEP #$20
+    ;    LDA $4343CA             ; music from the savestate
+    ;    CMP !current_music
+    ;    BEQ +
+    ;    STA !current_music
+    ;    JSL !load_music
+    ;    +
 
 
 
-    .mvn_instructions:
-        REP #$20
+    ;.mvn_instructions:
+    ;    REP #$20
 
-        LDX #$2000          ; Data copy starts
-        LDY #$0000          ; Copy SaveRAM $400000-$401FFF to $402000-$403FFF
-        LDA #$1FFF 
-        MVN $40,$43
+    ;    LDX #$2000          ; Data copy starts
+    ;    LDY #$0000          ; Copy SaveRAM $400000-$401FFF to $402000-$403FFF
+    ;    LDA #$1FFF 
+    ;    MVN $40,$43
 
-        LDX #$4000
-        LDY #$3000          ; Copy SA-1 IRAM $003000-$0037FF to $404000-$4047FF
-        LDA #$07FF
-        MVN $00,$43
+    ;    LDX #$4000
+    ;    LDY #$3000          ; Copy SA-1 IRAM $003000-$0037FF to $404000-$4047FF
+    ;    LDA #$07FF
+    ;    MVN $00,$43
 
-        LDX #$6000          ; Entity info such as what items were eaten, elevators, etc.
-        LDY #$1000          
-        LDA #$036F
-        MVN $7E,$43
+    ;    LDX #$6000          ; Entity info such as what items were eaten, elevators, etc.
+    ;    LDY #$1000          
+    ;    LDA #$036F
+    ;    MVN $7E,$43
 
-        LDX #$6370          ; Consumable items
-        LDY #$14A0          
-        LDA #$0060
-        MVN $7E,$43
+    ;    LDX #$6370          ; Consumable items
+    ;    LDY #$14A0          
+    ;    LDA #$0060
+    ;    MVN $7E,$43
 
-        LDX #$8000          ; Level data. This includes the room layout, tileset, tile graphics, etc.
-        LDY #$0000          ; Copy WRAM $7F0000-$7F6FFF to $408000-$40EFFF
-        LDA #$6FFF
-        MVN $7F,$43
+    ;    LDX #$8000          ; Level data. This includes the room layout, tileset, tile graphics, etc.
+    ;    LDY #$0000          ; Copy WRAM $7F0000-$7F6FFF to $408000-$40EFFF
+    ;    LDA #$6FFF
+    ;    MVN $7F,$43
 
-        LDA #$0000          ; Reset
-        MVN $00,$00
+    ;    LDA #$0000          ; Reset
+    ;    MVN $00,$00
 
     .dma_instructions:
-        SEP #$20
-        LDX #$4800      ;
-        STX $2116       ; Write to VRAM $9000
-        LDX #$4802      ;
-        STX $4302       ;
-        LDA #$43        ;
-        STA $4304       ; $434802 source bank
-        LDX #$0FFF      ; 
-        STX $4305       ; DMA transfer size
-        LDA #$18        ;
-        STA $4301       ; Writing to VRAM
-        LDX #$1801      ;
-        STX $4300       ; using write mode 1 (meaning write a word to $2118/$2119)
-        LDA #$01        ;
-        STA $420B       ; Start transfer
+    ;    SEP #$20
+    ;    LDX #$4800      ;
+    ;    STX $2116       ; Write to VRAM $9000
+    ;    LDX #$4802      ;
+    ;    STX $4302       ;
+    ;    LDA #$43        ;
+    ;    STA $4304       ; $434802 source bank
+    ;    LDX #$0FFF      ; 
+    ;    STX $4305       ; DMA transfer size
+    ;    LDA #$18        ;
+    ;    STA $4301       ; Writing to VRAM
+    ;    LDX #$1801      ;
+    ;    STX $4300       ; using write mode 1 (meaning write a word to $2118/$2119)
+    ;    LDA #$01        ;
+    ;    STA $420B       ; Start transfer
 
     JSR disable_vblank
 
-    SEP #$20
-    LDA #$02
-    STA !QSQL_transfer_mode         ; Tell SA-1 to restore stack pointer
-    LDA #$06
-    STA !QSQL_offset
-
-    ;LDA !qsql_soundeffect     
-    ;JSR play_sound
-
-    REP #$30
+    ;SEP #$20
+    ;LDA #$02
+    ;STA !QSQL_transfer_mode         ; Tell SA-1 to restore stack pointer
+    ;LDA #$06
+    ;STA !QSQL_offset
+    ;REP #$20
 
     RTS
 
