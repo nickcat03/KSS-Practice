@@ -3,6 +3,10 @@
 ORG !_F+$078736
     dw $0000
 
+; For testing room reloads. Do not include in release
+;ORG !_F+$008A01
+;    NOP #2
+
 ; Spring Breeze bosses always have New File health
 ; BNE $XX -> NOP NOP 
 ORG !_F+$00ED96
@@ -32,8 +36,8 @@ ORG !_F+$0387F4
 ; At a later point, this should have the option of being disabled by holding a button upon dying
 ; (For the time being, I commented it out as the new room reload routine is better for this purpose)
 ; BEQ -> BRA
-;ORG !_F+$01813D
-;    db $80
+ORG !_F+$01813D
+    db $80
 
 ; Always have MWW cursor highlight "Continue"
 ; BEQ -> BRA

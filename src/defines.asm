@@ -101,6 +101,10 @@
 !load_music                 = $00CF98
 !update_tileset             = $0087CB
 !update_tileset_kirby_pos   = $0085EA
+!reload_room                = $01806B
+!reload_entities            = $00D9FB
+!reload_coordinates         = $008E41
+!reload_full                = $01819C
 
 ;tables 
 !mww_planet_x_pos           = $CAA6F5
