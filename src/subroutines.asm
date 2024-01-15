@@ -47,3 +47,30 @@ make_100_file:
     LDA #$0605
     STA $7F4C,X
     RTS
+
+; Copy of routine at $00D255, except with instructions for editing the stack removed
+play_sound:
+    ADC #$1D            ; this is added due to it being offset for some reason
+    STA !current_sfx    ; store sound in queue
+
+    SEP #$30
+    CMP #$72
+    BCS +
+    TAX
+    LDA $3096
+    LDY $3094
+    CPY $00A7
+    BEQ ++
+    STY $00A7
+    EOR #$80
+    ++ AND #$80
+    STA $3096
+    TXA 
+    ORA $3096
+    STA $2141
+    + LDA !volume
+    STA $2142
+    LDA !stereo_mono
+    STA $2143
+    REP #$30
+    RTS

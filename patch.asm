@@ -8,17 +8,19 @@ ORG !_F+$00FFD8
         db $08
 
 ; include other files
-incsrc "defines.asm"
-incsrc "hex_edits.asm"
-incsrc "sa1.asm"
-incsrc "mww_map.asm"
-incsrc "abilities.asm"
-incsrc "subroutines.asm"
-incsrc "tables.asm"
-incsrc "room_reload.asm"
-;incsrc "hblank.asm"
-incsrc "nmi.asm"
-incsrc "qsql.asm"
+incsrc "src/defines.asm"
+incsrc "src/hex_edits.asm"
+incsrc "src/sa1.asm"
+incsrc "src/mww_map.asm"
+incsrc "src/abilities.asm"
+incsrc "src/subroutines.asm"
+incsrc "src/tables.asm"
+incsrc "src/room_reload.asm"
+;incsrc "src/hblank.asm"
+incsrc "src/nmi.asm"
+incsrc "src/qsql.asm"
+incsrc "src/mute_toggle.asm"
+incsrc "graphics/graphics.asm"
 
 ; make sure the ROM is expanded to the full 1MBit
 ORG !_F+$1FFFFF

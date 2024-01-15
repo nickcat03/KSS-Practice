@@ -1,22 +1,35 @@
 ; $7BF0 - $7EEF is free RAM space
 ; But for some reason they randomly get FF00 written to them?
 
+; Start of custom code areas
+!sa1_start          = F200
+!hblank_start       = FD00
+!nmi_start          = FC00
+!room_reload_start  = F140
+!mute_toggle_start  = FA00
+
 ; controller registers
 !p1controller_hold        = $32C4
 !p1controller_frame       = $32D4
 !p1controller_repeat      = $32CC
+
+; audio
+!current_music              = $33CA
+!current_sfx                = $33CB
+!volume                     = $33CC
+!stereo_mono                = $33CD
 
 ; menus and various selectable items
 !selected_file              = $6D56
 !timer_for_various_file_select_things   = $6724
 !game_mode                  = $7390
 !subgame                    = $32EA
+!corkboard_cursor           = $7A85
 !subgame_menu_cursor        = $7B23
 !romk_chapter               = $7A67
 !romk_chapter_to_be_loaded  = $7B25
 !cutscene_loaded            = $33C6
 !file_delete_menu           = $679E
-!current_music              = $33CA
 
 ;Milky Way Wishes 
 !mww_current_planet         = $7A6B
@@ -91,6 +104,7 @@
 !QSQL_timer                 = $7B62
 !QSQL_transfer_mode         = $7B64
 !QSQL_offset                = $7B66
+!mute_toggle                = $7B68
 
 ; subroutines
 !reset_game                 = $BCE7
@@ -101,6 +115,7 @@
 !load_music                 = $00CF98
 !update_tileset             = $0087CB
 !update_tileset_kirby_pos   = $0085EA
+;!play_sfx                   = $00D255
 
 ;tables 
 !mww_planet_x_pos           = $CAA6F5

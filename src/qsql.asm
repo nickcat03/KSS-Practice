@@ -1,5 +1,9 @@
 ; Save and Restore code
 ; DMA to VRAM could possibly be replaced with routine at $0087CB which loads tiles from WRAM (at least for autosaving)
+
+!sfx_save_state = #$0C
+!sfx_load_state = #$10
+
 save_state:
 
     JSR enable_vblank
@@ -68,7 +72,12 @@ save_state:
     STA !QSQL_transfer_mode             ; Tell SA-1 to save stack pointer
     LDA #$02
     STA !QSQL_offset
+
+    LDA !sfx_save_state          ;Sound effect played
+    JSR play_sound
+
     REP #$30
+
     RTS
 
 restore_state: 
@@ -149,7 +158,12 @@ restore_state:
     STA !QSQL_transfer_mode         ; Tell SA-1 to restore stack pointer
     LDA #$02
     STA !QSQL_offset
+
+    LDA !sfx_load_state
+    JSR play_sound
+
     REP #$30
+
     RTS
 
 ; For auto-saving, things such as what blocks have already been broken and etc. still need to be saved.
@@ -292,7 +306,11 @@ restore_current_room:
     STA !QSQL_transfer_mode         ; Tell SA-1 to restore stack pointer
     LDA #$06
     STA !QSQL_offset
-    REP #$20
+
+    ;LDA !qsql_soundeffect     
+    ;JSR play_sound
+
+    REP #$30
 
     RTS
 
@@ -326,6 +344,7 @@ disable_vblank:
     LDA #$0A
     STA !QSQL_timer     ; Set amount of frames until next QSQL is allowed
     RTS
+
 
 ;$7E7200-$7E7600 responsible for corkboard graphics overlap (not very important to fix)
 

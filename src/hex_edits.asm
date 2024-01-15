@@ -3,6 +3,16 @@
 ORG !_F+$078736
     dw $0000
 
+; Do not clear the entirety of SRAM 
+; LDA #$1EFE -> LDA #$1B5E
+ORG !_F+$008C04
+    LDA #$1B5E
+
+; Stop automatically setting Mono audio when game starts
+; STA $33CC -> NOP #2
+;ORG !_F+$00D538
+;    NOP #2
+
 ; Spring Breeze bosses always have New File health
 ; BNE $XX -> NOP NOP 
 ORG !_F+$00ED96

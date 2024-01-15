@@ -34,7 +34,8 @@ ability_table_any: db #%01100000, #%00000000, #%00000000, #%01000000, #%01100000
 ability_amount_any: db #$02, #$01, #$00, #$01, #$02, #$01, #$02, #$02, #$02
 
 
-
+; Table for "Off" audio button graphics
+off_button_graphics: db $B4, $06, $B5, $06, $B6, $06, $B7, $06, $B8, $06, $B9, $06, $BA, $06, $BB, $06, $BC, $06
 
 
 
