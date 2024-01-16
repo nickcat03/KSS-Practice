@@ -104,7 +104,7 @@
 !QSQL_timer                 = $7B62
 !QSQL_transfer_mode         = $7B64
 !QSQL_offset                = $7B66
-!mute_toggle                = $7B68
+!mute_toggle                = $7B7E
 
 ; subroutines
 !reset_game                 = $BCE7

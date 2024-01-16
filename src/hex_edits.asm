@@ -6,7 +6,7 @@ ORG !_F+$078736
 ; Do not clear the entirety of SRAM 
 ; LDA #$1EFE -> LDA #$1B5E
 ORG !_F+$008C04
-    LDA #$1B5E
+    LDA #$1B6E
 
 ; Stop automatically setting Mono audio when game starts
 ; STA $33CC -> NOP #2
