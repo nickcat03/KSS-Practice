@@ -12,6 +12,10 @@ ORG !_F+$00CDFE
 ORG !_F+$00CEE7
     JSR check_if_muted
 
+; after unpausing
+ORG !_F+$00CE26
+    JSR check_if_muted
+
 ORG !_F+$00D019
     JSR check_if_muted
 
