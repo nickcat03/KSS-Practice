@@ -31,7 +31,7 @@ check_roomload_input:
     LDA !p1controller_hold
     AND #$0010
     ORA !p1controller_frame
-    CMP #$4010
+    CMP #$0050
     BNE vblank_return_to_main_routine
     JSR restore_current_room
     BRA vblank_return_to_main_routine

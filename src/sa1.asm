@@ -46,7 +46,7 @@ BRA ++
 LDA !p1controller_hold
 AND #$0020
 ORA !p1controller_frame
-CMP #$4020
+CMP #$0060
 BNE +
 STZ !kirby_hp           ; set health to 0
 +
@@ -57,7 +57,7 @@ CMP #$0000              ; check if health is 0
 BNE +
 INC !lives                ; increase life count so it never goes to 0
 LDA #$0001
-STA $6E4C
+STA !animation_timer
 +
 
 ; Instant Helper removal

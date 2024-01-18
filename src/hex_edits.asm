@@ -54,6 +54,11 @@ ORG !_F+$01813D
 ORG !_F+$07DA3E
     db $80
 
+; Disable GCO treasure menu (temporary, as it overrides X button combos)
+; LDA #$1040 -> LDA #$1000
+ORG !_F+$00CB6C
+    db $00
+
 ; Never display subgame cutscene after inactivity
 ; This makes RNG manip impossible so maybe remove this
 ; BNE -> BRA

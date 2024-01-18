@@ -3,6 +3,7 @@
 
 !sfx_save_state = #$0C
 !sfx_load_state = #$10
+!sfx_room_reset = #$28
 
 save_state:
 
@@ -166,177 +167,40 @@ restore_state:
 
     RTS
 
-; For auto-saving, things such as what blocks have already been broken and etc. still need to be saved.
-; However, not everything needs to be saved (such as entity data), as the same room is being reloaded which will maintain consistency.
-; It may be cleaner to just re-use the save and restore code and make them all routines.
-; May be a hassle tho so I might just rewrite it completely.
+; Save stuff such as items collected, Kirby HP, ability, invincibility timer, etc.
 auto_save_on_room_load:
 
-    ;JSR enable_vblank
-    REP #$30
-
-    .mvn_instructions:
-        REP #$20
-
-        LDX #$0000          ; Data copy starts
-        LDY #$2000          ; Copy SaveRAM $400000-$401FFF to $402000-$403FFF
-        LDA #$1FFF
-        MVN $43,$40 
-
-        LDX #$3000          ; Copy SA-1 IRAM $003000-$0037FF to $404000-$4047FF
-        LDY #$4000
-        LDA #$07FF
-        MVN $43,$00
-
-        LDX #$1000          ; Elevators
-        LDY #$6000          
-        LDA #$036F
-        MVN $43,$7E
-
-        LDX #$14A0          ; Consumable items
-        LDY #$6370          
-        LDA #$0060
-        MVN $43,$7E
-
-        LDX #$0000          ; Level data. This includes the room layout, tileset, tile graphics, etc.
-        LDY #$8000          ; Copy WRAM $7F0000-$7F6FFF to $408000-$40EFFF
-        LDA #$6FFF
-        MVN $43,$7F
-
-        LDA #$0000          ; Reset
-        MVN $00,$00
-
-    .dma_instructions:
-        SEP #$20
-        LDX #$4800
-        STX $2116
-        LDX #$4800      ;Source Offset into source bank
-        STX $4302       ;Set Source address lower 16-bits
-        LDA #$43        ;Source bank
-        STA $4304       ;Set Source address upper 8-bits
-        LDX #$0FFF      ;# of bytes to copy 
-        STX $4305       ;Set DMA transfer size
-        LDA #$39        ;$2118 is the destination, so
-        STA $4301       ;  set lower 8-bits of destination to $18
-        LDX #$3981        ;Set DMA transfer mode: auto address increment
-        STX $4300       ;  using write mode 1 (meaning write a word to $2118/$2119)
-        LDA #$01        ;The registers we've been setting are for channel 0
-        STA $420B       ;  so Start DMA transfer on channel 0 (LSB of $420B)
-
-    ;JSR disable_vblank
-
-    SEP #$20
-    LDA #$01
-    STA !QSQL_transfer_mode             ; Tell SA-1 to save stack pointer
-    LDA #$06
-    STA !QSQL_offset
-    REP #$20
-
-    RTS
 
 restore_current_room:   
 
-    INC $3010
-    JSR enable_vblank
+    SEP #$20
+    
+    LDA !reload_room
+    CMP #$00
+    BNE .break              ; if already reloading, don't do it again
+    LDA !game_mode          ; checking multiple game modes to make sure we are in an actual level
+    CMP #$03                ; check if in a normal level
+    BEQ .load_room
+    CMP #$09                ; check if in Goal Game
+    BEQ .load_room
+    CMP #$0C                ; check if in The Arena
+    BEQ .load_room
+    CMP #$0D                ; check if in Dyna Blade Trial Room
+    BEQ .load_room
+    CMP #$0E                ; check if fighting Iron Ma'am 
+    BEQ .load_room
+    BRA .break
 
-    REP #$30
+    .load_room:
+        LDA !sfx_room_reset
+        JSR play_sound
+        INC !reload_room        ; tell game to reload the room
+        STZ !screen_fade        ; reset screen fade so it fades back in after respawn
+        STZ !replay_cutscene    ; replay beginning room cutscene if it exists
 
-    JSL $018071
-    JSL !reload_entities
-    LDA #$0002
-    STA $6010
-    LDA #$FFFF
-    STA $623E
-    LDA #$0001
-    LDX $330C
-    LDY $3310
-    JSL $008E2F
-
-
-    ;LDA $330C
-    ;STA !kirby_x_pos
-    ;LDA $3310
-    ;STA !kirby_y_pos
-
-    ;LDA #$000A 
-    ;LDX #$FFFE 
-    ;LDY #$0080
-    ;JSL !reload_full
-    ;JSL !reload_room
-    ;
-
-
-    ;REP #$20            ; Restore automatic copy of current room data
-
-    ;.restore_music
-    ;    SEP #$20
-    ;    LDA $4343CA             ; music from the savestate
-    ;    CMP !current_music
-    ;    BEQ +
-    ;    STA !current_music
-    ;    JSL !load_music
-    ;    +
-
-
-
-    ;.mvn_instructions:
-    ;    REP #$20
-
-    ;    LDX #$2000          ; Data copy starts
-    ;    LDY #$0000          ; Copy SaveRAM $400000-$401FFF to $402000-$403FFF
-    ;    LDA #$1FFF 
-    ;    MVN $40,$43
-
-    ;    LDX #$4000
-    ;    LDY #$3000          ; Copy SA-1 IRAM $003000-$0037FF to $404000-$4047FF
-    ;    LDA #$07FF
-    ;    MVN $00,$43
-
-    ;    LDX #$6000          ; Entity info such as what items were eaten, elevators, etc.
-    ;    LDY #$1000          
-    ;    LDA #$036F
-    ;    MVN $7E,$43
-
-    ;    LDX #$6370          ; Consumable items
-    ;    LDY #$14A0          
-    ;    LDA #$0060
-    ;    MVN $7E,$43
-
-    ;    LDX #$8000          ; Level data. This includes the room layout, tileset, tile graphics, etc.
-    ;    LDY #$0000          ; Copy WRAM $7F0000-$7F6FFF to $408000-$40EFFF
-    ;    LDA #$6FFF
-    ;    MVN $7F,$43
-
-    ;    LDA #$0000          ; Reset
-    ;    MVN $00,$00
-
-    .dma_instructions:
-    ;    SEP #$20
-    ;    LDX #$4800      ;
-    ;    STX $2116       ; Write to VRAM $9000
-    ;    LDX #$4802      ;
-    ;    STX $4302       ;
-    ;    LDA #$43        ;
-    ;    STA $4304       ; $434802 source bank
-    ;    LDX #$0FFF      ; 
-    ;    STX $4305       ; DMA transfer size
-    ;    LDA #$18        ;
-    ;    STA $4301       ; Writing to VRAM
-    ;    LDX #$1801      ;
-    ;    STX $4300       ; using write mode 1 (meaning write a word to $2118/$2119)
-    ;    LDA #$01        ;
-    ;    STA $420B       ; Start transfer
-
-    JSR disable_vblank
-
-    ;SEP #$20
-    ;LDA #$02
-    ;STA !QSQL_transfer_mode         ; Tell SA-1 to restore stack pointer
-    ;LDA #$06
-    ;STA !QSQL_offset
-    ;REP #$20
-
-    RTS
+    .break:
+        REP #$20
+        RTS
 
 enable_vblank:
 

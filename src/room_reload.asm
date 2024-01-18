@@ -5,7 +5,7 @@ ORG !_F+$01A743
     JSL $00!room_reload_start
 
 ORG !_F+$00!room_reload_start        ;custom code start    
-    JSR auto_save_on_room_load
+    ;JSR auto_save_on_room_load
 
 room_reload_return_to_main_routine:
     REP #$30
