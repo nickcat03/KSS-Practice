@@ -84,17 +84,16 @@ check_if_muted:
 set_button_gfx:
     SEP #$20
     LDA !mute_toggle
-    CMP #$01          ; is set to mute
+    CMP #$01            ; is set to mute
     BNE .break
     REP #$20
-    LDA #$F5BB
-    STA $3714           ; set where the gfx table address is
-    LDA #$0000
-    STA $3716
-    JML $CABCE0
+    LDA #$F5BB          ; (should really use a variable name here for the graphics table)
+    STA $3714           ; set where the gfx table address is 
+    STZ $3716           ; bank $00
+    JML $CABCE0         ; jump to code which applies the graphics
 
     .break
-        REP #$20
+        REP #$20        ; Run code that was replaced as the game is not muted
         LDA $33CD 
         AND #$00FF
-        JML $CABCC8
+        JML $CABCC8     ; jump to code which checks for if Stereo or Mono
