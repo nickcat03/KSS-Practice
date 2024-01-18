@@ -12,7 +12,7 @@ ORG !_F+$00CDFE
 ORG !_F+$00CEE7
     JSR check_if_muted
 
-; after unpausing
+; volume fade-in and out
 ORG !_F+$00CE26
     JSR check_if_muted
 
@@ -72,14 +72,18 @@ change_audio_output:
 
 ; Run for every time volume is adjusted
 check_if_muted:
+    PHA                 ; push volume value to stack
     LDA !mute_toggle
     CMP #$01            ; if muted 
     BEQ +
-    LDA #$FF 
-    STA $33CC
-    RTS 
-    + STZ $33CC 
-    RTS
+    PLA                 ; pull volume 
+    STA !volume         ; write value to volume
+    BRA .end
+    + STZ !volume       ; if game is muted, clear volume
+    PLA                 ; pulling so that stack is restored to how it was
+
+    .end:
+        RTS
 
 set_button_gfx:
     SEP #$20
