@@ -57,6 +57,7 @@
 !kirby_y_pos                = $6A02
 !kirby_x_respawn            = $330C
 !kirby_y_respawn            = $3310
+!room_to_respawn_into       = $32F2
 
 ; various miscellaneous things
 !animation_timer        = $6E4C
