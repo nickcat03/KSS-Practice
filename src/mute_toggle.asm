@@ -72,17 +72,16 @@ change_audio_output:
 
 ; Run for every time volume is adjusted
 check_if_muted:
-    PHA                 ; push volume value to stack
-    LDA !mute_toggle
-    CMP #$01            ; if muted 
+    SEP #$10
+    LDX !mute_toggle
+    CPX #$01            ; if muted 
     BEQ +
-    PLA                 ; pull volume 
     STA !volume         ; write value to volume
     BRA .end
     + STZ !volume       ; if game is muted, clear volume
-    PLA                 ; pulling so that stack is restored to how it was
 
     .end:
+        REP #$10
         RTS
 
 set_button_gfx:
