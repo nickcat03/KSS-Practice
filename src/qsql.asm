@@ -173,6 +173,8 @@ auto_save_on_room_load:
 
 restore_current_room:   
 
+    JSR enable_vblank
+
     SEP #$20
     
     LDA !reload_room
@@ -194,8 +196,13 @@ restore_current_room:
     .load_room:
         LDA !sfx_room_reset
         JSR play_sound
+        SEP #$20
         INC !reload_room        ; tell game to reload the room
         STZ !screen_fade        ; reset screen fade so it fades back in after respawn
+
+        LDA !replay_cutscene
+        CMP #$01                ; check if in first room in level
+        BNE .break
         STZ !replay_cutscene    ; replay beginning room cutscene if it exists
 
     .break:

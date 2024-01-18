@@ -46,8 +46,8 @@ ORG !_F+$0387F4
 ; At a later point, this should have the option of being disabled by holding a button upon dying
 ; (For the time being, I commented it out as the new room reload routine is better for this purpose)
 ; BEQ -> BRA
-ORG !_F+$01813D
-    db $80
+;ORG !_F+$01813D
+;    db $80
 
 ; Always have MWW cursor highlight "Continue"
 ; BEQ -> BRA

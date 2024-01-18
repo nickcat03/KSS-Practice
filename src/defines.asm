@@ -62,7 +62,7 @@
 !animation_timer        = $6E4C
 !reload_room            = $7392
 !screen_fade            = $30A1
-!replay_cutscene        = $332A
+!replay_cutscene        = $332A     ; this variable might do more than just handle cutscenes
 
 ; abilities
 !normal                 = 00
