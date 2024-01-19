@@ -89,7 +89,7 @@ set_button_gfx:     ; the issue last time was that it wasnt jumping to this rout
     CMP #$01            ; is set to mute
     BNE .break
     REP #$20
-    LDA #$F5BB          ; (should really use a variable name here for the graphics table)
+    LDA #off_button_graphics 
     STA $3714           ; set where the gfx table address is 
     STZ $3716           ; bank $00
     JML $CABCE0         ; jump to code which applies the graphics

@@ -4,6 +4,7 @@
 !sfx_save_state = #$0C
 !sfx_load_state = #$10
 !sfx_room_reset = #$28
+!sfx_warp_elsewhere = #$48
 
 save_state:
 
@@ -173,8 +174,6 @@ auto_save_on_room_load:
 
 restore_current_room:   
 
-    JSR enable_vblank
-
     SEP #$20
     
     LDA !reload_room
@@ -194,7 +193,19 @@ restore_current_room:
     BRA .break
 
     .load_room:
+
+        JSR enable_vblank
+
+        SEP #$30
+        LDA !subgame
+        CMP #$03
+        BNE +
+        JSR .warp_somewhere_else
+        BRA ++
+        + 
         LDA !sfx_room_reset
+        ++
+
         JSR play_sound
         SEP #$20
         INC !reload_room        ; tell game to reload the room
@@ -206,8 +217,67 @@ restore_current_room:
         STZ !replay_cutscene    ; replay beginning room cutscene if it exists
 
     .break:
-        REP #$20
+        REP #$30
         RTS
+
+    .warp_somewhere_else
+        REP #$20
+        LDA !p1controller_hold
+        AND #$0820
+        CMP #$0820
+        BNE +
+        LDX #$37            ; Fatty Whale
+        STX !room_to_respawn_into
+        LDA #$003C
+        STA !kirby_x_respawn
+        LDA #$009C
+        STA !kirby_y_respawn
+        BRA .finalize_warp
+        + LDA !p1controller_hold 
+        AND #$0120
+        CMP #$0120
+        BNE +
+        LDX #$36            ; Battle Windows
+        STX !room_to_respawn_into
+        LDA #$003C
+        STA !kirby_x_respawn
+        LDA #$009C
+        STA !kirby_y_respawn
+        BRA .finalize_warp
+        + LDA !p1controller_hold 
+        AND #$0420
+        CMP #$0420
+        BNE +
+        LDX #$13            ; Old Tower
+        STX !room_to_respawn_into
+        LDA #$012C
+        STA !kirby_x_respawn
+        LDA #$0054
+        STA !kirby_y_respawn
+        BRA .finalize_warp
+        + LDA !p1controller_hold 
+        AND #$0220
+        CMP #$0220
+        BNE +
+        LDX #$4C            ; Garden
+        STX !room_to_respawn_into
+        LDA #$00B4
+        STA !kirby_x_respawn
+        LDA #$0054
+        STA !kirby_y_respawn
+        BRA .finalize_warp
+        + SEP #$30
+        LDA !sfx_room_reset
+        RTS
+
+    .finalize_warp:
+        SEP #$30
+        LDA #$02
+        STA !replay_cutscene            ; use the "second" respawn coordinates
+        LDA !sfx_warp_elsewhere
+        RTS
+
+        
 
 enable_vblank:
 
@@ -239,7 +309,6 @@ disable_vblank:
     LDA #$0A
     STA !QSQL_timer     ; Set amount of frames until next QSQL is allowed
     RTS
-
 
 ;$7E7200-$7E7600 responsible for corkboard graphics overlap (not very important to fix)
 

@@ -3,6 +3,7 @@
 
 ; Start of custom code areas
 !sa1_start          = F200
+!cpu_start          = F800
 !hblank_start       = FD00
 !nmi_start          = FC00
 !room_reload_start  = F140
@@ -64,6 +65,9 @@
 !reload_room            = $7392
 !screen_fade            = $30A1
 !replay_cutscene        = $332A     ; this variable might do more than just handle cutscenes
+!move_cam_hud           = $3330     ; these...
+!is_paused              = $7368     ; ... two seem to do the same thing?
+
 
 ; abilities
 !normal                 = 00
