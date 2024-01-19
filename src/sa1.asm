@@ -1,13 +1,15 @@
+; Whenever possible, it is preferred to run code through SA-1 since it is faster than CPU
+
 ; Jump to blank ROM space from main routine
-ORG !_F+$008A0D
+ORG $008A0D
     JSR $!sa1_start
 
-ORG !_F+$00F11A         ; Crash handling code 
+ORG $00F11A         ; Crash handling code 
 handle_crash:
     REP #$30
     JMP !reset_game
 
-ORG !_F+$00!sa1_start        ; Custom code start
+ORG $00!sa1_start        ; Custom code start
 
 ; Make file deletion a single menu
 LDA !file_delete_menu
@@ -21,7 +23,7 @@ STA !file_delete_menu
 ++
 +
 
-; Crash handling code. Make RAM a jump instruction so if the game ends up jumping there, reset the game\
+; Crash handling code. Make RAM a jump instruction so if the game ends up jumping there, reset the game
 ;LDA #$EAEA
 ;STA $6000
 ;STA $6002
@@ -42,14 +44,14 @@ BRA ++
 + JSR cycle_abilities
 ++
 
-; Button combo for room reset
-LDA !p1controller_hold
-AND #$0020
-ORA !p1controller_frame
-CMP #$4020
-BNE +
-STZ !kirby_hp           ; set health to 0
-+
+; Button combo for quick death
+;LDA !p1controller_hold
+;AND #$0020
+;ORA !p1controller_frame
+;CMP #$0060
+;BNE +
+;STZ !kirby_hp           ; set health to 0
+;+
 
 ; Run this code if health = 0
 LDA !kirby_hp
@@ -57,7 +59,7 @@ CMP #$0000              ; check if health is 0
 BNE +
 INC !lives                ; increase life count so it never goes to 0
 LDA #$0001
-STA $6E4C
+STA !animation_timer
 +
 
 ; Instant Helper removal
@@ -151,9 +153,6 @@ BRA ++++
 ++ 
 ++++ JSR make_100_file       ; set 100% file data
 + REP #$30
-
-
-
 
 return_to_main_routine:
     LDA #$3000          ; run code that was replaced by JSR instruction

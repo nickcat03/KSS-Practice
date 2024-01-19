@@ -10,6 +10,7 @@ ORG !_F+$00FFD8
 ; include other files
 incsrc "src/defines.asm"
 incsrc "src/hex_edits.asm"
+;incsrc "src/cpu.asm"
 incsrc "src/sa1.asm"
 incsrc "src/mww_map.asm"
 incsrc "src/abilities.asm"

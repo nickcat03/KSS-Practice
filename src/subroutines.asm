@@ -50,7 +50,8 @@ make_100_file:
 
 ; Copy of routine at $00D255, except with instructions for editing the stack removed
 play_sound:
-    ADC #$1D            ; this is added due to it being offset for some reason
+    CLC
+    ADC #$1E            ; this is added due to it being offset for some reason
     STA !current_sfx    ; store sound in queue
 
     SEP #$30

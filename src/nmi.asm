@@ -1,9 +1,9 @@
 ; Jump to blank ROM space from main routine
-ORG !_F+$0081B7
+ORG $0081B7
     JSR $!nmi_start
 
 
-ORG !_F+$00!nmi_start        ; Custom code start
+ORG $00!nmi_start        ; Custom code start
 
 REP #$30
 LDA !QSQL_timer             ; make sure that a save or load hasn't occured in the last however many frames
@@ -31,7 +31,7 @@ check_roomload_input:
     LDA !p1controller_hold
     AND #$0010
     ORA !p1controller_frame
-    CMP #$4010
+    CMP #$0050
     BNE vblank_return_to_main_routine
     JSR restore_current_room
     BRA vblank_return_to_main_routine
