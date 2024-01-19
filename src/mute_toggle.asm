@@ -72,18 +72,18 @@ change_audio_output:
 
 ; Run for every time volume is adjusted
 check_if_muted:
+    TAX
     LDA !mute_toggle
     CMP #$01            ; if muted 
     BEQ +
-    LDA #$FF            ; Edit this or else fadeout is broken!!!
-    STA !volume         ; write value to volume
+    STX !volume         ; write value to volume
     BRA .end
     + STZ !volume       ; if game is muted, clear volume
 
     .end:
         RTS
 
-set_button_gfx:     ; the issue last time was that it wasnt jumping to this routine, im too tired rn
+set_button_gfx:
     SEP #$20
     LDA !mute_toggle
     CMP #$01            ; is set to mute
