@@ -72,11 +72,12 @@ change_audio_output:
 
 ; Run for every time volume is adjusted
 check_if_muted:
-    TAX
+    STA !temp_pointer
     LDA !mute_toggle
     CMP #$01            ; if muted 
     BEQ +
-    STX !volume         ; write value to volume
+    LDA !temp_pointer
+    STA !volume        ; write value to volume
     BRA .end
     + STZ !volume       ; if game is muted, clear volume
 

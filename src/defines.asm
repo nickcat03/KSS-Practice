@@ -3,6 +3,7 @@
 
 ; Start of custom code areas
 !sa1_start          = F200
+!cpu_start          = F800
 !hblank_start       = FD00
 !nmi_start          = FC00
 !room_reload_start  = F140
@@ -33,8 +34,6 @@
 
 ;Milky Way Wishes 
 !mww_current_planet         = $7A6B
-!kirby_x_pos                = $6988
-!kirby_y_pos                = $6A02
 !abilities_saved_1          = $7B1B
 !abilities_saved_2          = $7B1C 
 !abilities_saved_3          = $7B1D
@@ -54,8 +53,21 @@
 !boss_max_hp        = $7A1B
 !boss_hp_meter      = $7A1D
 
-; various timers
-!animation_timer      = $6E4C
+; coordinates / positions 
+!kirby_x_pos                = $6988
+!kirby_y_pos                = $6A02
+!kirby_x_respawn            = $330C
+!kirby_y_respawn            = $3310
+!room_to_respawn_into       = $32F2
+
+; various miscellaneous things
+!animation_timer        = $6E4C
+!reload_room            = $7392
+!screen_fade            = $30A1
+!replay_cutscene        = $332A     ; this variable might do more than just handle cutscenes
+!move_cam_hud           = $3330     ; these...
+!is_paused              = $7368     ; ... two seem to do the same thing?
+
 
 ; abilities
 !normal                 = 00
@@ -115,12 +127,11 @@
 !load_music                 = $00CF98
 !update_tileset             = $0087CB
 !update_tileset_kirby_pos   = $0085EA
-;!play_sfx                   = $00D255
 
 ;tables 
 !mww_planet_x_pos           = $CAA6F5
 !mww_planet_y_pos           = $CAA709
 
 ; useless subroutines that ill keep here anyway cuz theyre nice to have somewhere
-!debug_reload_display           = $DBE7
-
+!debug_reload_display       = $DBE7
+;!play_sfx                  = $00D255
