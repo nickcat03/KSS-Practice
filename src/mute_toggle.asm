@@ -6,32 +6,32 @@ bank $00
 
 ; The following locations are writes to the volume address
 ; The writes will be replaced with checks to see if mute is toggled
-ORG !_F+$00CDFE
+ORG $00CDFE
     JSR check_if_muted
 
-ORG !_F+$00CEE7
+ORG $00CEE7
     JSR check_if_muted
 
 ; volume fade-in and out
-ORG !_F+$00CE26
+ORG $00CE26
     JSR check_if_muted
 
-ORG !_F+$00D019
+ORG $00D019
     JSR check_if_muted
 
 ; Start code for audio mute toggle
-ORG !_F+$00CDDC
+ORG $00CDDC
     JSR $!mute_toggle_start
 
 bank noassume
 bank $00                ; I wish this worked for the problem below
 
 ; Code for getting Mute button graphics
-ORG !_F+$15BCC2
-    JML $00FA4E         ; this jumps to the set_button_gfx routine. I cannot use the variable name as the bank keeps switching to $80 when I need $00
+ORG $15BCC2
+    JML set_button_gfx         ; this jumps to the set_button_gfx routine. I cannot use the variable name as the bank keeps switching to $80 when I need $00
     NOP #2
 
-ORG !_F+$00!mute_toggle_start
+ORG $00!mute_toggle_start
 
 TAX             ; store accumulator so it can be used again when leaving routine
 LDA !corkboard_cursor
@@ -83,7 +83,7 @@ check_if_muted:
     .end:
         RTS
 
-set_button_gfx:
+set_button_gfx:     ; the issue last time was that it wasnt jumping to this routine, im too tired rn
     SEP #$20
     LDA !mute_toggle
     CMP #$01            ; is set to mute

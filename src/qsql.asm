@@ -245,10 +245,10 @@ disable_vblank:
 
 ; Code responsible for saving and loading the SA-1 stack pointer
 
-ORG !_F+$008C9D
+ORG $008C9D
     JMP $FF00               ; Use jump rather than JSR as this will not mess with the stack
 
-ORG !_F+$00FF00
+ORG $00FF00
     SEP #$20
     LDA !QSQL_transfer_mode
     CMP #$01

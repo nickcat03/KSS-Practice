@@ -1,9 +1,9 @@
 ; Jump to blank ROM space from main routine
-ORG !_F+$01E922
+ORG $01E922
     JSL $00!hblank_start
     NOP #3
 
-ORG !_F+$00!hblank_start      ; Custom code start
+ORG $00!hblank_start      ; Custom code start
 
 
 

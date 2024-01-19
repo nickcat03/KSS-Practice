@@ -1,13 +1,13 @@
 ; Jump to blank ROM space from main routine
-ORG !_F+$008A0D
+ORG $008A0D
     JSR $!sa1_start
 
-ORG !_F+$00F11A         ; Crash handling code 
+ORG $00F11A         ; Crash handling code 
 handle_crash:
     REP #$30
     JMP !reset_game
 
-ORG !_F+$00!sa1_start        ; Custom code start
+ORG $00!sa1_start        ; Custom code start
 
 ; Make file deletion a single menu
 LDA !file_delete_menu

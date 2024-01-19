@@ -1,10 +1,10 @@
 ; Jump to blank ROM space from main routine
-ORG !_F+$01A743
+ORG $01A743
     NOP
     NOP
     JSL $00!room_reload_start
 
-ORG !_F+$00!room_reload_start        ;custom code start    
+ORG $00!room_reload_start        ;custom code start    
     ;JSR auto_save_on_room_load
 
 room_reload_return_to_main_routine:
