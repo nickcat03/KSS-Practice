@@ -10,4 +10,4 @@ check bankcross off
 
 ; Corkboard graphics, specifically for the "Off" graphic on Stereo/Mono button.
 ORG $2CDE6E
-    incbin "corkboard4.bin"
+    incbin "corkboard.bin"

@@ -1,6 +1,3 @@
-; $7BF0 - $7EEF is free RAM space
-; But for some reason they randomly get FF00 written to them?
-
 ; Start of custom code areas
 !sa1_start          = F200
 !cpu_start          = F800
@@ -13,8 +10,11 @@
 !p1controller_hold        = $32C4
 !p1controller_frame       = $32D4
 !p1controller_repeat      = $32CC
+!p1mirror_hold            = $3690
+!p1mirror_frame           = $3694
 
 ; audio
+!sound_buffer               = $3096
 !current_music              = $33CA
 !current_sfx                = $33CB
 !volume                     = $33CC
@@ -102,13 +102,14 @@
 !ability_info2          = $74A0
 !ability_info3          = $74A2
 !wheelie_rider_state    = $7568
+!kirby_invincible       = $35F1
+!kirby_invincible_time  = $35F5
+!helper_invincible      = $35F3
+!helper_invincible_time = $35F7
+!kirby_speed            = $74C8
+!helper_speed           = $74CA
 
 ; blank addresses used for storing information
-!store_ability              = $7B50
-!store_ability_info1        = $7B52
-!store_ability_info2        = $7B54
-!store_ability_info3        = $7B56
-!store_wheelie_rider_state  = $7B58
 !respawn_timer              = $7B5A
 !temp_pointer               = $7B5C
 !mww_ability_route          = $7B5E
@@ -117,6 +118,27 @@
 !QSQL_transfer_mode         = $7B64
 !QSQL_offset                = $7B66
 !mute_toggle                = $7B7E
+!save_sound_buffer          = $404810
+
+; for saving certain values on room reload 
+!store_ability              = $7B40
+!store_wheelie_rider_state  = $7B41
+!store_kirby_hp             = $7B42
+!store_helper_hp            = $7B43
+!store_helper_info1         = $7B44
+!store_helper_info2         = $7B46
+!store_helper_info3         = $7B48
+!store_abilities1           = $7B4A
+!store_abilities2           = $7B4B
+!store_abilities3           = $7B4C
+!store_number_of_abilities  = $7B4D
+!store_invincibility_timer1 = $7B4E
+!store_invincibility_state1 = $7B50
+!store_invincibility_timer2 = $7B51
+!store_invincibility_state2 = $7B53
+!store_music                = $7B54
+!store_kirby_speed          = $7B55
+!store_helper_speed         = $7B56
 
 ; subroutines
 !reset_game                 = $BCE7
@@ -127,6 +149,7 @@
 !load_music                 = $00CF98
 !update_tileset             = $0087CB
 !update_tileset_kirby_pos   = $0085EA
+;!update_soundbank           = $00D1D0
 
 ;tables 
 !mww_planet_x_pos           = $CAA6F5

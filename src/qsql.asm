@@ -8,6 +8,10 @@
 
 save_state:
 
+    SEP #$30
+    LDA !sfx_save_state          ;Sound effect played
+    JSR play_sound
+
     JSR enable_vblank
 
     REP #$20
@@ -27,25 +31,15 @@ save_state:
         LDA #$07FF
         MVN $40,$00
                            
-        LDX #$0000          ; Palette data, what enemies spawn, basically the first part of workram (except for the first 100 bytes)
-        LDY #$5000          ; Copy WRAM $7F0000-$7F6FFF to $408000-$40EFFF
-        LDA #$2FFF
-        MVN $40,$7E
+        LDX #$0000          ; This game sucks
+        LDY #$0000          ; Copy all of WRAM cuz yolo
+        LDA #$FFFF
+        MVN $41,$7E
 
-        LDX #$B000
+        LDX #$0000
         LDY #$0000
-        LDA #$4FFF
-        MVN $42,$7E
-
-        LDX #$0000          ; Level data. This includes the room layout, tileset, tile graphics, etc.
-        LDY #$8000          ; Copy WRAM $7F0000-$7F6FFF to $408000-$40EFFF
-        LDA #$6FFF
-        MVN $40,$7F
-
-        ;LDX #$0900          ; test copy 
-        ;LDY #$8600
-        ;LDA #$0FFF
-        ;MVN $40,$7E
+        LDA #$FFFF
+        MVN $42,$7F
 
         LDA #$0000          ; Reset
         MVN $00,$00
@@ -57,7 +51,7 @@ save_state:
         STX $2116
         LDX #$0000      
         STX $4302       
-        LDA #$41        
+        LDA #$43        
         STA $4304       
         LDX #$FFFF
         STX $4305       
@@ -75,14 +69,15 @@ save_state:
     LDA #$02
     STA !QSQL_offset
 
-    LDA !sfx_save_state          ;Sound effect played
-    JSR play_sound
-
     REP #$30
 
     RTS
 
 restore_state: 
+
+    SEP #$30
+    LDA !sfx_load_state
+    JSR play_sound
 
     JSR enable_vblank
 
@@ -99,7 +94,8 @@ restore_state:
         JSL !load_music
         +
 
-    ;JSL $00D29E    ; subroutine for loading in SFX?
+    LDA !sound_buffer           ; sometimes sounds do not play if this is not saved
+    STA !save_sound_buffer
 
     .restore_sram_sa1
         REP #$20
@@ -114,25 +110,15 @@ restore_state:
         LDA #$07FF
         MVN $00,$40
                             
-        LDX #$5000          ; Palette data, what enemies spawn, basically the first part of workram (except for the first 100 bytes)
-        LDY #$0000          ; Copy WRAM $7E0100-$7E2FFF to $405000-$407FFF
-        LDA #$2FFF
-        MVN $7E,$40
+        LDX #$0000          ; Restore all WRAM
+        LDY #$0000         
+        LDA #$FFFF
+        MVN $7E,$41
 
         LDX #$0000
-        LDY #$B000
-        LDA #$4FFF
-        MVN $7E,$42
-
-        LDX #$8000          ; Level data. This includes the room layout, tileset, tile graphics, etc.
-        LDY #$0000          ; Copy WRAM $7F0000-$7F6FFF to $408000-$40EFFF
-        LDA #$6FFF
-        MVN $7F,$40
-
-        ;LDX #$8600          ; test copy 
-        ;LDY #$0900
-        ;LDA #$0FFF
-        ;MVN $7E,$40
+        LDY #$0000
+        LDA #$FFFF
+        MVN $7F,$42
 
         LDA #$0000          ; Reset
         MVN $00,$00
@@ -143,7 +129,7 @@ restore_state:
         STX $2116
         LDX #$0002      ;Source Offset into source bank
         STX $4302       ;Set Source address lower 16-bits
-        LDA #$41        ;Source bank
+        LDA #$43        ;Source bank
         STA $4304       ;Set Source address upper 8-bits
         LDX #$FFFF      ;# of bytes to copy 
         STX $4305       ;Set DMA transfer size
@@ -161,8 +147,8 @@ restore_state:
     LDA #$02
     STA !QSQL_offset
 
-    LDA !sfx_load_state
-    JSR play_sound
+    LDA !save_sound_buffer          ; apply previous sound buffer so consecutive sound plays
+    STA !sound_buffer
 
     REP #$30
 
@@ -170,7 +156,9 @@ restore_state:
 
 ; Save stuff such as items collected, Kirby HP, ability, invincibility timer, etc.
 auto_save_on_room_load:
-
+    SEP #$20
+    LDA !kirby_hp
+    STA !store
 
 restore_current_room:   
 
@@ -277,8 +265,6 @@ restore_current_room:
         LDA !sfx_warp_elsewhere
         RTS
 
-        
-
 enable_vblank:
 
     SEP #$20
@@ -310,8 +296,6 @@ disable_vblank:
     STA !QSQL_timer     ; Set amount of frames until next QSQL is allowed
     RTS
 
-;$7E7200-$7E7600 responsible for corkboard graphics overlap (not very important to fix)
-
 ; Code responsible for saving and loading the SA-1 stack pointer
 
 ORG $008C9D
@@ -319,7 +303,7 @@ ORG $008C9D
 
 ORG $00FF00
     SEP #$20
-    LDA !QSQL_transfer_mode
+    LDA !QSQL_transfer_mode     ; mode 01 is save, mode 02 is load
     CMP #$01
     BNE +
 
