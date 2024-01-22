@@ -96,9 +96,11 @@ restore_state:
 
     LDA !sound_buffer           ; sometimes sounds do not play if this is not saved
     STA !save_sound_buffer
+    REP #$20
+    LDA !sound_bank     ; make sure sound banks are reloaded if they are different
+    STA !save_sound_bank
 
     .restore_sram_sa1
-        REP #$20
 
         LDX #$2000          ; Data copy starts
         LDY #$0000          ; Copy SaveRAM $400000-$401FFF to $402000-$403FFF
@@ -149,8 +151,9 @@ restore_state:
 
     LDA !save_sound_buffer          ; apply previous sound buffer so consecutive sound plays
     STA !sound_buffer
-
     REP #$30
+    LDA !save_sound_bank
+    STA !sound_bank
 
     RTS
 

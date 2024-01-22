@@ -15,6 +15,7 @@
 
 ; audio
 !sound_buffer               = $3096
+!sound_bank                 = $00AB
 !current_music              = $33CA
 !current_sfx                = $33CB
 !volume                     = $33CC
@@ -119,6 +120,7 @@
 !QSQL_offset                = $7B66
 !mute_toggle                = $7B7E
 !save_sound_buffer          = $404810
+!save_sound_bank            = $404811
 
 ; for saving certain values on room reload 
 !store_ability              = $7B40
@@ -149,7 +151,7 @@
 !load_music                 = $00CF98
 !update_tileset             = $0087CB
 !update_tileset_kirby_pos   = $0085EA
-;!update_soundbank           = $00D1D0
+;!update_soundbank           = $00D2F0          ;$00D1D0
 
 ;tables 
 !mww_planet_x_pos           = $CAA6F5
