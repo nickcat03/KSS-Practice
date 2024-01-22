@@ -66,9 +66,11 @@
 !animation_timer        = $6E4C
 !reload_room            = $7392
 !screen_fade            = $30A1
+!screen_brightness      = $305F
 !replay_cutscene        = $332A     ; this variable might do more than just handle cutscenes
 !move_cam_hud           = $3330     ; these...
 !is_paused              = $7368     ; ... two seem to do the same thing?
+!RNG                    = $3743
 
 
 ; abilities
@@ -100,9 +102,9 @@
 
 ; ability information RAM addresses
 !ability                = $749F
-!ability_info1          = $7496
-!ability_info2          = $74A0
-!ability_info3          = $74A2
+!helper_info1          = $7496
+!helper_info2          = $74A0
+!helper_info3          = $74A2
 !wheelie_rider_state    = $7568
 !kirby_invincible       = $35F1
 !kirby_invincible_time  = $35F5
@@ -119,6 +121,7 @@
 !QSQL_timer                 = $7B62
 !QSQL_transfer_mode         = $7B64
 !QSQL_offset                = $7B66
+!is_reloading_room          = $7B68
 !mute_toggle                = $7B7E
 !save_sound_buffer          = $404810
 !save_sound_bank_1          = $404811
@@ -143,6 +146,7 @@
 !store_music                = $7B54
 !store_kirby_speed          = $7B55
 !store_helper_speed         = $7B56
+!store_RNG                  = $7B58
 
 ; subroutines
 !reset_game                 = $BCE7

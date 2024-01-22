@@ -161,15 +161,47 @@ restore_state:
 
     RTS
 
-; Save stuff such as items collected, Kirby HP, ability, invincibility timer, etc.
+; Save stuff such as HP, ability, invincibility timer, RNG, etc.
 auto_save_on_room_load:
-    ;SEP #$20
-    ;LDA !kirby_hp
-    ;STA !store
+    SEP #$10
+    REP #$20
+
+    ; ability info
+    ;LDX !ability
+    ;STX !store_ability
+    ;LDA !helper_info1 
+    ;STA !store_helper_info1 
+    ;LDA !helper_info2
+    ;STA !store_helper_info2 
+    ;LDA !helper_info3 
+    ;STA !store_helper_info3
+    ;LDX !wheelie_rider_state
+    ;STX !store_wheelie_rider_state
+
+    ; health
+    ;LDX !kirby_hp 
+    ;STX !store_kirby_hp 
+    ;LDX !helper_hp 
+    ;STX !store_helper_hp 
+
+    ; mww abilities
+
+    ; invincibility status 
+    
+    ; miscellaneous
+    ;LDA !current_music
+    ;STA !store_music
+    LDA !RNG
+    STA !store_RNG
+
+    STZ !is_reloading_room
+    RTS
 
 restore_current_room:   
 
     SEP #$20
+
+    INC !is_reloading_room
     
     LDA !reload_room
     CMP #$00
@@ -199,23 +231,36 @@ restore_current_room:
         BRA ++
         + 
         LDA !sfx_room_reset
+        JSR .reload_saved_values
         ++
 
         JSR play_sound
         SEP #$20
         INC !reload_room        ; tell game to reload the room
         STZ !screen_fade        ; reset screen fade so it fades back in after respawn
+        STZ !screen_brightness  ; turn screen dark
 
         LDA !replay_cutscene
         CMP #$01                ; check if in first room in level
         BNE .break
         STZ !replay_cutscene    ; replay beginning room cutscene if it exists
 
+        LDA #$20
+        STA !QSQL_timer     ; Set amount of frames until next QSQL is allowed
+
     .break:
         REP #$30
         RTS
 
-    .warp_somewhere_else
+    .reload_saved_values:
+        SEP #$10
+        REP #$20
+        LDA !store_RNG
+        STA !RNG
+        SEP #$30
+        RTS
+
+    .warp_somewhere_else:
         REP #$20
         LDA !p1controller_hold
         AND #$0820
@@ -261,7 +306,7 @@ restore_current_room:
         LDA #$0054
         STA !kirby_y_respawn
         BRA .finalize_warp
-        + SEP #$30
+        + JSR .reload_saved_values
         LDA !sfx_room_reset
         RTS
 
@@ -269,6 +314,7 @@ restore_current_room:
         SEP #$30
         LDA #$02
         STA !replay_cutscene            ; use the "second" respawn coordinates
+        STZ !is_reloading_room
         LDA !sfx_warp_elsewhere
         RTS
 
