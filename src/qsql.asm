@@ -156,9 +156,9 @@ restore_state:
 
 ; Save stuff such as items collected, Kirby HP, ability, invincibility timer, etc.
 auto_save_on_room_load:
-    SEP #$20
-    LDA !kirby_hp
-    STA !store
+    ;SEP #$20
+    ;LDA !kirby_hp
+    ;STA !store
 
 restore_current_room:   
 
@@ -298,35 +298,52 @@ disable_vblank:
 
 ; Code responsible for saving and loading the SA-1 stack pointer
 
-ORG $008C9D
-    JMP $FF00               ; Use jump rather than JSR as this will not mess with the stack
+ORG $008C9D             ; After waiting for CPU to finish
+    JMP standard      ; Use jump rather than JSR as this will not mess with the stack
+
+ORG $008A03             ; After waiting for lag frame
+    JMP lag_frame
 
 ORG $00FF00
-    SEP #$20
-    LDA !QSQL_transfer_mode     ; mode 01 is save, mode 02 is load
-    CMP #$01
-    BNE +
 
-    REP #$20
-    LDX !QSQL_offset
-    TSC                     ; Transfer stack pointer to A
-    STA $404800,X           ; Backup stack pointer
-    BRA .end
-    + CMP #$02
+    lag_frame:
+        LDA #$01
+        STA !temp_pointer
+        BRA +
 
-    BNE .end
-    LDX !QSQL_offset
-    REP #$20
-    LDA $404800,X           ; Load stack pointer address into A
-    TCS                     ; Restore stack pointer
+    standard:
+        STZ !temp_pointer 
+
+        + SEP #$20
+        LDA !QSQL_transfer_mode     ; mode 01 is save, mode 02 is load
+        CMP #$01
+        BNE +
+
+        REP #$20
+        LDX !QSQL_offset
+        TSC                     ; Transfer stack pointer to A
+        STA $404800,X           ; Backup stack pointer
+        BRA .end
+        + CMP #$02
+
+        BNE .end
+        LDX !QSQL_offset
+        REP #$20
+        LDA $404800,X           ; Load stack pointer address into A
+        TCS                     ; Restore stack pointer
 
     .end:
+        SEP #$20
+        LDA !temp_pointer
+        CMP #$01
+        BEQ +
         STZ !QSQL_transfer_mode
         REP #$20
         STZ $2209
         JMP $8CA0           ; Jump back to main routine
-
-
+        + PLA
+        PLP 
+        JMP $8CCE
 
 ; workram $14D0 items collected
 ; workram $1200 elevators
