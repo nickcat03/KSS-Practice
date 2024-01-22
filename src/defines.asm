@@ -15,7 +15,8 @@
 
 ; audio
 !sound_buffer               = $3096
-!sound_bank                 = $00AB
+!sound_bank_1               = $00AA
+!sound_bank_2               = $00AB
 !current_music              = $33CA
 !current_sfx                = $33CB
 !volume                     = $33CC
@@ -120,7 +121,8 @@
 !QSQL_offset                = $7B66
 !mute_toggle                = $7B7E
 !save_sound_buffer          = $404810
-!save_sound_bank            = $404811
+!save_sound_bank_1          = $404811
+!save_sound_bank_2          = $404812
 
 ; for saving certain values on room reload 
 !store_ability              = $7B40

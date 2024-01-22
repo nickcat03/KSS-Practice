@@ -96,9 +96,11 @@ restore_state:
 
     LDA !sound_buffer           ; sometimes sounds do not play if this is not saved
     STA !save_sound_buffer
+    LDA !sound_bank_1
+    STA !save_sound_bank_1
     REP #$20
-    LDA !sound_bank     ; make sure sound banks are reloaded if they are different
-    STA !save_sound_bank
+    LDA !sound_bank_2     ; make sure sound banks are reloaded if they are different
+    STA !save_sound_bank_2
 
     .restore_sram_sa1
 
@@ -151,9 +153,11 @@ restore_state:
 
     LDA !save_sound_buffer          ; apply previous sound buffer so consecutive sound plays
     STA !sound_buffer
+    LDA !save_sound_bank_1
+    STA !sound_bank_1
     REP #$30
-    LDA !save_sound_bank
-    STA !sound_bank
+    LDA !save_sound_bank_2
+    STA !sound_bank_2
 
     RTS
 
@@ -293,6 +297,8 @@ disable_vblank:
 
     LDA #$81
     STA $4200           ; NMI enable
+    LDA #$A8 
+    STA $4209           ; Set IRQ hblank period so HUD displays correctly
     LDA #$0F 
     STA $2100           ; Exit force blank
     LDA #$0A
