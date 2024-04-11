@@ -3,6 +3,11 @@
 ORG $078736
     dw $0000
 
+;Set BRK vector to game reset subroutine. This makes it so the game is reset on a crash rather than... crashing.
+;$BCE7 is where the reset subroutine is located.
+ORG $00FFE6
+    dw $E7BC
+
 ; Do not clear the entirety of SRAM 
 ; LDA #$1EFE -> LDA #$1B5E
 ORG $008C04
