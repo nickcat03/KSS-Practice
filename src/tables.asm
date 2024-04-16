@@ -19,19 +19,19 @@
 
 ; Tables for converting planet number to proper any% order
 
-;mww_planets_rta_order: db #$05, #$01, #$00, #$03, #$04, #$02, #$06, #$08, #$07
-;mww_planets_orig_order: db #$00, #$01, #$02, #$03, #$04, #$05, #$06, #$07, #$08
+;mww_planets_rta_order: db $05, $01, $00, $03, $04, $02, $06, $08, $07
+;mww_planets_orig_order: db $00, $01, $02, $03, $04, $05, $06, $07, $08
 
 ; These tables are explicitly for 100% route.
 ;                   Floria      Hotbeat     Skyhigh     Cavios      Aqualis     Mecheye     Halfmoon    ???         Nova
-ability_table_1: db #%01101000, #%00000000, #%00000000, #%00000000, #%01101100, #%00000000, #%01111110, #%01101000, #%11111111
-ability_table_2: db #%10001010, #%10001000, #%00000000, #%10001010, #%10001111, #%10001010, #%10011111, #%10001010, #%11111111
-ability_table_3: db #%00011111, #%00000010, #%00000000, #%00010010, #%00011111, #%00010010, #%11111111, #%00010111, #%11111111
+ability_table_1: db %01101000, %00000000, %00000000, %00000000, %01101100, %00000000, %01111110, %01101000, %11111111
+ability_table_2: db %10001010, %10001000, %00000000, %10001010, %10001111, %10001010, %10011111, %10001010, %11111111
+ability_table_3: db %00011111, %00000010, %00000000, %00010010, %00011111, %00010010, %11111111, %00010111, %11111111
 
 ; For any%, the only RAM value that needs to be changed is the one with Hammer and Plasma ($7B1B)
 ;                     Floria      Hotbeat     Skyhigh     Cavios      Aqualis     Mecheye     Halfmoon    ???         Nova
-ability_table_any: db #%01100000, #%00000000, #%00000000, #%01000000, #%01100000, #%00000000, #%01100000, #%01100000, #%01100000
-ability_amount_any: db #$02, #$01, #$00, #$01, #$02, #$01, #$02, #$02, #$02
+ability_table_any: db %01100000, %00000000, %00000000, %01000000, %01100000, %00000000, %01100000, %01100000, %01100000
+ability_amount_any: db $02, $01, $00, $01, $02, $01, $02, $02, $02
 
 
 ; Table for "Off" audio button graphics

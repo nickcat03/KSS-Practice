@@ -94,3 +94,20 @@ mww_toggle_ability_route:
 
     .merge:
         RTS
+
+mww_multiply_map_movement_speed:
+
+    LDY $39
+    LDA $6C62,Y
+    ASL
+    CLC
+    ADC $6B6E,Y 
+    STA $6B6E,Y 
+    LDA $6CDC,Y 
+    ASL
+    CLC
+    ADC $6BE8,Y 
+    STA $6BE8,Y
+    RTS 
+
+;#$4000
