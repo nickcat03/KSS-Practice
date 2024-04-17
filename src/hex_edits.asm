@@ -99,6 +99,5 @@ ORG $03A081
     NOP #3
 
 ; Jump to MWW map speed boost routine
-ORG $00A7BE
-    JSR mww_multiply_map_movement_speed
-    RTS
+;ORG $0D32C4
+;    JSL mww_multiply_map_movement_speed

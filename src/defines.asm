@@ -61,6 +61,7 @@
 !kirby_x_respawn            = $330C
 !kirby_y_respawn            = $3310
 !room_to_respawn_into       = $32F2
+!camera_lock                = $7368
 
 ; various miscellaneous things
 !animation_timer        = $6E4C
@@ -122,6 +123,7 @@
 !QSQL_transfer_mode         = $7B64
 !QSQL_offset                = $7B66
 !is_reloading_room          = $7B68
+!toggle_free_move           = $7B70
 !mute_toggle                = $7B7E
 !save_sound_buffer          = $404810
 !save_sound_bank_1          = $404811
@@ -158,6 +160,7 @@
 !update_tileset             = $0087CB
 !update_tileset_kirby_pos   = $0085EA
 ;!update_soundbank           = $00D2F0          ;$00D1D0
+!global_jump_pointer        = $633E
 
 ;tables 
 !mww_planet_x_pos           = $CAA6F5

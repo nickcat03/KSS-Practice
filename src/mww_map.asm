@@ -97,17 +97,49 @@ mww_toggle_ability_route:
 
 mww_multiply_map_movement_speed:
 
-    LDY $39
-    LDA $6C62,Y
-    ASL
+    ;$CA9E8C (replacing LDA $32C4; XBA)
+    LDA !p1controller_hold
+    AND #$0040
+    CMP #$0040
+    BNE .no_changes
+
+    LDA !p1controller_hold
+    AND #$0200  ; Left
+    CMP #$0200
+    BNE +
+    LDA !kirby_x_pos
     CLC
-    ADC $6B6E,Y 
-    STA $6B6E,Y 
-    LDA $6CDC,Y 
-    ASL
+    SBC #$0005
+    STA !kirby_x_pos
+
+    + LDA !p1controller_hold
+    AND #$0100  ; Right
+    CMP #$0100
+    BNE + 
+    LDA !kirby_x_pos
     CLC
-    ADC $6BE8,Y 
-    STA $6BE8,Y
-    RTS 
+    ADC #$0005
+    STA !kirby_x_pos
+
+    + LDA !p1controller_hold
+    AND #$0400  ; Down
+    CMP #$0400
+    BNE + 
+    LDA !kirby_y_pos 
+    CLC
+    ADC #$0005
+    STA !kirby_y_pos
+
+    + LDA !p1controller_hold
+    AND #$0800  ; Up
+    CMP #$0800
+    BNE +
+    LDA !kirby_y_pos 
+    CLC
+    SBC #$0005
+    STA !kirby_y_pos
+    
+    .no_changes:
+        + RTS
 
 ;#$4000

@@ -4,11 +4,6 @@
 ORG $008A0D
     JSR $!sa1_start
 
-ORG $00F11A         ; Crash handling code 
-handle_crash:
-    REP #$30
-    JMP !reset_game
-
 ORG $00!sa1_start        ; Custom code start
 
 ; Make file deletion a single menu
@@ -22,15 +17,6 @@ LDA #$811A
 STA !file_delete_menu 
 ++
 +
-
-; Crash handling code. Make RAM a jump instruction so if the game ends up jumping there, reset the game
-;LDA #$EAEA
-;STA $6000
-;STA $6002
-;LDA #$1A5C
-;STA $6004
-;LDA #$00F1
-;STA $6006
 
 ;Ability code
 ; If holding L + R, cycle through all abilities
@@ -119,18 +105,53 @@ BRA +++
 + REP #$20
 
 ; MWW World Map code
-SEP #$30
-LDA !subgame
-CMP #$05                            ; check if in MWW
-BNE merge
-LDA !game_mode
-CMP #$06                            ; check if on world map screen
-BNE merge
-JSR mww_cycle_planets
-JSR mww_assign_starting_abilities
-JSR mww_toggle_ability_route
-merge:
+mww_map:
+    SEP #$30
+    LDA !subgame
+    CMP #$05                            ; check if in MWW
+    BNE .merge
+    LDA !game_mode
+    CMP #$06                            ; check if on world map screen
+    BNE .merge
+    JSR mww_cycle_planets
+    JSR mww_assign_starting_abilities
+    JSR mww_toggle_ability_route
+    JSR mww_multiply_map_movement_speed
+    .merge:
+        REP #$30
+
+; Free movement toggle
+free_movement_toggle:
+    LDA !p1controller_hold
+    AND #$0030  ; L + R
+    ORA !p1controller_frame
+    CMP #$4030  ; Press Y
+    BNE .merge
+
+    SEP #$20
+    LDA !toggle_free_move
+    CMP #$00
+    BNE +
+    INC !toggle_free_move   ; Toggle off free move 
+    LDA #$02
+    STA !kirby_invincible   ; Make Kirby no longer invincible
+    BRA .merge
+    + DEC !toggle_free_move ; Toggle on free move
     REP #$30
+    JSR prepare_intangibility
+    ;LDA #$8B80
+    ;STA !global_jump_pointer
+
+    .merge:
+        ; Free move if toggle is set to 1
+        SEP #$20
+        LDA !toggle_free_move
+        CMP #$00
+        BNE +
+        JSR free_movement
+        +
+
+REP #$30
 
 ; Instant 100% file
 LDA !p1controller_hold
@@ -157,3 +178,11 @@ BRA ++++
 return_to_main_routine:
     LDA #$3000          ; run code that was replaced by JSR instruction
     RTS
+
+
+
+;6B0E
+;0E87
+;0E9D
+
+;744B - set to 1 so you cant go in cannons
