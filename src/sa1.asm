@@ -135,12 +135,16 @@ free_movement_toggle:
     INC !toggle_free_move   ; Toggle off free move 
     LDA #$02
     STA !kirby_invincible   ; Make Kirby no longer invincible
-    BRA .merge
-    + DEC !toggle_free_move ; Toggle on free move
+    STZ !intangible_to_items
     REP #$30
-    JSR prepare_intangibility
-    ;LDA #$8B80
-    ;STA !global_jump_pointer
+    LDA #$80FF      ; Set pointer that runs code which checks for Kirby's collision
+    STA !global_jump_pointer
+    BRA .merge
+    + STZ !toggle_free_move ; Toggle on free move
+    INC !intangible_to_items
+    REP #$30
+    LDA #$8BC9      ; Set pointer that runs code which makes Kirby intangible
+    STA !global_jump_pointer
 
     .merge:
         ; Free move if toggle is set to 1
@@ -150,7 +154,7 @@ free_movement_toggle:
         BNE +
         JSR free_movement
         +
-
+        
 REP #$30
 
 ; Instant 100% file

@@ -6,6 +6,10 @@
 !room_reload_start  = F140
 !mute_toggle_start  = FA00
 
+; Game function stuff (this could probably be called something better)
+!max_nmi_load       = $301B
+!current_nmi_load   = $301D
+
 ; controller registers
 !p1controller_hold        = $32C4
 !p1controller_frame       = $32D4
@@ -72,7 +76,7 @@
 !move_cam_hud           = $3330     ; these...
 !is_paused              = $7368     ; ... two seem to do the same thing?
 !RNG                    = $3743
-
+!intangible_to_items    = $744B
 
 ; abilities
 !normal                 = 00

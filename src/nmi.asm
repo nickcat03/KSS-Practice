@@ -6,6 +6,10 @@ ORG $0081B7
 ORG $00!nmi_start        ; Custom code start
 
 REP #$30
+LDA !current_nmi_load       ; If the game is currently on a lag frame, skip qsql code
+CMP !max_nmi_load
+BCS vblank_return_to_main_routine
+
 LDA !QSQL_timer             ; make sure that a save or load hasn't occured in the last however many frames
 CMP #$0000
 BNE countdown_QSQL_timer

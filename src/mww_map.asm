@@ -97,10 +97,10 @@ mww_toggle_ability_route:
 
 mww_multiply_map_movement_speed:
 
-    ;$CA9E8C (replacing LDA $32C4; XBA)
+    REP #$30
     LDA !p1controller_hold
-    AND #$0040
-    CMP #$0040
+    AND #$1000
+    CMP #$1000
     BNE .no_changes
 
     LDA !p1controller_hold
@@ -141,5 +141,3 @@ mww_multiply_map_movement_speed:
     
     .no_changes:
         + RTS
-
-;#$4000

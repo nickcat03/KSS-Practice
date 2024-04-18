@@ -9,7 +9,7 @@ ORG $00FFE6
     dw $E7BC
 
 ; Do not clear the entirety of SRAM 
-; LDA #$1EFE -> LDA #$1B5E
+; LDA #$1EFE -> LDA #$1B6E
 ORG $008C04
     LDA #$1B6E
 
@@ -98,6 +98,3 @@ ORG $038727
 ORG $03A081
     NOP #3
 
-; Jump to MWW map speed boost routine
-;ORG $0D32C4
-;    JSL mww_multiply_map_movement_speed

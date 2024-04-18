@@ -39,26 +39,3 @@ free_movement:
     STA !kirby_y_pos
     
     + RTS
-
-prepare_intangibility:
-    REP #$30
-    LDX #$0046
-    LDY #$0002
-    JSL $038D9A
-    LDA #$0E6B
-    LDX #$00C4
-    JSL $00931D
-    RTS
-
-    ;$280FF start of collision routine
-    ; $28B69 is start of initializing MWW power up select
-    ;63B8
-    ;63CE
-    ;63D0
-    ;63D2
-
-    ;63B8
-    ;63F6
-
-    ;$721C
-    ;$6726
