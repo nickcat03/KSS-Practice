@@ -41,6 +41,14 @@
             font-size: 10px;
         }
 
+        ul {
+            line-height: 200%;
+        }
+
+        li {
+            line-height: 200%;
+        }
+
     </style>
 
     <head>
@@ -65,44 +73,76 @@
             <img src="1.png"/>
 
             <p>Downloads:</p>
-            <a href="patches/9-28-23.ips">Latest (Stable)</a> - Updated 9/28/2023<br><br>
-            <a href="https://github.com/nickcat03/KSS-Practice">Latest</a><br><br>
+            <a href="patches/4-28-24.ips">Latest</a> - Updated 4/28/2024<br><br>
+            <a href="patches/9-28-23.ips">Latest (HUD Mod)</a> - This patch is outdated and will be added to main patch soon<br><br>
             <a href="changelog.html">Changelog and Older Releases</a><br><br>
+
+            <a href="https://github.com/nickcat03/KSS-Practice">Source Code</a><br><br>
 
 
             <h2>Features list:</h2>
             <ul>
                 <li>Infinite lives</li>
-                <li>Quick room reset with R + Y, then L</li>
-                <li>Remove Helper instantly with R + Y, then Select</li>
                 <li>Death animation removed</li>
-                <li>Powers, Helper, and Wheelie Rider state are kept through death</li>
-                <li>Instant 100% save file with Up + X on file select screen (selected file will be made 100%)</li>
-                <li>Quick select abilities with R + A, then the following buttons:</li>
+                <li>Mute music by using Stereo/Mono button</li>
+                <li>Defeated Boss screen flashing removed (a toggle for this will be added later)</li>
+                <li>Quick Save Quick Load:</li>
                 <ul>
-                    <li>Up: Jet</li>
-                    <li>Right: Wheel</li>
-                    <li>Down: Hammer</li>
-                    <li>Left: Plasma</li>
-                    <li>Select: Remove ability</li>
-
+                    <li>R + Select: Create Save State</li>
+                    <li>L + Select: Load Save State</li>
                 </ul>
-                <li>Change respawn coordinates to current location with R + B, then L</li>
+                <li>Quick room reset with R + X</li>
+                <li>Powers, Helper, and Wheelie Rider state are kept through death.</li>
+                <li>Instant 100% save file with Up + X on file select screen (selected file will be made 100%)</li>
+                <li>Quick select abilities using the following buttons:</li>
                 <ul>
-                    <li>This code does not work when riding on Wheelie.</li>
-
+                    <li>Holding R + A:</li>
+                    <ul>
+                        <li>Up: Jet</li>
+                        <li>Right: Wheel</li>
+                        <li>Down: Hammer</li>
+                        <li>Left: Plasma</li>
+                        <li>Select: Remove Ability</li>
+                    </ul>
+                    <li>Holding L + A:</li>
+                    <ul>
+                        <li>Up: Wing</li>
+                        <li>Right: Stone</li>
+                        <li>Down: Suplex</li>
+                        <li>Left: Cutter</li>
+                        <li>Select: Remove Helper</li>
+                    </ul>
+                    <li>Holding L + R + A</li>
+                    <ul>
+                        <li>Left: Cycle left through all abilities</li>
+                        <li>Right: Cycle right through all abilities</li>
+                    </ul>
+                </ul>
+                <li>Enable Free Movement with L + R, then Y</li>
+                <ul>
+                    <li>This code does not work in many situations, such as when riding on Wheelie and during cutscenes. Bugs still need to be fixed.</li>
+                </ul>
+                <li>Milky Way Wishes ability presets:</li>
+                <ul>
+                    <li>Toggling this feature makes it so upon entering a level, you are automatically given whatever abilities you would normally have upon entering that level during a speedrun. Pressing Select on the MWW map screen allows you to cycle through these options:</li>
+                    <ul>
+                        <li>0: Off</li>
+                        <li>1: Any%</li>
+                        <li>2: Any% Plasma</li>
+                        <li>3: 100%</li>
+                    </ul>
+                    <li>Note: There is no visual indication for when this is being toggled, this still needs to be added.</li>
                 </ul>
                 <li>Spring Breeze bosses always at New File HP</li>
                 <li>GCO bosses always respawn</li>
+                <li>GCO Treasures always respawn</li>
+                <li>MWW Abilities always respawn</li>
                 <li>RoMK timer always frozen</li>
-                <li>RoMK chapter select</li>
+                <li>RoMK chapter select on subgame screen</li>
                 <li>RoMK dialogue cutscenes skippable by pressing Start</li>
-                <ul>
-                    Bug: Skipping some cutscenes causes the music to not start properly.
-                </ul>
-                <li>Use L and R to quick select planets in MWW</li>
-                <li>All rooms have checkpoints</li>
-                <li>Custom HUD:</li>
+                <li>Use L and R to quick select planets in MWW, hold Start to double movement speed</li>
+                <li>Fatal game crashes will attempt to automatically reset the game to avoid data loss</li>
+                <li>Custom HUD Version Features (Note that in this version, most features above do not exist):</li>
                 <ul>
                     <li>View specific HP values</li>
                     <li>Input display</li>
@@ -117,24 +157,16 @@
             <p>To be completed:</p>
             <ul>
                 <li>Skip Goal Game cutscenes</li>
-                <li>Dying in Arena does not cause a Game Over</li>
                 <li>Speed up death animation when in shooting segment</li>
-                <li>Music mute toggle (instead of having two separate patches)</li>
                 <li>Advance and go back rooms</li>
-                <li>Toggle treasures in GCO</li>
-                <li>Toggle abilities in MWW</li>
                 <li>Skip all RoMK cutscenes</li>
-                <li>Add more abilities to be quick selectable (Stone, Wing, Cutter, etc.)</li>
             </ul>
             <p>Stretch Goals:</p>
             <ul>
                 <li>In-game timer which accounts for lag frames</li>
-                <li>Crash handling, prevent complete data wipe on crash</li>
                 <li>Faster world map movement in Dyna Blade</li>
-                <li>Better room reset (rather than instantly killing Kirby, do a proper room reload)</li>
                 <li>Pause menu with a robust amount of features:</li>
                 <ul>
-                    <li>Power select</li>
                     <li>Helper power select</li>
                     <li>Adjust and freeze RNG</li>
                     <li>Instantly load any room from any subgame</li>
