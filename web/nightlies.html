@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en-US">
+    <meta charset="utf-8">
+    <style>
+
+        @import url("../styles.css");
+
+        h1 {
+            text-align: center;
+        }
+
+
+        body {
+            background-color: rgb(57, 27, 97);
+            color: white;
+            font-family: Ubuntu;
+        }
+
+        .entire-thing {
+            max-width: 1100px;
+            margin: auto;
+            padding: 25px;
+            font-size: 20px;
+        }
+
+        ul {
+            line-height: 2;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 10px;
+        }
+
+    </style>
+
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=0.4" />
+        <link rel="icon" type="image/x-icon" href="images/favicons/favicon.png">
+        <title>KSS Practice Hack</title>
+    </head>
+
+    <body class="darkbglinks">
+        <div class="entire-thing content darkbglinks">
+            <h1>KSS Practice Nightlies</h1>
+
+            <a href="index.html">Back to Main Page</a>
+            
+            <p>This page is a list of "nightly" hack releases. If I work on something, I will upload it. Note that these versions may be unstable and not tested much.</p>
+
+            <h2>Future Releases</h2>
+            <p>Going forward, the most up-to-date versions can be found in the <a href="https://github.com/nickcat03/KSS-Practice">GitHub repository</a>.</p>
+
+            <h2>12-23-23</h2>
+            <a href="patches/12-23-23.ips">Download</a>
+            <ul>
+                <li>Milky Way Wishes abilities can be automatically obtained / removed when entering a level (depending on the category being practiced).</li>
+                <ul>
+                    <li>On planet select, press Select to scroll through each category:</li>
+                    <li>Any%</li>
+                    <li>Any% Plasma</li>
+                    <li>100%</li>
+                    <li>Toggle off (default)</li>
+                    <li>Visual feedback still needs to be added.</li>
+                </ul>
+                <li>Planets can now be quick selected with L or R.</li>
+                <li>QSQL now copies SA-1 RAM, allowing for more accurate saving and loading. VRAM transfers are still a work in progress.</li>
+            </ul>
+
+            <h2>12-21-23</h2>
+            <a href="patches/12-21-23.ips">Download</a>
+            <ul>
+                <li>Committing to a complete rewrite of the entire practice hack, which is now uploaded onto <a href="https://github.com/nickcat03/KSS-Practice">GitHub</a>. This will allow for easier management and organization, as writing directly to the ROM file itself was very time consuming.</li>
+                <li>There are several things that were added and removed in this hack. All the removed features will eventually come back, but I just need time to add them in again.</li>
+                <li>Added:</li>
+                <ul>
+                    <li><b>Save State support (QSQL)</b>, use Select+L to save and Select+R to load. These hotkeys may be changed later.</li>
+                    <li>Every single ability can now be quick selected:</li>
+                        <ul>
+                            <li>Hold R + A + ...</li>
+                            <li>Up: Jet</li>
+                            <li>Right: Wheel</li>
+                            <li>Down: Hammer</li>
+                            <li>Left: Plasma</li>
+                            <li>Hold L + A + ...</li>
+                            <li>Up: Wing</li>
+                            <li>Right: Stone</li>
+                            <li>Down: Suplex</li>
+                            <li>Left: Cutter</li>
+                            <li>Hold L + R + A + ...</li>
+                            <li>Press Left or Right to cycle through all abilities.</li>
+                        </ul>
+                    <li>Files are deleted instantly when prompted to.</li>
+                    <li>Subgame menus will no longer play cutscenes when inactive.</li>
+                    <li>Milky Way Wishes menu will always highlight "Continue" by default.</li>
+                    <li>Very minor performance tweaks.</li>
+                </ul>
+                <li>Removed:</li>
+                <ul>
+                    <li>Custom HUD. Given that most weren't too fond of its inclusion, I will only include it once I can make it completely optional (it will be a togglable setting in the game).</li>
+                    <li>Music toggle.</li>
+                    <li>Custom respawn coordinates were removed as QSQL in tandem with instant death makes them obsolete. I will put in my best effort to make QSQL as stable as possible.</li>
+                </ul>
+                <li>Any other features that were in the ROM previously are included in this rewrite.</li>
+            </ul>
+
+            <h2>10-03-23</h2>
+            <a href="patches/10-03-23.ips">Download</a>
+            <ul>
+                <li>Crash handling code now in place. Though it isn't 100% accurate, most crashes will reset the game with no data wipe.</li>
+                <li>Temporary music toggle using the Stereo/Mono button. Setting it to Mono turns off the music. There will be a better toggle for this later as to not eliminate Mono functionality.</li>
+            </ul>
+
+            <h2>9-30-23</h2>
+            <a href="patches/9-30-23.ips">Download</a>
+            <ul>
+                <li>Quick select Dyna Blade levels with L or R. Visuals still need to be worked on.</li>
+                <li>No Game Overs in The Arena.</li>
+                <li>Chests in GCO always respawn.</li>
+                <li>Abilities in MWW always respawn.</li>
+            </ul>
+        </div>
+    </body>
+</html>
+
