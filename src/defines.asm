@@ -16,6 +16,7 @@
 !p1controller_repeat      = $32CC
 !p1mirror_hold            = $3690
 !p1mirror_frame           = $3694
+!p1controller_direct      = $4218
 
 ; audio
 !sound_buffer               = $3096
@@ -130,8 +131,10 @@
 !toggle_free_move           = $7B70
 !mute_toggle                = $7B7E
 !save_sound_buffer          = $404810
-!save_sound_bank_1          = $404811
-!save_sound_bank_2          = $404812
+!save_sound_bank_1          = $40481A
+!save_sound_bank_2          = $40481B
+!afk_timer                  = $7B40
+!afk_toggle                 = $7B42
 
 ; for saving certain values on room reload 
 !store_ability              = $7B40
@@ -172,4 +175,4 @@
 
 ; useless subroutines that ill keep here anyway cuz theyre nice to have somewhere
 !debug_reload_display       = $DBE7
-;!play_sfx                  = $00D255
+!play_sfx                   = $D155

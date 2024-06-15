@@ -10,7 +10,8 @@ save_state:
 
     SEP #$30
     LDA !sfx_save_state          ;Sound effect played
-    JSR play_sound
+    STA !current_sfx
+    JSL !play_sfx
 
     JSR enable_vblank
 
@@ -76,8 +77,9 @@ save_state:
 restore_state: 
 
     SEP #$30
-    LDA !sfx_load_state
-    JSR play_sound
+    LDA !sfx_load_state          ;Sound effect played
+    STA !current_sfx
+    JSL !play_sfx
 
     JSR enable_vblank
 
@@ -234,7 +236,9 @@ restore_current_room:
         JSR .reload_saved_values
         ++
 
-        JSR play_sound
+        LDA !sfx_warp_elsewhere          ;Sound effect played
+        STA !current_sfx
+        JSL !play_sfx
         SEP #$20
         INC !reload_room        ; tell game to reload the room
         STZ !screen_fade        ; reset screen fade so it fades back in after respawn
@@ -356,8 +360,8 @@ disable_vblank:
 ORG $008C9D             ; After waiting for CPU to finish
     JMP standard      ; Use jump rather than JSR as this will not mess with the stack
 
-ORG $008A03             ; After waiting for lag frame
-    JMP lag_frame
+;ORG $008A03             ; After waiting for lag frame
+;    JMP lag_frame
 
 ORG $00FF00
 

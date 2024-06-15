@@ -6,6 +6,10 @@ ORG $008A0D
 
 ORG $00!sa1_start        ; Custom code start
 
+; Lives always set to 99
+LDA #$0064
+STA !lives
+
 ; Make file deletion a single menu
 LDA !file_delete_menu
 CMP #$80F6
@@ -43,7 +47,6 @@ BRA ++
 LDA !kirby_hp
 CMP #$0000              ; check if health is 0
 BNE +
-INC !lives                ; increase life count so it never goes to 0
 LDA #$0001
 STA !animation_timer
 +
@@ -178,6 +181,50 @@ BRA ++++
 ++ 
 ++++ JSR make_100_file       ; set 100% file data
 + REP #$30
+
+; Code for dimming screen when player is AFK
+!afk_time = #$1C20
+
+afk_timer: 
+    LDA !p1controller_hold
+    CMP #$0000      ; if controller isn't being pressed
+    BNE +
+
+    ; If the timer isn't greater than the limit, increase it.
+    LDA !afk_timer 
+    CMP !afk_time 
+    BCS ++
+    INC !afk_timer  ; increase afk timer each frame 
+    ++ BRA .check_timer
+
+    ; Code ran for if an input is pressed on this frame
+    + STZ !afk_timer
+    SEP #$30
+    LDA !afk_toggle     ; check if the AFK toggle is already on, if it is, reset screen brightness.
+    CMP #$01
+    BNE .end
+    STZ !afk_toggle 
+    LDA #$0F 
+    STA !screen_brightness
+    BRA .end
+
+    .check_timer:   ; Code ran for if no inputs are pressed
+        LDA !afk_timer
+        CMP !afk_time   ; Check if the AFK timer is greater than the time set
+        BCC +
+        SEP #$30
+        LDA #$01
+        STA !afk_toggle
+        LDA #$05        ; Lower screen brightness
+        STA !screen_brightness
+
+    .end:
+        + REP #$30
+        
+
+
+
+; Do not write any additional code past this ending routine (it won't be ran)
 
 return_to_main_routine:
     LDA #$3000          ; run code that was replaced by JSR instruction

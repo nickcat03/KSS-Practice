@@ -105,3 +105,7 @@ ORG $27E547
     RTS
 ORG $27E565
     RTS
+
+; Always on quick pause 
+;ORG $1F991F 
+;    db $80
