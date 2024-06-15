@@ -233,11 +233,10 @@ restore_current_room:
         BRA ++
         + 
         LDA !sfx_room_reset
+        STA !current_sfx
         JSR .reload_saved_values
         ++
 
-        LDA !sfx_warp_elsewhere          ;Sound effect played
-        STA !current_sfx
         JSL !play_sfx
         SEP #$20
         INC !reload_room        ; tell game to reload the room
@@ -312,6 +311,7 @@ restore_current_room:
         BRA .finalize_warp
         + JSR .reload_saved_values
         LDA !sfx_room_reset
+        STA !current_sfx
         RTS
 
     .finalize_warp:
@@ -320,6 +320,7 @@ restore_current_room:
         STA !replay_cutscene            ; use the "second" respawn coordinates
         STZ !is_reloading_room
         LDA !sfx_warp_elsewhere
+        STA !current_sfx
         RTS
 
 enable_vblank:
