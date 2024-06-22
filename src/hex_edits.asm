@@ -1,3 +1,45 @@
+; Code hijacks. Putting this in hex edits because they are simple code changes and they don't really belong anywhere else.
+; Jump to SA-1 custom code from main SA-1 routine
+ORG $008A0D
+    JSR sa1_code
+
+; Jump to NMI custom code from main CPU routine
+ORG $0081B7
+    JSR nmi_code
+
+; Jump to custom room reload code from room reload routine
+ORG $01A743
+    NOP
+    NOP
+    JSL room_reload_code
+
+
+; The following locations are writes to the volume address
+; The writes are replaced with checks to see if mute is toggled
+ORG $00CDFE
+    JSR check_if_muted
+
+ORG $00CEE7
+    JSR check_if_muted
+
+; volume fade-in and out
+ORG $00CE26
+    JSR check_if_muted
+
+ORG $00D019
+    JSR check_if_muted
+
+; Start code for audio mute toggle
+ORG $00CDDC
+    JSR mute_toggle
+
+
+; Code for getting Mute button graphics
+ORG $15BCC2
+    JML set_button_gfx
+    NOP #2
+
+
 ; Make file deletion instant
 ; LDA #$00B4 -> LDA #$0000
 ORG $078736

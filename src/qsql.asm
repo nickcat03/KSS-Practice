@@ -169,22 +169,22 @@ auto_save_on_room_load:
     REP #$20
 
     ; ability info
-    ;LDX !ability
-    ;STX !store_ability
-    ;LDA !helper_info1 
-    ;STA !store_helper_info1 
-    ;LDA !helper_info2
-    ;STA !store_helper_info2 
-    ;LDA !helper_info3 
-    ;STA !store_helper_info3
-    ;LDX !wheelie_rider_state
-    ;STX !store_wheelie_rider_state
+    LDX !ability
+    STX !store_ability
+    LDA !helper_info1 
+    STA !store_helper_info1 
+    LDA !helper_info2
+    STA !store_helper_info2 
+    LDA !helper_info3 
+    STA !store_helper_info3
+    LDX !wheelie_rider_state
+    STX !store_wheelie_rider_state
 
     ; health
-    ;LDX !kirby_hp 
-    ;STX !store_kirby_hp 
-    ;LDX !helper_hp 
-    ;STX !store_helper_hp 
+    LDX !kirby_hp 
+    STX !store_kirby_hp 
+    LDX !helper_hp 
+    STX !store_helper_hp 
 
     ; mww abilities
 
@@ -197,6 +197,42 @@ auto_save_on_room_load:
     STA !store_RNG
 
     STZ !is_reloading_room
+    RTS
+
+; Reload saved values when room is reloaded
+restore_on_room_restart:
+    SEP #$10
+    REP #$20
+
+    ; ability info
+    LDX !store_ability
+    STX !ability
+    LDA !store_helper_info1 
+    STA !helper_info1
+    LDA !store_helper_info2 
+    STA !helper_info2
+    LDA !store_helper_info3
+    STA !helper_info3
+    LDX !store_wheelie_rider_state
+    STX !wheelie_rider_state
+
+    ; health
+    LDX !store_kirby_hp
+    STX !kirby_hp
+    LDX !store_helper_hp 
+    STX !helper_hp
+
+    ; mww abilities
+
+    ; invincibility status 
+    
+    ; miscellaneous
+    ;LDA !current_music
+    ;STA !store_music
+    LDA !store_RNG
+    STA !RNG
+
+    ; STZ !is_reloading_room
     RTS
 
 restore_current_room:   
@@ -256,10 +292,7 @@ restore_current_room:
         RTS
 
     .reload_saved_values:
-        SEP #$10
-        REP #$20
-        LDA !store_RNG
-        STA !RNG
+        JSR restore_on_room_restart
         SEP #$30
         RTS
 
@@ -361,7 +394,7 @@ disable_vblank:
 ORG $008C9D             ; After waiting for CPU to finish
     JMP standard      ; Use jump rather than JSR as this will not mess with the stack
 
-;ORG $008A03             ; After waiting for lag frame
+;ORG $008A03             ; After waiting for lag frame (commented out b/c it broke things and idk if it even worked)
 ;    JMP lag_frame
 
 ORG $00FF00

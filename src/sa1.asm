@@ -1,10 +1,6 @@
 ; Whenever possible, it is preferred to run code through SA-1 since it is faster than CPU
 
-; Jump to blank ROM space from main routine
-ORG $008A0D
-    JSR $!sa1_start
-
-ORG $00!sa1_start        ; Custom code start
+sa1_code:
 
 ; Lives always set to 99
 LDA #$0064

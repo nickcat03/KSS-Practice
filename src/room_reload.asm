@@ -1,10 +1,5 @@
-; Jump to blank ROM space from main routine
-ORG $01A743
-    NOP
-    NOP
-    JSL $00!room_reload_start
 
-ORG $00!room_reload_start        ;custom code start  
+room_reload_code:        ;custom code start  
     SEP #$20
     LDA !is_reloading_room
     CMP #$00

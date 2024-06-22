@@ -1,10 +1,3 @@
-; Start of custom code areas
-!sa1_start          = F200
-!cpu_start          = F800
-!hblank_start       = FD00
-!nmi_start          = FC00
-!room_reload_start  = F140
-!mute_toggle_start  = FA00
 
 ; Game function stuff (this could probably be called something better)
 !max_nmi_load       = $301B
@@ -74,8 +67,8 @@
 !screen_fade            = $30A1
 !screen_brightness      = $305F
 !replay_cutscene        = $332A     ; this variable might do more than just handle cutscenes
-!move_cam_hud           = $3330     ; these...
-!is_paused              = $7368     ; ... two seem to do the same thing?
+!move_cam_hud           = $3330    /; these...
+!is_paused              = $7368    \; ... two seem to do the same thing?
 !RNG                    = $3743
 !intangible_to_items    = $744B
 
@@ -133,29 +126,29 @@
 !save_sound_buffer          = $404810
 !save_sound_bank_1          = $40481A
 !save_sound_bank_2          = $40481B
-!afk_timer                  = $7B40
-!afk_toggle                 = $7B42
+!afk_timer                  = $7B3E
+!afk_toggle                 = $7B3D
 
 ; for saving certain values on room reload 
-!store_ability              = $7B40
-!store_wheelie_rider_state  = $7B41
-!store_kirby_hp             = $7B42
-!store_helper_hp            = $7B43
-!store_helper_info1         = $7B44
-!store_helper_info2         = $7B46
-!store_helper_info3         = $7B48
-!store_abilities1           = $7B4A
-!store_abilities2           = $7B4B
-!store_abilities3           = $7B4C
-!store_number_of_abilities  = $7B4D
-!store_invincibility_timer1 = $7B4E
-!store_invincibility_state1 = $7B50
-!store_invincibility_timer2 = $7B51
-!store_invincibility_state2 = $7B53
-!store_music                = $7B54
-!store_kirby_speed          = $7B55
-!store_helper_speed         = $7B56
-!store_RNG                  = $7B58
+!store_ability                      = $7B40
+!store_wheelie_rider_state          = $7B41
+!store_kirby_hp                     = $7B42
+!store_helper_hp                    = $7B43
+!store_helper_info1                 = $7B44
+!store_helper_info2                 = $7B46
+!store_helper_info3                 = $7B48
+!store_abilities1                   = $7B4A
+!store_abilities2                   = $7B4B
+!store_abilities3                   = $7B4C
+!store_number_of_abilities          = $7B4D
+!store_kirby_invincibility_timer    = $7B4E
+!store_kirby_invincibility_state    = $7B50
+!store_helper_invincibility_timer   = $7B51
+!store_helper_invincibility_state   = $7B53
+!store_music                        = $7B54
+!store_kirby_speed                  = $7B55
+!store_helper_speed                 = $7B56
+!store_RNG                          = $7B58
 
 ; subroutines
 !reset_game                 = $BCE7

@@ -2,36 +2,7 @@
 ; Audio toggle code starts at $00CDD8
 ; Edit $00D017 so that audio doesn't play when muted
 
-bank $00
-
-; The following locations are writes to the volume address
-; The writes will be replaced with checks to see if mute is toggled
-ORG $00CDFE
-    JSR check_if_muted
-
-ORG $00CEE7
-    JSR check_if_muted
-
-; volume fade-in and out
-ORG $00CE26
-    JSR check_if_muted
-
-ORG $00D019
-    JSR check_if_muted
-
-; Start code for audio mute toggle
-ORG $00CDDC
-    JSR $!mute_toggle_start
-
-bank noassume
-bank $00                ; I wish this worked for the problem below
-
-; Code for getting Mute button graphics
-ORG $15BCC2
-    JML set_button_gfx         ; this jumps to the set_button_gfx routine. I cannot use the variable name as the bank keeps switching to $80 when I need $00
-    NOP #2
-
-ORG $00!mute_toggle_start
+mute_toggle:
 
 TAX             ; store accumulator so it can be used again when leaving routine
 LDA !corkboard_cursor
