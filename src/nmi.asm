@@ -1,6 +1,10 @@
 
 nmi_code:
     REP #$30
+
+    ; Ghost test
+    ;JSL $06F25E
+
     LDA !current_nmi_load       ; If the game is currently on a lag frame, skip qsql code
     CMP !max_nmi_load
     BCS vblank_return_to_main_routine

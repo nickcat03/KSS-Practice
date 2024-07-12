@@ -67,8 +67,8 @@
 !screen_fade            = $30A1
 !screen_brightness      = $305F
 !replay_cutscene        = $332A     ; this variable might do more than just handle cutscenes
-!move_cam_hud           = $3330    /; these...
-!is_paused              = $7368    \; ... two seem to do the same thing?
+!move_cam_hud           = $3330     ;/ these...
+!is_paused              = $7368     ;\ ... two seem to do the same thing?
 !RNG                    = $3743
 !intangible_to_items    = $744B
 
@@ -126,6 +126,7 @@
 !save_sound_buffer          = $404810
 !save_sound_bank_1          = $40481A
 !save_sound_bank_2          = $40481B
+!toggle_custom_colors       = $40481D
 !afk_timer                  = $7B3E
 !afk_toggle                 = $7B3D
 

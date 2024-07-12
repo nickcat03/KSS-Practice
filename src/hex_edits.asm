@@ -13,6 +13,10 @@ ORG $01A743
     NOP
     JSL room_reload_code
 
+; Jump to code that checks for custom Kirby kirby colors 
+ORG $03D8C0
+    JSL kirby_colors
+
 
 ; The following locations are writes to the volume address
 ; The writes are replaced with checks to see if mute is toggled
@@ -149,5 +153,5 @@ ORG $27E565
     RTS
 
 ; Always on quick pause 
-;ORG $1F991F 
+;ORG $1F991F
 ;    db $80
