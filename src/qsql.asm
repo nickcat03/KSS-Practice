@@ -292,8 +292,16 @@ restore_current_room:
         RTS
 
     .reload_saved_values:
+        ; If holding L, do not reload stored values and instead store new ones
+        REP #$30
+        LDA !p1controller_hold
+        AND #$0020
+        CMP #$0020
+        BEQ +
         JSR restore_on_room_restart
-        SEP #$30
+        BRA ++
+        + JSR auto_save_on_room_load
+        ++ SEP #$30
         RTS
 
     .warp_somewhere_else:
