@@ -1,7 +1,11 @@
 kirby_colors:
 
-    ; Color selection in game
-    select_kirby_colors:
+    ; Skip everything if Helper palette is being selected 
+    LDY $06
+    CPY #$0002
+    BNE .IsZero
+    
+    .select_kirby_colors:
         LDA !p1controller_hold
         AND #$2040
         CMP #$2040
@@ -30,7 +34,26 @@ kirby_colors:
     ; See if a color is selected. If it is 0, that means we use default colors.
     + LDA !toggle_custom_colors
     BEQ .IsZero
+    JSR apply_colors
 
+    .finalize:
+
+        ; Adjust stack pointer to jump to the previous routine
+        TSC 
+        CLC
+        ADC #$0003
+        TCS
+
+        RTL
+
+    ; Run code as normal if default colors are selected
+    .IsZero:
+        LDX $04
+        LDY $06
+        RTL
+
+
+apply_colors:
     .kirby_palette_offset:
         ; Kirby palette offset 
         ; If Kirby is "flashing", use the flashing palette (e.g shielding, jet charge, etc.)
@@ -63,7 +86,7 @@ kirby_colors:
         ; If hat palette isn't normally overwritten, don't overwrite it
         LDA $00
         CMP #$0016
-        BCC .finalize
+        BCC +
 
         LDA $04
         CLC
@@ -73,19 +96,5 @@ kirby_colors:
         LDA #$000B
         MVN $00,$C4
 
-    .finalize:
-        PLB
-
-        ; Adjust stack pointer to jump to the previous routine
-        TSC 
-        CLC
-        ADC #$0003
-        TCS
-
-        RTL
-
-    ; Run code as normal if default colors are selected
-    .IsZero:
-        LDX $04
-        LDY $06
-        RTL
+        + PLB
+        RTS
