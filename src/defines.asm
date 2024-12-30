@@ -127,8 +127,8 @@
 !save_sound_bank_1          = $40481A
 !save_sound_bank_2          = $40481B
 !toggle_custom_colors       = $40481D
-!afk_timer                  = $7B3E
-!afk_toggle                 = $7B3D
+!afk_timer                  = $7B3A
+!afk_toggle                 = $7B3C
 
 ; for saving certain values on room reload 
 !store_ability                      = $7B40

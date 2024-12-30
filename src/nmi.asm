@@ -1,4 +1,3 @@
-
 nmi_code:
     REP #$30
 

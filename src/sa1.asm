@@ -183,7 +183,7 @@ BRA ++++
 
 afk_timer: 
     LDA !p1controller_hold
-    BEQ +   ; Controller isn't being pressed
+    BNE +   ; Controller isn't being pressed
 
     ; If the timer isn't greater than the limit, increase it.
     LDA !afk_timer 
