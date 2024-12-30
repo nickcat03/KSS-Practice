@@ -1,6 +1,18 @@
 ; Subroutine to make a 100% file. All it does is overwrite the file with data that a 100% file would have. This will also pass checksum.
 ; Preferably in the future, all of these RAM addresses should be labeled.
+
+; to do:
+; change graphic to show a 100% file
+; delete file first, then make it 100% because not doing this will cause file to not pass checksum and will be deleted on reload.
 make_100_file:
+
+    ; sfx for making 100 file, this needs to be ran on cpu or else game will freeze
+    ;SEP #$30
+    ;3E
+    ;LDA #$2C
+    ;STA !current_sfx
+    ;JSL !play_sfx
+
     REP #$20
     LDA #$1557
     STA $7F04,X

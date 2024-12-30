@@ -152,6 +152,10 @@ ORG $27E547
 ORG $27E565
     RTS
 
+; Change Arena timer color
+;ORG $598680
+;    db $1F
+
 ; Always on quick pause 
 ;ORG $1F991F
 ;    db $80
