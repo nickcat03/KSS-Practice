@@ -17,6 +17,10 @@ ORG $01A743
 ORG $03D8C0
     JSL kirby_colors
 
+; Jump to code for replacing Lives count in the HUD with RNG number
+;ORG $01F8A8
+;    JSL Display_RNG
+
 
 ; The following locations are writes to the volume address
 ; The writes are replaced with checks to see if mute is toggled
@@ -151,6 +155,11 @@ ORG $27E547
     RTS
 ORG $27E565
     RTS
+
+; Consumables (tomato, candy, etc.) always respawn
+; STA $28 -> STZ $28
+ORG $00E9DF
+    STZ $28
 
 ; Change Arena timer color
 ;ORG $598680

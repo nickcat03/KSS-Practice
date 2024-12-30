@@ -49,7 +49,7 @@
 !score              = $7376
 !romk_timer         = $73A0
 !boss_inv_frames    = $78FC
-!boss_hp            = $77BA
+!boss_hp            = $7A19
 !boss_max_hp        = $7A1B
 !boss_hp_meter      = $7A1D
 
