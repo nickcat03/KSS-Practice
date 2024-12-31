@@ -11,7 +11,7 @@ ORG !_F+$00FFD8
 
 incsrc "src/defines.asm"
 incsrc "src/hex_edits.asm"
-incsrc "src/hud.asm"
+incsrc "src/hijacks.asm"
 
 ORG $00F140
 ;incsrc "src/cpu.asm"

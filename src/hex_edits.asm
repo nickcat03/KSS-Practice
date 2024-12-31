@@ -1,27 +1,3 @@
-; Code hijacks. Putting this in hex edits because they are simple code changes and they don't really belong anywhere else.
-; Jump to SA-1 custom code from main SA-1 routine
-ORG $008A0D
-    JSR sa1_code
-
-; Jump to NMI custom code from main CPU routine
-ORG $0081B7
-    JSR nmi_code
-
-; Jump to custom room reload code from room reload routine
-ORG $01A743
-    NOP
-    NOP
-    JSL room_reload_code
-
-; Jump to code that checks for custom Kirby kirby colors 
-ORG $03D8C0
-    JSL kirby_colors
-
-; Jump to code for replacing Lives count in the HUD with RNG number
-;ORG $01F8A8
-;    JSL Display_RNG
-
-
 ; The following locations are writes to the volume address
 ; The writes are replaced with checks to see if mute is toggled
 ORG $00CDFE
