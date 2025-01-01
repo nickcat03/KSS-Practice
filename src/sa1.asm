@@ -6,6 +6,11 @@ sa1_code:
 LDA #$0064
 STA !lives
 
+; for HUD debug
+LDA !score
+INC
+STA !score
+
 ; Make file deletion a single menu
 LDA !file_delete_menu
 CMP #$80F6
