@@ -156,7 +156,7 @@
 !update_romk_vram           = $07E55D
 !assign_ability_data        = $029C71
 !finalize_cutscene          = $00CF98
-!erase_file                 = $00EBD7
+!erase_file                 = $00ECD0
 !load_music                 = $00CF98
 !update_tileset             = $0087CB
 !update_tileset_kirby_pos   = $0085EA

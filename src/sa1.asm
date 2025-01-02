@@ -167,8 +167,8 @@ AND #$0840              ; holding Up+X
 ORA !game_mode          ; check if game is on file select screen
 CMP #$0840
 BNE +
-;LDA !selected_file
-;JSL !erase_file    ; erase previous data to ensure checksum is correct
+LDA !selected_file
+JSL !erase_file    ; erase previous data to ensure checksum is correct
 SEP #$30
 LDX #$00                ; set default offset
 LDA !selected_file
