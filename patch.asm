@@ -5,7 +5,7 @@
 
 ; give the cartridge more SRAM
 ORG !_F+$00FFD8
-        db $08
+        db $07
 
 ; These are ran first because they are not part of the main code block
 incsrc "src/defines.asm"
@@ -21,6 +21,7 @@ incsrc "graphics/hud_layouts.asm"
 ORG $00F140
 ;incsrc "src/cpu.asm"
 incsrc "src/sa1.asm"
+incsrc "src/menu.asm"
 incsrc "src/mww_map.asm"
 incsrc "src/free_movement.asm"
 incsrc "src/abilities.asm"

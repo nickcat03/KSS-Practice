@@ -162,6 +162,14 @@
 !update_tileset_kirby_pos   = $0085EA
 ;!update_soundbank           = $00D2F0          ;$00D1D0
 !global_jump_pointer        = $633E
+!pass_frame                 = $00BC81
+!pause_game_loop            = $00A2D4
+!resume_game_loop           = $00A2EF
+!close_pause_menu           = $CF9AB2
+!load_font                  = $1FB416
+!draw_text                  = $1FB449
+!draw_pause_menu            = $CF999B
+!dim_screen                 = $C005C7
 
 ;tables 
 !mww_planet_x_pos           = $CAA6F5
@@ -170,3 +178,17 @@
 ; useless subroutines that ill keep here anyway cuz theyre nice to have somewhere
 !debug_reload_display       = $DBE7
 !play_sfx                   = $D155
+
+; controller buttons
+!btn_b      = $8000
+!btn_y      = $4000
+!btn_select = $2000
+!btn_start  = $1000
+!btn_up     = $0800
+!btn_down   = $0400
+!btn_left   = $0200
+!btn_right  = $0100
+!btn_a      = $0080
+!btn_x      = $0040
+!btn_l      = $0020
+!btl_r      = $0010
