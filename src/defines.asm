@@ -52,6 +52,7 @@
 !boss_hp            = $7A19
 !boss_max_hp        = $7A1B
 !boss_hp_meter      = $7A1D
+!write_to_HUD       = $00AF     ; if set to 1, the HUD will update
 
 ; coordinates / positions 
 !kirby_x_pos                = $6988
@@ -60,6 +61,11 @@
 !kirby_y_respawn            = $3310
 !room_to_respawn_into       = $32F2
 !camera_lock                = $7368
+
+; gourmet race timer
+!timer_minutes      = $7A2D
+!timer_seconds      = $7A2C 
+!timer_milliseconds = $7A2B
 
 ; various miscellaneous things
 !animation_timer        = $6E4C
