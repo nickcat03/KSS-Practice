@@ -171,6 +171,17 @@
 !draw_pause_menu            = $CF999B
 !dim_screen                 = $C005C7
 
+; internal dma queue
+!write_to_dma_buffer        = $00875a
+
+; arguments for the above
+!dma_type                   = $003731 ;8bit
+; index into table at $00869D
+!dma_size                   = $003732 ;16bit
+!dma_src                    = $003734 ;16bit
+!dma_src_bank               = $003736 ;8bit
+!dma_dest                   = $003737 ;16bit
+
 ;tables 
 !mww_planet_x_pos           = $CAA6F5
 !mww_planet_y_pos           = $CAA709
