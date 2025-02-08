@@ -5,7 +5,7 @@
 
 ; give the cartridge more SRAM
 ORG !_F+$00FFD8
-        db $07
+        db $08
 
 ; These are ran first because they are not part of the main code block
 incsrc "src/defines.asm"
