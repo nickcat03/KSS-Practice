@@ -18,7 +18,7 @@ STA !file_delete_menu
 ++
 +
 
-JSR $EE52 ; Built in subroutine to calculate timer incrementation
+REP #$30
 
 ;Ability code
 ; If holding L + R, cycle through all abilities

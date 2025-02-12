@@ -46,24 +46,38 @@ ORG $01F8A8
 
 ; Replace Score display routine with the following code
 ORG $01F938
-    TXA     ; Code before jumping to this routine will store the Score tile coordinate in X
-    STA $34 ; Transfer it to this temp variable as that's what the Gourmet Race routine update_tileset_kirby_pos
-    STZ $36
-    JSR $EE52 ; Built in subroutine to calculate timer incrementation
+    timer_display:
+        TXA     ; Code before jumping to this routine will store the Score tile coordinate in X
+        STA $34 ; Transfer it to this temp variable as that's what the Gourmet Race routine update_tileset_kirby_pos
+        STZ $36
+        
+        ; Increment timer based on how many lag frames have occurred
+        ;LDX !active_frames
+        ;- JSR $EE52 ; Built in subroutine to calculate timer incrementation
+        ;DEX
+        ;BNE -
 
-    ; Display numbers in HUD
-    SEP #$30
-    LDA !timer_minutes
-    LDY #$00
-    JSR !display_number
-    LDA !timer_seconds
-    LDY #$03
-    JSR !display_number
-    LDA !timer_milliseconds
-    LDY #$06
-    JSR !display_number
-    REP #$30
-    INC !write_to_HUD
+        ; Above lag frame code is buggy so don't run it for now
+        JSR $EE52
+
+        ; Display numbers in HUD
+        SEP #$30
+        LDA !timer_minutes
+        LDY #$00
+        JSR !display_number
+        LDA !timer_seconds
+        LDY #$03
+        JSR !display_number
+        LDA !timer_milliseconds
+        LDY #$06
+        JSR !display_number
+        REP #$30
+        INC !write_to_HUD
+        RTS
+
+; Replace GCO gold display with timer
+ORG $01F8DF
+    JSR timer_display
     RTS
 
 ; Stop game from clearing the timer

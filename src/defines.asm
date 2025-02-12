@@ -1,7 +1,10 @@
 
 ; Game function stuff (this could probably be called something better)
+; These values are used for seeing how many cycles are left to do DMA operations
 !max_nmi_load       = $301B
-!current_nmi_load   = $301D
+!current_nmi_load   = $3019
+!nmi_mirror         = $301D
+!active_frames      = $3010 ;(default is 1, if game lags it will be greater)
 
 ; controller registers
 !p1controller_hold        = $32C4

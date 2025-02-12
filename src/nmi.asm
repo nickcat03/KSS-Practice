@@ -4,8 +4,8 @@ nmi_code:
     ; Ghost test
     ;JSL $06F25E
 
-    LDA !current_nmi_load       ; If the game is currently on a lag frame, skip qsql code
-    CMP !max_nmi_load
+    LDA !active_frames       ; If the game is currently on a lag frame, skip qsql code
+    CMP #$0002
     BCS vblank_return_to_main_routine
 
     LDA !QSQL_timer             ; make sure that a save or load hasn't occured in the last however many frames
