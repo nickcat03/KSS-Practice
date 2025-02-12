@@ -21,6 +21,7 @@ incsrc "graphics/hud_layouts.asm"
 ORG $00F140
 ;incsrc "src/cpu.asm"
 incsrc "src/sa1.asm"
+incsrc "src/menu.asm"
 incsrc "src/mww_map.asm"
 incsrc "src/free_movement.asm"
 incsrc "src/abilities.asm"

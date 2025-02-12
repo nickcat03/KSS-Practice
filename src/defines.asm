@@ -1,7 +1,10 @@
 
 ; Game function stuff (this could probably be called something better)
+; These values are used for seeing how many cycles are left to do DMA operations
 !max_nmi_load       = $301B
-!current_nmi_load   = $301D
+!current_nmi_load   = $3019
+!nmi_mirror         = $301D
+!active_frames      = $3010 ;(default is 1, if game lags it will be greater)
 
 ; controller registers
 !p1controller_hold        = $32C4
@@ -52,6 +55,7 @@
 !boss_hp            = $7A19
 !boss_max_hp        = $7A1B
 !boss_hp_meter      = $7A1D
+!write_to_HUD       = $00AF     ; if set to 1, the HUD will update
 
 ; coordinates / positions 
 !kirby_x_pos                = $6988
@@ -60,6 +64,11 @@
 !kirby_y_respawn            = $3310
 !room_to_respawn_into       = $32F2
 !camera_lock                = $7368
+
+; gourmet race timer
+!timer_minutes      = $7A2D
+!timer_seconds      = $7A2C 
+!timer_milliseconds = $7A2B
 
 ; various miscellaneous things
 !animation_timer        = $6E4C
@@ -162,6 +171,25 @@
 !update_tileset_kirby_pos   = $0085EA
 ;!update_soundbank           = $00D2F0          ;$00D1D0
 !global_jump_pointer        = $633E
+!pass_frame                 = $00BC81
+!pause_game_loop            = $00A2D4
+!resume_game_loop           = $00A2EF
+!close_pause_menu           = $CF9AB2
+!load_font                  = $1FB416
+!draw_text                  = $1FB449
+!draw_pause_menu            = $CF999B
+!dim_screen                 = $C005C7
+
+; internal dma queue
+!write_to_dma_buffer        = $00875a
+
+; arguments for the above
+!dma_type                   = $003731 ;8bit
+; index into table at $00869D
+!dma_size                   = $003732 ;16bit
+!dma_src                    = $003734 ;16bit
+!dma_src_bank               = $003736 ;8bit
+!dma_dest                   = $003737 ;16bit
 
 ;tables 
 !mww_planet_x_pos           = $CAA6F5
@@ -170,3 +198,17 @@
 ; useless subroutines that ill keep here anyway cuz theyre nice to have somewhere
 !debug_reload_display       = $DBE7
 !play_sfx                   = $D155
+
+; controller buttons
+!btn_b      = $8000
+!btn_y      = $4000
+!btn_select = $2000
+!btn_start  = $1000
+!btn_up     = $0800
+!btn_down   = $0400
+!btn_left   = $0200
+!btn_right  = $0100
+!btn_a      = $0080
+!btn_x      = $0040
+!btn_l      = $0020
+!btl_r      = $0010

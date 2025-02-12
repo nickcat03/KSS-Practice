@@ -11,3 +11,7 @@ check bankcross off
 ; Corkboard graphics, specifically for the "Off" graphic on Stereo/Mono button.
 ORG $2CDE6E
     incbin "graphics/bin/corkboard.bin"
+
+; Insert compressed English text graphics into blank spot in ROM
+ORG $02F270
+    incbin "graphics/bin/pause_menu_english_text.bin"
