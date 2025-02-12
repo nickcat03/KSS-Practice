@@ -182,6 +182,7 @@
 
 ; internal dma queue
 !write_to_dma_buffer        = $00875a
+!load_dma_table             = $0086e5
 
 ; arguments for the above
 !dma_type                   = $003731 ;8bit
