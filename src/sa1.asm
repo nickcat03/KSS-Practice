@@ -181,6 +181,7 @@ BRA ++++
 + REP #$30
 
 ; Code for dimming screen when player is AFK
+; - Commenting out for now because this code interferes with a RoMK cutscene trigger and it is annoying...
 !afk_time_limit = #$1C20
 
 afk_timer: 

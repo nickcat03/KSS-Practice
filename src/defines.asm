@@ -132,10 +132,10 @@
 !is_reloading_room          = $7B68
 !toggle_free_move           = $7B70
 !mute_toggle                = $7B7E
-!save_sound_buffer          = $404810
-!save_sound_bank_1          = $40481A
-!save_sound_bank_2          = $40481B
-!toggle_custom_colors       = $40481D
+!save_sound_buffer          = $40D410
+!save_sound_bank_1          = $40D40A
+!save_sound_bank_2          = $40D41B
+!toggle_custom_colors       = $40D41D
 !afk_timer                  = $7B3A
 !afk_toggle                 = $7B3C
 
@@ -182,6 +182,7 @@
 
 ; internal dma queue
 !write_to_dma_buffer        = $00875a
+!load_dma_table             = $0086e5
 
 ; arguments for the above
 !dma_type                   = $003731 ;8bit

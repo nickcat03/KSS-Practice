@@ -8,6 +8,13 @@ nmi_code:
     CMP #$0002
     BCS vblank_return_to_main_routine
 
+    ;SEP #$30
+    ;PHB         ; Push data bank onto stack
+    ;LDA #$00    ; Set data bank to zero
+    ;PHA
+    ;PLB
+    ;REP #$30
+
     LDA !QSQL_timer             ; make sure that a save or load hasn't occured in the last however many frames
     CMP #$0000
     BNE countdown_QSQL_timer
@@ -42,6 +49,9 @@ nmi_code:
         DEC !QSQL_timer
 
     vblank_return_to_main_routine:
+        ;SEP #$30
+        ;PLB         ; Restore data bank
+
         REP #$30
         LDA #$3000
         RTS

@@ -6,6 +6,9 @@
 !sfx_room_reset = #$28
 !sfx_warp_elsewhere = #$48
 
+!temp_stack_pointer_location = $40D400
+!music_from_savestate = $408FCA     ; current music RAM ($33CA) from the savestate data
+
 save_state:
 
     SEP #$30
@@ -17,42 +20,53 @@ save_state:
 
     REP #$20
     TSC                     ; Transfer stack pointer
-    STA $404800
+    STA !temp_stack_pointer_location
 
     .mvn_instructions:
         REP #$20
 
-        LDX #$0000          ; Data copy starts
-        LDY #$2000          ; Copy SaveRAM $400000-$401FFF to $402000-$403FFF
-        LDA #$1FFF
-        MVN $40,$40 
+        ; Copy savestate data to expanded SaveRAM
 
-        LDX #$3000          ; Copy SA-1 IRAM $003000-$0037FF to $404000-$4047FF
+        ; WRAM
+        LDX #$0000          ; Copy first portion of WRAM $7E0000-$7E1FFF to $402000-$403FFF
+        LDY #$2000
+        LDA #$1FFF
+        MVN $40,$7E
+
+        ; WRAM 
+        LDX #$B400          ; Copy level data(?) in WRAM $7EB400-$7EFFFF to $404000-$408BFF
         LDY #$4000
+        LDA #$4BFF
+        MVN $40,$7E
+
+        ; SA1
+        LDX #$3000          ; Copy SA-1 IRAM $003000-$0037FF to $408C00-$4093FF
+        LDY #$8C00
         LDA #$07FF
         MVN $40,$00
-                           
-        LDX #$0000          ; This game sucks
-        LDY #$0000          ; Copy all of WRAM cuz yolo
-        LDA #$FFFF
-        MVN $41,$7E
 
-        LDX #$0000
-        LDY #$0000
-        LDA #$FFFF
-        MVN $42,$7F
+        ; WRAM
+        LDX #$0000          ; Copy current level layout in WRAM $7F0000-$7F1FFF to $409400-$B3FF
+        LDY #$9400
+        LDA #$1FFF
+        MVN $40,$7F
+
+        ; SAVERAM
+        LDX #$0000          ; Copy SaveRAM $400000-$401FFF to $40B400-$40D3FF
+        LDY #$B400
+        LDA #$1FFF
+        MVN $40,$40 
 
         LDA #$0000          ; Reset
         MVN $00,$00
 
-
-    .dma_instructions:
+        .dma_instructions:
         SEP #$20
         LDX #$0000      ; add comments here later as per the restore code
         STX $2116
         LDX #$0000      
         STX $4302       
-        LDA #$43        
+        LDA #$41        
         STA $4304       
         LDX #$FFFF
         STX $4305       
@@ -61,8 +75,8 @@ save_state:
         LDA #$81        
         STA $4300       
         LDA #$01        
-        STA $420B            
-
+        STA $420B           
+ 
     JSR disable_vblank
 
     LDA #$01
@@ -84,12 +98,12 @@ restore_state:
     JSR enable_vblank
 
     REP #$20
-    LDA $404800                 ; Restore stack pointer
+    LDA !temp_stack_pointer_location                 ; Restore stack pointer
     TCS
 
     .restore_music
         SEP #$20
-        LDA $4043CA             ; music from the savestate
+        LDA !music_from_savestate            
         CMP !current_music
         BEQ +
         STA !current_music
@@ -105,37 +119,60 @@ restore_state:
     STA !save_sound_bank_2
 
     .restore_sram_sa1
+        ; Restore savestate from SRAM
 
-        LDX #$2000          ; Data copy starts
-        LDY #$0000          ; Copy SaveRAM $400000-$401FFF to $402000-$403FFF
-        LDA #$1FFF 
-        MVN $40,$40
+        ; WRAM
+        LDX #$2000          ; Copy first portion of WRAM $7E0000-$7E1FFF to $402000-$403FFF
+        LDY #$0000
+        LDA #$1FFF
+        MVN $7E,$40
 
-        LDX #$4000
-        LDY #$3000          ; Copy SA-1 IRAM $003000-$0037FF to $404000-$4047FF
+        ; WRAM 
+        LDX #$4000          ; Copy level data(?) in WRAM $7EB400-$7EFFFF to $404000-$408BFF
+        LDY #$B400
+        LDA #$4BFF
+        MVN $7E,$40
+
+        ; SA1
+        LDX #$8C00          ; Copy SA-1 IRAM $003000-$0037FF to $408C00-$4093FF
+        LDY #$3000
         LDA #$07FF
         MVN $00,$40
-                            
-        LDX #$0000          ; Restore all WRAM
-        LDY #$0000         
-        LDA #$FFFF
-        MVN $7E,$41
 
-        LDX #$0000
+        ; WRAM
+        LDX #$9400          ; Copy current level layout in WRAM $7F0000-$7F1FFF to $409400-$B3FF
         LDY #$0000
-        LDA #$FFFF
-        MVN $7F,$42
+        LDA #$1FFF
+        MVN $7F,$40
+
+        ; SAVERAM
+        LDX #$B400          ; Copy SaveRAM $400000-$401FFF to $40B400-$40D3FF
+        LDY #$0000
+        LDA #$1FFF
+        MVN $40,$40 
 
         LDA #$0000          ; Reset
         MVN $00,$00
 
-    .restore_vram:
+        ; add check for if in same room or if in menu
+        SEP #$30
+        LDA #$00    ; Set data bank to zero (this is what the original routine uses)
+        PHA
+        PLB
+        REP #$30
+        ; Jump to routine for loading in level tileset
+        JSL $018074
+
+        LDA #$0000          ; Reset
+        MVN $00,$00
+
+        .restore_vram:
         SEP #$20
         LDX #$0000
         STX $2116
         LDX #$0002      ;Source Offset into source bank
         STX $4302       ;Set Source address lower 16-bits
-        LDA #$43        ;Source bank
+        LDA #$41        ;Source bank
         STA $4304       ;Set Source address upper 8-bits
         LDX #$FFFF      ;# of bytes to copy 
         STX $4305       ;Set DMA transfer size
@@ -423,15 +460,15 @@ ORG $00FF00
         REP #$20
         LDX !QSQL_offset
         TSC                     ; Transfer stack pointer to A
-        STA $404800,X           ; Backup stack pointer
+        STA !temp_stack_pointer_location,X           ; Backup stack pointer
         BRA .end
         + CMP #$02
 
         BNE .end
         LDX !QSQL_offset
         REP #$20
-        LDA $404800,X           ; Load stack pointer address into A
-        TCS                     ; Restore stack pointer
+        LDA !temp_stack_pointer_location,X           ; Load stack pointer address into A
+        TCS                                     ; Restore stack pointer
 
     .end:
         SEP #$20
