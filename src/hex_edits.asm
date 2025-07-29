@@ -132,10 +132,12 @@ ORG $27E547
 ORG $27E565
     RTS
 
+; For some reason this code causes RoMK cutscenes to replay for some reason...
+; Could be due to the cutscene acting as a "consumable" 
 ; Consumables (tomato, candy, etc.) always respawn
 ; STA $28 -> STZ $28
-ORG $00E9DF
-    STZ $28
+;ORG $00E9DF
+;    STZ $28
 
 ; Change Arena timer color
 ;ORG $598680
@@ -144,3 +146,9 @@ ORG $00E9DF
 ; Always on quick pause 
 ;ORG $1F991F
 ;    db $80
+
+; Stupid hack for QSQL (swap the order of two subroutines so it is easier to call one of them and then return while still using the built in routine)
+ORG $018071
+    JSR $8698
+    JSR $8678   ; we only need to really use this one so it will be placed on the bottom 
+    ; RTL (this returns back to the QSQL code, commented out because this exists in the regular game code already)
