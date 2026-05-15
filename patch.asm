@@ -10,8 +10,7 @@ ORG !_F+$00FFD8
 ; These are ran first because they are not part of the main code block
 incsrc "src/defines.asm"
 incsrc "src/hex_edits.asm"
-incsrc "src/hijacks.asm"
-;incsrc "src/hud.asm"
+;incsrc "src/hud.asm"   ;commenting out for optimization purposes
 
 ; These are all graphics inserts, all of them are compressed graphics. They have minor edits but the entire graphics section needs to be reinserted because of the compression.
 incsrc "graphics/graphics.asm"
@@ -23,8 +22,8 @@ ORG $00F140
 incsrc "src/sa1.asm"
 ;incsrc "src/menu.asm"
 incsrc "src/file_select.asm"
-incsrc "src/map_screen.asm"
-incsrc "src/mww_map.asm"
+incsrc "src/subgame_title.asm"
+incsrc "src/map_screens.asm"
 incsrc "src/free_movement.asm"
 incsrc "src/abilities.asm"
 incsrc "src/kirby_colors.asm"

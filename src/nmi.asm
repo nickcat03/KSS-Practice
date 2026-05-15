@@ -1,3 +1,9 @@
+pushpc
+; Jump to NMI custom code from main CPU routine
+ORG $0081B7
+    JSR nmi_code
+pullpc
+
 nmi_code:
     REP #$30
 

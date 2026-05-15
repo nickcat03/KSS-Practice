@@ -1,3 +1,10 @@
+pushpc
+; Jump to custom room reload code from room reload routine
+ORG $01A743
+    NOP
+    NOP
+    JSL room_reload_code
+pullpc
 
 room_reload_code:        ;custom code start  
     SEP #$20

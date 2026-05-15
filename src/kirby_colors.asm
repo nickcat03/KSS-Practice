@@ -1,3 +1,9 @@
+pushpc
+; Jump to code that checks for custom Kirby kirby colors 
+ORG $03D8C0
+    JSL kirby_colors
+pullpc
+
 kirby_colors:
 
     ; Skip everything if Helper palette is being selected 

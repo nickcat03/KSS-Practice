@@ -18,6 +18,21 @@ ORG $15B831
 ORG $078736
     dw $0000
 
+; Make death animation instant
+; $B4 -> $01
+ORG $088D9D
+    db $01
+
+; Set lives to 99 (purely cosmetic)
+; LDA #$0003 -> LDA #$0063
+ORG $00D873
+    LDA #$0063
+
+; Don't decrease lives counter
+; DEC $737A -> NOP
+ORG $0387E1
+    NOP #3
+
 ;Set BRK vector to game reset subroutine. This makes it so the game is reset on a crash rather than... crashing.
 ;$BCE7 is where the reset subroutine is located.
 ORG $00FFE6

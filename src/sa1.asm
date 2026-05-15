@@ -1,81 +1,86 @@
-; Whenever possible, it is preferred to run code through SA-1 since it is faster than CPU
+pushpc
+; Jump to SA-1 custom code from main SA-1 routine
+ORG $008A0D
+    JSR sa1_code
+pullpc
 
 sa1_code:
 
-; Lives always set to 99
-LDA #$0064
-STA !lives
-
-; Make file deletion a single menu
-LDA !file_delete_menu
-CMP #$80F6
-BNE +
-LDA !game_mode 
-CMP #$0000
-BNE ++
-LDA #$811A
-STA !file_delete_menu 
-++
-+
-
 REP #$30
 
-;Ability code
-; If holding L + R, cycle through all abilities
-; If not holding, select a commonly used ability
+; Ability / Free Movement Input Handling
+; A + L/R      = Common abilities
+; A + L + R    = Cycle abilities
+; Y + L + R    = Toggle free movement
+
 LDA !p1controller_hold
-AND #$00B0
-CMP #$00B0
-BEQ +
+
+BIT #$0080                      ; A held
+BEQ .free_move_toggle_check
+
+AND #$0030                      ; L or R held
+BEQ .free_move_toggle_check
+
+CMP #$0030                      ; Both L + R
+BEQ .cycle_abilities
+
 JSR common_abilities
-BRA ++
-+ JSR cycle_abilities
-++
+BRA .free_move_toggle_check
 
-; Run this code if health = 0
-LDA !kirby_hp
-CMP #$0000              ; check if health is 0
-BNE +
-LDA #$0001
-STA !animation_timer
-+
+.cycle_abilities:
+    JSR cycle_abilities
 
-; Instant Helper removal
-LDA !p1controller_hold
-AND #$00A0      ;L+A held
-ORA !wheelie_rider_state
-ORA !p1controller_frame
-CMP #$20A0      ;Check if Select is pressed and that Kirby is not riding Wheelie 
-BNE +
-LDA #$8C74      ;\ Assign RAM values for when Helper gets removed by Suppin Beam.
-STA $6340       ;| I have no idea how this works, but I'm glad it does :)
-LDA #$16AA      ;|
-STA $67A2       ;|
-LDA #$86C4      ;|
-STA $681C       ;/
-+
+.free_move_toggle_check:
+    LDA !p1controller_hold
+    AND #$0030                  ; L + R held?
+    CMP #$0030
+    BNE .free_move_check
 
-; RoMK chapter select
-LDA !subgame
-CMP #$0004                  ; if not RoMK, do not run
-BNE +
-LDA !game_mode
-CMP #$0005                  ; only run in subgame menu
-BNE ++
-LDA !p1controller_repeat
-CMP #$0100                  ; if pressing right, increase chapter
-BNE +++                     ; if not, check for left press
-INC !romk_chapter
-BRA ++++
-+++ CMP #$0200              ; if pressing left, decrease chapter
-BNE +++                     ; if not, leave routine
-DEC !romk_chapter
-++++ LDA !romk_chapter
-STA !romk_chapter_to_be_loaded 
-JSL !update_romk_vram       ; jump to game code for updating vram based on chapter value
-+++
-++
-+
+    LDA !p1controller_frame
+    BIT #$4000                  ; Y pressed this frame?
+    BEQ .free_move_check
+
+.toggle_free_move:
+    SEP #$20
+
+    LDA !toggle_free_move
+    BEQ .enable_free_move
+
+; Disable free move
+.disable_free_move:
+    STZ !toggle_free_move
+
+    LDA #$02
+    STA !kirby_invincible
+
+    STZ !intangible_to_items
+
+    REP #$30
+
+    LDA #$80FF                  ; Restore collision routine
+    STA !global_jump_pointer
+
+    BRA .free_move_check
+
+; Enable free move
+.enable_free_move:
+    INC !toggle_free_move
+    INC !intangible_to_items
+
+    REP #$30
+
+    LDA #$8BC9                  ; Intangible movement routine
+    STA !global_jump_pointer
+
+.free_move_check:
+    SEP #$20
+
+    LDA !toggle_free_move
+    BEQ .done
+
+    JSR free_movement
+
+.done:
 
 ; RoMK cutscene skip
 LDA !p1controller_frame
@@ -96,58 +101,10 @@ BRA +++
 +++
 + REP #$20
 
-; MWW World Map code
-mww_map:
-    SEP #$30
-    LDA !subgame
-    CMP #$05                            ; check if in MWW
-    BNE .merge
-    LDA !game_mode
-    CMP #$06                            ; check if on world map screen
-    BNE .merge
-    ;JSR mww_cycle_planets
-    JSR mww_assign_starting_abilities
-    JSR mww_toggle_ability_route
-    JSR mww_multiply_map_movement_speed
-    .merge:
-        REP #$30
-
-; Free movement toggle
-free_movement_toggle:
-    LDA !p1controller_hold
-    AND #$0030  ; L + R
-    ORA !p1controller_frame
-    CMP #$4030  ; Press Y
-    BNE .merge
-
-    SEP #$20
-    LDA !toggle_free_move
-    CMP #$00
-    BNE +
-    INC !toggle_free_move   ; Toggle off free move 
-    LDA #$02
-    STA !kirby_invincible   ; Make Kirby no longer invincible
-    STZ !intangible_to_items
-    REP #$30
-    LDA #$80FF      ; Set pointer that runs code which checks for Kirby's collision
-    STA !global_jump_pointer
-    BRA .merge
-    + STZ !toggle_free_move ; Toggle on free move
-    INC !intangible_to_items
-    REP #$30
-    LDA #$8BC9      ; Set pointer that runs code which makes Kirby intangible
-    STA !global_jump_pointer
-
-    .merge:
-        ; Free move if toggle is set to 1
-        SEP #$20
-        LDA !toggle_free_move
-        CMP #$00
-        BNE +
-        JSR free_movement
-        +
         
 REP #$30
+
+; Commenting AFK code for the sake of optimization
 
 ; Code for dimming screen when player is AFK
 ;!afk_time_limit = #$1C20

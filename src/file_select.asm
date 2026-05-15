@@ -1,11 +1,25 @@
 pushpc
 
+; Hijack a routine that runs once per frame in the file select screen (SA-1)
 ORG $078683
     JSL check_inputs
     NOP
     NOP
 
 pullpc
+
+; Make file deletion a single menu
+LDA !file_delete_menu
+CMP #$80F6
+BNE .return
+
+LDA !game_mode
+BNE .return
+
+LDA #$811A
+STA !file_delete_menu
+
+.return:
 
 check_inputs:
     LDA !p1controller_hold
@@ -50,7 +64,6 @@ check_inputs:
 
 ; to do:
 ; change graphic to show a 100% file
-; delete file first, then make it 100% because not doing this will cause file to not pass checksum and will be deleted on reload.
 make_100_file:
 
     ; sfx for making 100 file, this needs to be ran on cpu or else game will freeze
@@ -106,9 +119,3 @@ make_100_file:
     LDA #$0605
     STA $7F4C,X
     RTS
-
-
-
-
-    ;68AA
-    ;CA7D50
