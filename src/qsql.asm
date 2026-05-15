@@ -6,7 +6,7 @@
 !sfx_room_reset = #$28
 !sfx_warp_elsewhere = #$48
 
-!temp_stack_pointer_location = $40D400
+!temp_stack_pointer_location = $40FFE0
 !music_from_savestate = $408FCA     ; current music RAM ($33CA) from the savestate data
 
 save_state:
@@ -46,14 +46,14 @@ save_state:
         MVN $40,$00
 
         ; WRAM
-        LDX #$0000          ; Copy current level layout in WRAM $7F0000-$7F1FFF to $409400-$B3FF
+        LDX #$0000          ; Copy current level layout in WRAM $7F0000-$7F1FFF to $409400-$40B3FF
         LDY #$9400
-        LDA #$1FFF
+        LDA #$2FFF
         MVN $40,$7F
 
         ; SAVERAM
-        LDX #$0000          ; Copy SaveRAM $400000-$401FFF to $40B400-$40D3FF
-        LDY #$B400
+        LDX #$0000          ; Copy SaveRAM $400000-$401FFF to $40C400-$40E3FF
+        LDY #$C400
         LDA #$1FFF
         MVN $40,$40 
 
@@ -139,22 +139,13 @@ restore_state:
         LDA #$07FF
         MVN $00,$40
 
-        ; WRAM
-        LDX #$9400          ; Copy current level layout in WRAM $7F0000-$7F1FFF to $409400-$B3FF
-        LDY #$0000
-        LDA #$1FFF
-        MVN $7F,$40
-
         ; SAVERAM
-        LDX #$B400          ; Copy SaveRAM $400000-$401FFF to $40B400-$40D3FF
+        LDX #$C400          ; Copy SaveRAM $400000-$401FFF to $40B400-$40D3FF
         LDY #$0000
         LDA #$1FFF
         MVN $40,$40 
 
-        LDA #$0000          ; Reset
-        MVN $00,$00
-
-        ; add check for if in same room or if in menu
+        ; Load all of the level data from the previous state
         SEP #$30
         LDA #$00    ; Set data bank to zero (this is what the original routine uses)
         PHA
@@ -162,6 +153,12 @@ restore_state:
         REP #$30
         ; Jump to routine for loading in level tileset
         JSL $018074
+
+        ; WRAM
+        LDX #$9400          ; Copy current level layout in WRAM $7F0000-$7F1FFF to $409400-$B3FF
+        LDY #$0000
+        LDA #$2FFF
+        MVN $7F,$40
 
         LDA #$0000          ; Reset
         MVN $00,$00

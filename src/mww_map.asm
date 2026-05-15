@@ -1,26 +1,26 @@
-mww_cycle_planets: 
+;mww_cycle_planets: 
+;
+;    REP #$20
+;    LDA !p1controller_repeat
+;    CMP #$0010                  ; if pressing R
+;    BNE +
+;    INC !mww_current_planet
+;    BRA .apply_map_coordinates
+;    + CMP #$0020                ; if pressing L
+;    BNE .merge
+;    DEC !mww_current_planet 
 
-    REP #$20
-    LDA !p1controller_repeat
-    CMP #$0010                  ; if pressing R
-    BNE +
-    INC !mww_current_planet
-    BRA .apply_map_coordinates
-    + CMP #$0020                ; if pressing L
-    BNE .merge
-    DEC !mww_current_planet 
+;    .apply_map_coordinates:
+;        LDA !mww_current_planet
+;        ASL A                       ; Multiply planet number by 2 to find the spot in 16-bit coordinates table.
+;        TAX                         
+;        LDA !mww_planet_x_pos,X     ;\ 
+;        STA !kirby_x_pos            ;| Then assign the coordinates to Kirby.
+;        LDA !mww_planet_y_pos,X     ;| Using the same coordinates table that the game uses when loading from a continued file.
+;        STA !kirby_y_pos            ;/
 
-    .apply_map_coordinates:
-        LDA !mww_current_planet
-        ASL A                       ; Multiply planet number by 2 to find the spot in 16-bit coordinates table.
-        TAX                         
-        LDA !mww_planet_x_pos,X     ;\ 
-        STA !kirby_x_pos            ;| Then assign the coordinates to Kirby.
-        LDA !mww_planet_y_pos,X     ;| Using the same coordinates table that the game uses when loading from a continued file.
-        STA !kirby_y_pos            ;/
-
-    .merge: 
-        RTS
+;    .merge: 
+;        RTS
 
 
 mww_assign_starting_abilities:
@@ -99,8 +99,8 @@ mww_multiply_map_movement_speed:
 
     REP #$30
     LDA !p1controller_hold
-    AND #$1000
-    CMP #$1000
+    AND #$0010
+    CMP #$0010
     BNE .no_changes
 
     LDA !p1controller_hold

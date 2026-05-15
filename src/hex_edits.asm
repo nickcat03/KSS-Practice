@@ -1,28 +1,17 @@
-; The following locations are writes to the volume address
-; The writes are replaced with checks to see if mute is toggled
-ORG $00CDFE
-    JSR check_if_muted
-
-ORG $00CEE7
-    JSR check_if_muted
-
-; volume fade-in and out
-ORG $00CE26
-    JSR check_if_muted
-
-ORG $00D019
-    JSR check_if_muted
-
-; Start code for audio mute toggle
-ORG $00CDDC
-    JSR mute_toggle
-
-
 ; Code for getting Mute button graphics
 ORG $15BCC2
     JML set_button_gfx
     NOP #2
 
+; All sub-games selectable
+; allow for selection
+; LDA $7A83 -> LDA #$0005
+ORG $15B644
+    LDA #$0005
+; visibly show games unlocked
+; BEQ $XX -> NOP
+ORG $15B831
+    LDA #$007F
 
 ; Make file deletion instant
 ; LDA #$00B4 -> LDA #$0000
@@ -39,17 +28,23 @@ ORG $00FFE6
 ORG $008C04
     LDA #$1B6E
 
-; Stop automatically setting Mono audio when game starts
-; STA $33CC -> NOP #2
-;ORG $00D538
-;    NOP #2
+; Leave every Dyna Blade stage
+; always show leave menu
+; BEQ $0C -> BRA $04
+ORG $1F9F10
+    db $80, $04
+; actual logic to accept leave stage input
+; BEQ $D7 -> BRA $04
+ORG $1F9E5D
+    db $80, $04
 
-; For testing room reloads. Do not include in release
-;ORG $008A01
-;    NOP #2
+; Leave every MWW stage
+; BNE $XX -> NOP
+ORG $1FA611
+    NOP #2
 
 ; Spring Breeze bosses always have New File health
-; BNE $XX -> NOP NOP 
+; BNE $XX -> NOP 
 ORG $00ED96
     NOP #2
 

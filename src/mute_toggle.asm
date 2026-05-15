@@ -2,6 +2,29 @@
 ; Audio toggle code starts at $00CDD8
 ; Edit $00D017 so that audio doesn't play when muted
 
+pushpc
+
+; The following locations are writes to the volume address
+; The writes are replaced with checks to see if mute is toggled
+ORG $00CDFE
+    JSR check_if_muted
+
+ORG $00CEE7
+    JSR check_if_muted
+
+; volume fade-in and out
+ORG $00CE26
+    JSR check_if_muted
+
+ORG $00D019
+    JSR check_if_muted
+
+; Start code for audio mute toggle
+ORG $00CDDC
+    JSR mute_toggle
+
+pullpc
+
 mute_toggle:
 
 TAX             ; store accumulator so it can be used again when leaving routine

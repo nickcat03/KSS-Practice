@@ -132,10 +132,10 @@
 !is_reloading_room          = $7B68
 !toggle_free_move           = $7B70
 !mute_toggle                = $7B7E
-!save_sound_buffer          = $40D410
-!save_sound_bank_1          = $40D40A
-!save_sound_bank_2          = $40D41B
-!toggle_custom_colors       = $40D41D
+!save_sound_buffer          = $40FFF0
+!save_sound_bank_1          = $40FFEA
+!save_sound_bank_2          = $40FFFB
+!toggle_custom_colors       = $40FFFD
 !afk_timer                  = $7B3A
 !afk_toggle                 = $7B3C
 

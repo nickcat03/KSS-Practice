@@ -11,17 +11,19 @@ ORG !_F+$00FFD8
 incsrc "src/defines.asm"
 incsrc "src/hex_edits.asm"
 incsrc "src/hijacks.asm"
-incsrc "src/hud.asm"
+;incsrc "src/hud.asm"
 
 ; These are all graphics inserts, all of them are compressed graphics. They have minor edits but the entire graphics section needs to be reinserted because of the compression.
 incsrc "graphics/graphics.asm"
-incsrc "graphics/hud_layouts.asm"
+;incsrc "graphics/hud_layouts.asm"
 
 ; All of these are ran together because they are all going to be placed in the blank space in ROM
 ORG $00F140
 ;incsrc "src/cpu.asm"
 incsrc "src/sa1.asm"
 ;incsrc "src/menu.asm"
+incsrc "src/file_select.asm"
+incsrc "src/map_screen.asm"
 incsrc "src/mww_map.asm"
 incsrc "src/free_movement.asm"
 incsrc "src/abilities.asm"
