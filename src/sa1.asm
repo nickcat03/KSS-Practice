@@ -6,8 +6,6 @@ pullpc
 
 sa1_code:
 
-REP #$30
-
 ; Ability / Free Movement Input Handling
 ; A + L/R      = Common abilities
 ; A + L + R    = Cycle abilities
@@ -81,6 +79,7 @@ BRA .free_move_toggle_check
     JSR free_movement
 
 .done:
+    REP #$30
 
 ; RoMK cutscene skip
 LDA !p1controller_frame
@@ -148,6 +147,7 @@ REP #$30
 ; Do not write any additional code past this ending routine (it won't be ran)
 
 return_to_main_routine:
+    REP #$30
     LDA #$3000          ; run code that was replaced by JSR instruction
     RTS
 

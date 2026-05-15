@@ -6,20 +6,25 @@ ORG $078683
     NOP
     NOP
 
+; Make file select instant
+; As I made this I realized that this would affect timing reset strats
+;ORG $078146
+;    db $01
+
 pullpc
 
 ; Make file deletion a single menu
-LDA !file_delete_menu
-CMP #$80F6
-BNE .return
-
-LDA !game_mode
-BNE .return
-
-LDA #$811A
-STA !file_delete_menu
-
-.return:
+; (Not working at the moment, might not be running in the current routine)
+;single_menu_delete:
+;    LDA !file_delete_menu
+;    CMP #$80F6
+;    BNE check_inputs
+;
+;    LDA !game_mode
+;    BNE check_inputs
+;
+;    LDA #$811A
+;    STA !file_delete_menu
 
 check_inputs:
     LDA !p1controller_hold

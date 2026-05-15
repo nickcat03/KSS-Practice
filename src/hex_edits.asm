@@ -39,9 +39,9 @@ ORG $00FFE6
     dw $E7BC
 
 ; Do not clear the entirety of SRAM 
-; LDA #$1EFE -> LDA #$1B6E
+; LDA #$1EFE -> LDA #$1B6F
 ORG $008C04
-    LDA #$1B6E
+    LDA #$1B6F
 
 ; Leave every Dyna Blade stage
 ; always show leave menu
