@@ -100,48 +100,7 @@ BRA +++
 +++
 + REP #$20
 
-        
 REP #$30
-
-; Commenting AFK code for the sake of optimization
-
-; Code for dimming screen when player is AFK
-;!afk_time_limit = #$1C20
-
-;afk_timer: 
-;    LDA !p1controller_hold
-;    BNE +   ; Controller isn't being pressed
-;
-;    ; If the timer isn't greater than the limit, increase it.
-;    LDA !afk_timer 
-;    CMP !afk_time_limit
-;    BCS ++
-;    INC !afk_timer  ; increase afk timer each frame 
-;    ++ BRA .check_timer
-
-;    ; Code ran for if an input is pressed on this frame
-;    + STZ !afk_timer
-;    SEP #$30
-;    LDA !afk_toggle     ; check if the AFK toggle is already on, if it is, reset screen brightness.
-;    CMP #$01
-;    BNE .end
-;    STZ !afk_toggle 
-;    LDA #$0F 
-;    STA !screen_brightness
-;    BRA .end
-
-;    .check_timer:   ; Code ran for if no inputs are pressed
-;        LDA !afk_timer
-;        CMP !afk_time_limit   ; Check if the AFK timer is greater than the time set
-;        BCC +
-;        SEP #$30
-;        LDA #$01
-;        STA !afk_toggle
-;        LDA #$05        ; Lower screen brightness
-;        STA !screen_brightness
-
-;    .end:
-;        + REP #$30
         
 
 ; Do not write any additional code past this ending routine (it won't be ran)

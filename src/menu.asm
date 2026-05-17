@@ -220,3 +220,20 @@ menu_line_blank: db $00, $20, $00, $20, $00, $20, $00, $20, $00, $20, $00, $20,
                     $00, $20, $00, $20, $00, $20, $00, $20, $00, $20, $00, $20,
                     $00, $20, $00, $20, $00, $20, $00, $20, $00, $20, $00, $20
 menu_end: ; asar needs a label after each db to use datasize()
+
+
+
+
+; A9D0 object routine
+; 8E41 - routine that initializes object data into SRAM
+
+; 623C - does a sprite exist?
+; 65B0
+; 6436 - sprite frame graphic to use
+; 64B6 - order priority (kirby, sun, moon, non-animated planets, animated planets)
+; 6536 - sprite frame graphic offset thing 
+
+
+
+
+; CDE590 pointer table of all sprites being used in mww map

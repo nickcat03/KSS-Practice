@@ -159,6 +159,7 @@ pullpc
 
 ; MWW World Map code
 mww_map:
+    ;JSL object_shit
     SEP #$30
     LDA !subgame
     CMP #$05                            ; check if in MWW
@@ -294,3 +295,31 @@ mww_multiply_map_movement_speed:
     
     .no_changes:
         + RTS
+
+object_shit:
+    LDX #$0030
+    LDA #$0030
+    STA $6010
+    LDA #$007C
+    STA $6018
+    JSL $008E41
+    LDA #$007C
+    STA $606C
+    RTL
+
+
+
+
+; A9D0 object routine
+; 8E41 - routine that initializes object data into SRAM
+
+; 623C - does a sprite exist?
+; 6436 - sprite frame graphic to use
+; 64B6 - order priority (kirby, sun, moon, non-animated planets, animated planets)
+; 6536 - sprite frame graphic offset thing 
+; 65B0
+
+
+
+
+; CDE590 pointer table of all sprites being used in mww map

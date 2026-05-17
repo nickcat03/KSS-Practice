@@ -163,6 +163,9 @@ restore_state:
         LDA #$0000          ; Reset
         MVN $00,$00
 
+        LDA #$FFFF          ; Set first two bytes in SA-1 to $FFFF so pause menu doesn't glitch out (don't ask why)
+        STA $3000
+
         .restore_vram:
         SEP #$20
         LDX #$0000
