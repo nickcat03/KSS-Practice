@@ -110,9 +110,10 @@
 
 ; ability information RAM addresses
 !ability                = $749F
-!helper_info1          = $7496
-!helper_info2          = $74A0
-!helper_info3          = $74A2
+!helper_ability         = $74A1
+!helper_info1           = $7496
+!helper_info2           = $74A0
+!helper_info3           = $74A2
 !wheelie_rider_state    = $7568
 !kirby_invincible       = $35F1
 !kirby_invincible_time  = $35F5
@@ -120,6 +121,7 @@
 !helper_invincible_time = $35F7
 !kirby_speed            = $74C8
 !helper_speed           = $74CA
+!is_shooting            = $7577 ;shmup section, the "shooting" ability
 
 ; blank addresses used for storing information
 !respawn_timer              = $7B5A
@@ -164,6 +166,7 @@
 !reset_game                 = $BCE7
 !update_romk_vram           = $07E55D
 !assign_ability_data        = $029C71
+!assign_helper_data         = $029D2F
 !finalize_cutscene          = $00CF98
 !erase_file                 = $00ECD0
 !load_music                 = $00CF98

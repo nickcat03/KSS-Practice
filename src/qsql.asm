@@ -8,6 +8,7 @@
 
 !temp_stack_pointer_location = $40FFE0
 !music_from_savestate = $408FCA     ; current music RAM ($33CA) from the savestate data
+!helper_ability_from_savestate = $40D8A1    ; current helper ability RAM ($74A1) from the savestate data
 
 save_state:
 
@@ -118,7 +119,29 @@ restore_state:
     LDA !sound_bank_2     ; make sure sound banks are reloaded if they are different
     STA !save_sound_bank_2
 
-    .restore_sram_sa1
+    .restore_helper_graphics
+        ; Restore helper graphics from the previous savestate
+        SEP #$30
+        LDA !is_shooting    ; if in nova shmup, ignore this completely
+        BEQ .merge
+
+        LDA !helper_ability_from_savestate
+        CMP #$FF    ; if there wasn't a helper in the last state don't do anything
+        BEQ .merge
+
+        CMP !helper_ability
+        BEQ .merge
+
+        REP #$30
+        LDX #$0004
+        LDY #$0004
+        JSL !assign_helper_data
+
+        .merge
+            REP #$30
+
+
+    .restore_ram
         ; Restore savestate from SRAM
 
         ; WRAM
@@ -485,3 +508,6 @@ ORG $00FF00
 
 ; workram $14D0 items collected
 ; workram $1200 elevators
+
+; helper graphics: $7F8800
+; $29D2F - subroutine for handling helper graphics and attributes. Accumulator is the specific helper to load in.

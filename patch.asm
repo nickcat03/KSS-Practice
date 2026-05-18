@@ -18,7 +18,7 @@ incsrc "graphics/graphics.asm"
 
 ; All of these are ran together because they are all going to be placed in the blank space in ROM
 ORG $00F140
-;incsrc "src/cpu.asm"
+incsrc "src/cpu.asm"
 incsrc "src/sa1.asm"
 ;incsrc "src/menu.asm"
 incsrc "src/file_select.asm"
@@ -27,7 +27,7 @@ incsrc "src/map_screens.asm"
 incsrc "src/free_movement.asm"
 incsrc "src/abilities.asm"
 incsrc "src/kirby_colors.asm"
-incsrc "src/subroutines.asm"
+;incsrc "src/subroutines.asm"
 incsrc "src/tables.asm"
 incsrc "src/room_reload.asm"
 ;incsrc "src/hblank.asm"

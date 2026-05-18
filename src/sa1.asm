@@ -79,30 +79,7 @@ BRA .free_move_toggle_check
     JSR free_movement
 
 .done:
-    REP #$30
-
-; RoMK cutscene skip
-LDA !p1controller_frame
-AND #$1000
-ORA !cutscene_loaded    ;(should be #$0000)
-ORA !subgame            ;(should be #$0004)
-CMP #$1004
-BNE +
-SEP #$20
-LDA !romk_chapter           ;\ Allows for level 2 RoMK music to play if cutscene is skipped      
-CMP #$01                    ;| No need to execute this for anything else, so it only runs for Chapter 2
-BNE ++                      ;|                             
-LDA #$03                    ;|
-INC $33C6                   ;|
-JSL !finalize_cutscene      ;/
-BRA +++
-++ INC $33C6
-+++
-+ REP #$20
-
-REP #$30
         
-
 ; Do not write any additional code past this ending routine (it won't be ran)
 
 return_to_main_routine:
