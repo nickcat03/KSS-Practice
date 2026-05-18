@@ -123,7 +123,7 @@ restore_state:
         ; Restore helper graphics from the previous savestate
         SEP #$30
         LDA !is_shooting    ; if in nova shmup, ignore this completely
-        BEQ .merge
+        BNE .merge
 
         LDA !helper_ability_from_savestate
         CMP #$FF    ; if there wasn't a helper in the last state don't do anything
