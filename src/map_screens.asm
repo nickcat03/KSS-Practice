@@ -37,110 +37,27 @@ ORG $158067
 
 !multiplier = 04
 
-; Stage 1 -> Stage 2
-!addr = $14FD5A
-ORG !addr
-    db $!multiplier, $02, $2F/!multiplier
-ORG !addr+6
-    db $00-!multiplier, $02, $1E/!multiplier
-ORG !addr+12
-    db $!multiplier, $02, $17/!multiplier
+; 373D address to read from for dyna blade data
+; Read break on addr $0A7D63 SA-1
+; 67B6
+; 6830
 
-;Stage 2 -> Stage 1
-!addr = $14FD80
-ORG !addr
-    db $00-!multiplier, $02, $17/!multiplier+1
-ORG !addr+6
-    db $!multiplier, $02, $1E/!multiplier+1
-ORG !addr+12
-    db $00-!multiplier, $02, $24/!multiplier+1
+; CA7F49 code for setting addresses for one of several directions you can take
+; Instead of writing the specific address, make a pointer table and then jump to another subroutine before the main one and then write the address to A and X?
 
+; Have timer and speed adjust dynamically when holding R:
+; (Note, find a place to hijack into that runs once every frame)
 
-; Stage 2 -> Stage 3
-!addr = $14FDA6
-ORG !addr
-    db $!multiplier, $02, $27/!multiplier+1
-ORG !addr+6
-    db $!multiplier, $02, $1F/!multiplier
+; Speed: 6B86
+; Timer: 673C
 
-; Stage 3 -> Stage 2
-!addr = $14FE12
-ORG !addr
-    db $00-!multiplier, $02, $1F/!multiplier+1
-ORG !addr+6
-    db $00-!multiplier, $02, $27/!multiplier
+; if R held:
+; If Speed = 0: .merge
+; If Speed = 1: speed = 4
+; Elif Speed = FF: speed = FC
+; Timer Dec by 3
+; .merge
 
-
-; Stage 3 -> Stage 4
-!addr = $14FE32
-ORG !addr
-    db $!multiplier, $02, $27/!multiplier+1
-ORG !addr+6
-    db $00-!multiplier, $02, $38/!multiplier
-ORG !addr+12
-    db $00-!multiplier, $02, $18/!multiplier
-ORG !addr+18
-    db $00-!multiplier, $02, $15/!multiplier
-
-; Stage 4 -> Stage 3
-!addr = $14FE5E
-ORG !addr
-    db $!multiplier, $02, $15/!multiplier
-ORG !addr+6
-    db $!multiplier, $02, $18/!multiplier
-ORG !addr+12
-    db $!multiplier, $02, $38/!multiplier
-ORG !addr+18
-    db $00-!multiplier, $02, $27/!multiplier
-
-
-; Stage 4 -> Dyna Blade
-!addr = $14FE8A
-ORG !addr
-    db $!multiplier, $02, $27/!multiplier+1
-ORG !addr+6
-    db $00-!multiplier, $02, $14/!multiplier
-
-; Dyna Blade -> Stage 4
-!addr = $14FEEA
-ORG !addr
-    db $!multiplier, $02, $14/!multiplier
-ORG !addr+6
-    db $00-!multiplier, $02, $27/!multiplier
-
-
-; Stage 2 -> Switch 1
-!addr = $14FDC6
-ORG !addr
-    db $00-!multiplier, $02, $1C/!multiplier
-ORG !addr+6
-    db $00-!multiplier, $02, $38/!multiplier
-ORG !addr+12
-    db $00-!multiplier, $02, $12/!multiplier
-
-; Switch 1 -> Stage 2
-!addr = $14FDEC
-ORG !addr
-    db $!multiplier, $02, $12/!multiplier+1
-ORG !addr+6
-    db $!multiplier, $02, $38/!multiplier
-ORG !addr+12
-    db $!multiplier, $02, $1C/!multiplier
-
-
-; Stage 4 -> Switch 2
-!addr = $14FEAA
-ORG !addr
-    db $00-!multiplier, $02, $1C/!multiplier
-ORG !addr+6
-    db $00-!multiplier, $02, $18/!multiplier
-
-; Switch 2 -> Stage 4
-!addr = $14FECA
-ORG !addr
-    db $!multiplier, $02, $18/!multiplier
-ORG !addr+6
-    db $!multiplier, $02, $1C/!multiplier
 
 ; --- MILKY WAY WISHES ---
 
