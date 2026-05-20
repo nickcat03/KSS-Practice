@@ -154,6 +154,7 @@
 !save_sound_bank_1          = $40FFEA
 !save_sound_bank_2          = $40FFFB
 !toggle_custom_colors       = $40FFFD
+!custom_menu_enabled        = $40FFC0
 
 ; for saving certain values on room reload 
 !room_reload_storage                = $40FF40
@@ -196,14 +197,13 @@
 !update_tileset_kirby_pos   = $0085EA
 ;!update_soundbank           = $00D2F0          ;$00D1D0
 !global_jump_pointer        = $633E
-!pass_frame                 = $00BC81
 !pause_game_loop            = $00A2D4
 !resume_game_loop           = $00A2EF
 !close_pause_menu           = $CF9AB2
-!load_font                  = $1FB416
 !draw_text                  = $1FB449
 !draw_pause_menu            = $CF999B
 !dim_screen                 = $C005C7
+!update_layers_input        = $008A06
 
 ; internal dma queue
 !write_to_dma_buffer        = $00875a
@@ -237,4 +237,4 @@
 !btn_a      = $0080
 !btn_x      = $0040
 !btn_l      = $0020
-!btl_r      = $0010
+!btn_r      = $0010
