@@ -186,8 +186,11 @@ restore_state:
         LDA #$0000          ; Reset
         MVN $00,$00
 
-        LDA #$FFFF          ; Set first two bytes in SA-1 to $FFFF so pause menu doesn't glitch out (don't ask why)
-        STA $3000
+        LDA #$FFFF
+        STA $3000           ; Set first two bytes in SA-1 to $FFFF so pause menu doesn't glitch out (don't ask why)
+
+        LDA #$0001
+        STA $7E04B1         ; Temporary value for DMA writes to the tileset. Clearing so this doesn't make glitchy graphics on load.
 
         .restore_vram:
         SEP #$20
@@ -257,37 +260,49 @@ auto_save_on_room_load:
 
 ; Reload saved values when room is reloaded
 restore_on_room_restart:
-    REP #$30
+    SEP #$30
 
-    .restore_ability
+    .check_wheelie_rider
+        LDA !store_wheelie_rider_state
+        STA !wheelie_rider_state 
+        BEQ .restore_kirby_ability    ; if it equals #$0000 then we don't need to do anything special
+
+        LDA !store_ability
+        STA !ability
+        STZ $36C8       ; address used for tracking if swimming. needs to be cleared or game will crash
+        LDA #$0D      ; Wheel ability (for Wheelie). Forcing this here because you'd only be riding on Wheelie.
+        BRA .reload_helper
+
+    .restore_kirby_ability
+        REP #$30
         LDA !store_ability
         CMP !ability
         BEQ +
         JSR quick_select_ability
+        + 
 
-        + SEP #$10
-
-    .restore_helper
-        LDA !helper_ability
-        CMP !store_helper_ability
-        BEQ .skip
+    .restore_helper_ability
         LDA !store_helper_ability
+        CMP !helper_ability
+        BEQ .no_change
         CMP #$FFFF
         BEQ .unload_helper
 
-        .reload_helper
-            JSL !assign_helper_data
-            BRA .skip
-        
-        ; still unstable! find a fix. 
-        .unload_helper
-            LDA #$FFFF
-            STA !helper_ability
-        
-        .skip
+    .reload_helper
+        STZ $7496       ; address used to store helper state, but if it's #$FFFF then the helper ability will reset
+        STA !helper_ability
+        BRA .skip
+    
+    .unload_helper
+        LDA #$FFFF
+        STA !helper_ability
+        STA $62C0
+        BRA .skip
+    
+    .no_change
+        STZ $7496       ; Reset this to eliminate edge cases where it could be FFFF so that helper respawns
 
-    LDX !store_wheelie_rider_state
-    STX !wheelie_rider_state
+    .skip
 
     ; health
     LDX !store_kirby_hp
@@ -343,10 +358,10 @@ restore_current_room:
         + 
         LDA !sfx_room_reset
         STA !current_sfx
+        JSL !play_sfx
         JSR .reload_saved_values
         ++
 
-        JSL !play_sfx
         SEP #$20
         INC !reload_room        ; tell game to reload the room
         STZ !screen_fade        ; reset screen fade so it fades back in after respawn

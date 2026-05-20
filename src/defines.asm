@@ -114,7 +114,7 @@
 !helper_info1           = $7496
 !helper_info2           = $74A0
 !helper_info3           = $74A2
-!wheelie_rider_state    = $7568
+!wheelie_rider_state    = $7569
 !kirby_invincible       = $35F1
 !kirby_invincible_time  = $35F5
 !helper_invincible      = $35F3

@@ -29,14 +29,17 @@ BRA .free_move_toggle_check
     JSR cycle_abilities
 
 .free_move_toggle_check:
+    LDA !wheelie_rider_state    ; don't activate while riding on wheelie or game will crash
+    BNE .free_move_check_done
+
     LDA !p1controller_hold
     AND #$0030                  ; L + R held?
     CMP #$0030
-    BNE .free_move_check
+    BNE .free_move_check_done
 
     LDA !p1controller_frame
     BIT #$4000                  ; Y pressed this frame?
-    BEQ .free_move_check
+    BEQ .free_move_check_done
 
 .toggle_free_move:
     SEP #$20
@@ -58,7 +61,7 @@ BRA .free_move_toggle_check
     LDA #$80FF                  ; Restore collision routine
     STA !global_jump_pointer
 
-    BRA .free_move_check
+    BRA .free_move_check_done
 
 ; Enable free move
 .enable_free_move:
@@ -70,7 +73,7 @@ BRA .free_move_toggle_check
     LDA #$8BC9                  ; Intangible movement routine
     STA !global_jump_pointer
 
-.free_move_check:
+.free_move_check_done:
     SEP #$20
 
     LDA !toggle_free_move
