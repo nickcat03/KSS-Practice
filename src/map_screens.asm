@@ -51,6 +51,83 @@ ORG $158067
 ; Speed: 6B86
 ; Timer: 673C
 
+!move_speed_x = $6B87
+!move_speed_y = $6C01
+!move_duration = $673C
+
+ORG $158111
+    JSL adjust_dyna_move_speed
+    NOP
+
+pullpc
+
+adjust_dyna_move_speed:
+    ; if R held
+    LDA !p1controller_hold
+    AND #$0010
+    CMP #$0010
+    BNE .normal_speed
+
+    ; check if Kirby should be moving
+    SEP #$30
+    LDA !move_duration
+    BEQ .merge
+
+    ; Set which byte to write to for the movement speed increase
+    LDX #$00
+    LDA !move_speed_x
+    BNE .apply_movement     ; if move_speed is zero, it will probably be the y speed that needs to be adjusted
+    LDX #$7A    ;offset for movement_speed_y
+
+    .apply_movement
+        LDA !move_speed_x,X
+        BMI +
+        LDA #$04
+        STA !move_speed_x,X
+        BRA .adjust_timer
+
+        + LDA #$FC
+        STA !move_speed_x,X
+        +
+
+    .adjust_timer
+        DEC !move_duration
+        DEC !move_duration
+        DEC !move_duration
+
+        LDA !move_duration
+        BPL .merge      ; make sure move_direction doesn't go below 00
+        STZ !move_duration
+        BRA .merge
+    
+    .normal_speed
+        SEP #$30
+        .adjust_x
+            LDA !move_speed_x
+            BEQ .adjust_y
+            BMI +
+            LDA #$01
+            STA !move_speed_x
+            BRA .adjust_y
+            + LDA #$FF
+            STA !move_speed_x
+
+        .adjust_y
+            LDA !move_speed_y
+            BEQ .merge
+            BMI +
+            LDA #$01
+            STA !move_speed_y
+            BRA .merge
+            + LDA #$FF
+            STA !move_speed_y
+
+    .merge
+        REP #$30
+        LDY $39
+        LDA $6F3E,Y
+        RTL
+
 ; if R held:
 ; If Speed = 0: .merge
 ; If Speed = 1: speed = 4
@@ -60,6 +137,8 @@ ORG $158067
 
 
 ; --- MILKY WAY WISHES ---
+
+pushpc
 
 ; Nova always accessible
 ; Read controller input for Nova enter
@@ -72,6 +151,7 @@ ORG $159E2E
 ; Hijack into a routine that runs once per frame on the MWW map screen
 ORG $159E8C
     JSL mww_map
+
 pullpc
 
 ; MWW World Map code
