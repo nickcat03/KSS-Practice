@@ -143,12 +143,10 @@
 
 ; for saving certain values on room reload 
 !store_ability                      = $7B40
+!store_helper_ability               = $7B44
 !store_wheelie_rider_state          = $7B41
 !store_kirby_hp                     = $7B42
 !store_helper_hp                    = $7B43
-!store_helper_info1                 = $7B44
-!store_helper_info2                 = $7B46
-!store_helper_info3                 = $7B48
 !store_abilities1                   = $7B4A
 !store_abilities2                   = $7B4B
 !store_abilities3                   = $7B4C

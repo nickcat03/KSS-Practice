@@ -231,12 +231,8 @@ auto_save_on_room_load:
     ; ability info
     LDX !ability
     STX !store_ability
-    LDA !helper_info1 
-    STA !store_helper_info1 
-    LDA !helper_info2
-    STA !store_helper_info2 
-    LDA !helper_info3 
-    STA !store_helper_info3
+    LDA !helper_ability
+    STA !store_helper_ability
     LDX !wheelie_rider_state
     STX !store_wheelie_rider_state
 
@@ -261,18 +257,35 @@ auto_save_on_room_load:
 
 ; Reload saved values when room is reloaded
 restore_on_room_restart:
-    SEP #$10
-    REP #$20
+    REP #$30
 
-    ; ability info
-    LDX !store_ability
-    STX !ability
-    LDA !store_helper_info1 
-    STA !helper_info1
-    LDA !store_helper_info2 
-    STA !helper_info2
-    LDA !store_helper_info3
-    STA !helper_info3
+    .restore_ability
+        LDA !store_ability
+        CMP !ability
+        BEQ +
+        JSR quick_select_ability
+
+        + SEP #$10
+
+    .restore_helper
+        LDA !helper_ability
+        CMP !store_helper_ability
+        BEQ .skip
+        LDA !store_helper_ability
+        CMP #$FFFF
+        BEQ .unload_helper
+
+        .reload_helper
+            JSL !assign_helper_data
+            BRA .skip
+        
+        ; still unstable! find a fix. 
+        .unload_helper
+            LDA #$FFFF
+            STA !helper_ability
+        
+        .skip
+
     LDX !store_wheelie_rider_state
     STX !wheelie_rider_state
 
