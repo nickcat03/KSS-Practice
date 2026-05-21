@@ -140,9 +140,18 @@ restore_state:
         .merge
             REP #$30
 
-
     .restore_ram
         ; Restore savestate from SRAM
+
+        JSR save_level_data
+        
+        ; SA1
+        LDX #$8C00          ; Copy SA-1 IRAM $003000-$0037FF to $408C00-$4093FF
+        LDY #$3000
+        LDA #$07FF
+        MVN $00,$40
+
+        JSR restore_level_data
 
         ; WRAM
         LDX #$2000          ; Copy first portion of WRAM $7E0000-$7E1FFF to $402000-$403FFF
@@ -156,26 +165,11 @@ restore_state:
         LDA #$4BFF
         MVN $7E,$40
 
-        ; SA1
-        LDX #$8C00          ; Copy SA-1 IRAM $003000-$0037FF to $408C00-$4093FF
-        LDY #$3000
-        LDA #$07FF
-        MVN $00,$40
-
         ; SAVERAM
-        LDX #$C400          ; Copy SaveRAM $400000-$401FFF to $40B400-$40D3FF
+        LDX #$C400          ; Copy SaveRAM $400000-$401FFF to $40C400-$40E3FF
         LDY #$0000
         LDA #$1FFF
         MVN $40,$40 
-
-        ; Load all of the level data from the previous state
-        SEP #$30
-        LDA #$00    ; Set data bank to zero (this is what the original routine uses)
-        PHA
-        PLB
-        REP #$30
-        ; Jump to routine for loading in level tileset
-        JSL $018074
 
         ; WRAM
         LDX #$9400          ; Copy current level layout in WRAM $7F0000-$7F1FFF to $409400-$B3FF
@@ -225,6 +219,111 @@ restore_state:
     STA !sound_bank_2
 
     RTS
+
+
+; Load all of the level data from the previous state
+; Routines for loading in level tileset/background/etc:
+; $0183CA - background graphics
+; $0184DE - consumables (food)
+; $018698 - tile data
+; $018678 - level tileset
+
+!room_graphics = $0032F6
+!room_graphics_state = $408EF6
+
+; using random spots in WRAM for these because they're temporary and we're loading the state anyway
+!current_background = $000300
+!state_background = $000302
+!current_tileset = $000304
+!state_tileset = $000306
+
+save_level_data:
+    ; store current room graphics
+    SEP #$20
+    LDA.w !room_graphics+2
+    PHA
+    PLB
+    REP #$20
+
+    LDA !room_graphics
+    TAX
+
+    LDA $001D,X
+    STA !current_background
+
+    LDA $001B,X
+    STA !current_tileset
+
+    ; store state room graphics
+    SEP #$20
+    LDA !room_graphics_state+2
+    PHA
+    PLB
+    REP #$20
+
+    LDA !room_graphics_state
+    TAX
+
+    LDA $001D,X
+    STA !state_background
+
+    LDA $001B,X
+    STA !state_tileset
+
+    SEP #$20
+    LDA #$00
+    PHA
+    PLB   ; Set data bank back to zero (this is what the original routine uses)
+    REP #$20
+
+    RTS
+
+restore_level_data:
+    .prepare_level_restore
+
+        LDA #$8000      ; Prevents an infinite loop when loading background data
+        STA $30A1
+
+        ; write the new room graphics pointer to the actual game so that the subroutines pick it up
+        LDA !room_graphics_state
+        STA.w !room_graphics
+        LDA !room_graphics_state+2
+        STA.w !room_graphics+2
+
+    .reload_consumables
+        ; always run, it doesn't waste many cycles and there are some edge cases that are impractical to check for
+        JSL load_consumables
+
+    .reload_background
+        LDA.w !state_background
+        CMP.w !current_background
+        BEQ .reload_tileset
+        JSL load_background
+
+    .reload_tileset
+        LDA.w !state_tileset
+        CMP.w !current_tileset
+        BEQ .end_level_restore
+        JSL load_tileset
+
+    .end_level_restore
+        RTS
+
+    pushpc
+    ; writing code in bank 01 so that short jumps can be performed in the same bank as the built-in routines
+    ORG $01FFD7
+        load_consumables:
+            JSR $84DE
+            RTL
+        load_background:
+            JSR $83CA
+            RTL
+        load_tileset:
+            JSR $8678
+            RTL
+    pullpc
+
+
 
 ; Save stuff such as HP, ability, invincibility timer, RNG, etc.
 auto_save_on_room_load:
