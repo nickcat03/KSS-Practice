@@ -41,6 +41,8 @@
 !abilities_saved_2          = $7B1C 
 !abilities_saved_3          = $7B1D
 !number_of_abilities        = $7B1E
+!mww_ability_data_1         = $7B1B
+!mww_ability_data_2         = $7B1D
 
 ; subgame addresses
 !sb_gco_boss_status         = $7AE5
@@ -121,7 +123,13 @@
 !helper_invincible_time = $35F7
 !kirby_speed            = $74C8
 !helper_speed           = $74CA
-!is_shooting            = $7577 ;shmup section, the "shooting" ability
+!is_shooting            = $7577     ; shmup section, the "shooting" ability
+
+; item tracking
+!lives_collected        = $14C7     ; persists between rooms (item does not respawn between rooms)
+!tomatoes_collected     = $14CF     ; persists between rooms
+!food_collected         = $14D7     ; gets cleared in between rooms (these always respawn)
+!romk_cutscenes_done    = $771F     ; persists between rooms 
 
 ; blank addresses used for storing information
 !respawn_timer              = $7B5A
@@ -138,27 +146,31 @@
 !save_sound_bank_1          = $40FFEA
 !save_sound_bank_2          = $40FFFB
 !toggle_custom_colors       = $40FFFD
-!afk_timer                  = $7B3A
-!afk_toggle                 = $7B3C
 
 ; for saving certain values on room reload 
-!store_ability                      = $7B40
-!store_helper_ability               = $7B44
-!store_wheelie_rider_state          = $7B41
-!store_kirby_hp                     = $7B42
-!store_helper_hp                    = $7B43
-!store_abilities1                   = $7B4A
-!store_abilities2                   = $7B4B
-!store_abilities3                   = $7B4C
-!store_number_of_abilities          = $7B4D
-!store_kirby_invincibility_timer    = $7B4E
-!store_kirby_invincibility_state    = $7B50
-!store_helper_invincibility_timer   = $7B51
-!store_helper_invincibility_state   = $7B53
-!store_music                        = $7B54
-!store_kirby_speed                  = $7B55
-!store_helper_speed                 = $7B56
-!store_RNG                          = $7B58
+!room_reload_storage                = $40FF40
+
+!store_ability                      = !room_reload_storage
+!store_helper_ability               = !room_reload_storage+$2
+!store_wheelie_rider_state          = !room_reload_storage+$4
+!store_kirby_hp                     = !room_reload_storage+$6
+!store_helper_hp                    = !room_reload_storage+$8
+!store_abilities_1                   = !room_reload_storage+$A
+!store_abilities_2                   = !room_reload_storage+$C
+!store_kirby_invincibility_timer    = !room_reload_storage+$E
+!store_kirby_invincibility_state    = !room_reload_storage+$10
+!store_helper_invincibility_timer   = !room_reload_storage+$12
+!store_helper_invincibility_state   = !room_reload_storage+$14
+!store_kirby_speed                  = !room_reload_storage+$16
+!store_helper_speed                 = !room_reload_storage+$18
+!store_music                        = !room_reload_storage+$1A
+!store_RNG                          = !room_reload_storage+$1C
+!store_lives_collected              = !room_reload_storage+$1E
+!store_tomatoes_collected           = !room_reload_storage+$20
+!store_romk_cutscenes               = !room_reload_storage+$22
+
+!reload_storage_size                = $0022
+!room_reload_storage_state          = !room_reload_storage+!reload_storage_size+2
 
 ; subroutines
 !reset_game                 = $BCE7

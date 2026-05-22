@@ -11,7 +11,7 @@ nmi_code:
     ;JSL $06F25E
 
     LDA !active_frames       ; If the game is currently on a lag frame, skip qsql code
-    CMP #$0002
+    CMP #$0001
     BCS vblank_return_to_main_routine
 
     ;SEP #$30

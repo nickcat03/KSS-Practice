@@ -41,6 +41,12 @@ save_state:
         LDA #$4BFF
         MVN $40,$7E
 
+        ; Room Reload Data  ; Copy custom room reload data to another block directly next to it
+        LDX.w #!room_reload_storage
+        LDY.w #!room_reload_storage_state
+        LDA #!reload_storage_size
+        MVN $40,$40
+
         ; SA1
         LDX #$3000          ; Copy SA-1 IRAM $003000-$0037FF to $408C00-$4093FF
         LDY #$8C00
@@ -77,7 +83,7 @@ save_state:
         LDA #$81        
         STA $4300       
         LDA #$01        
-        STA $420B           
+        STA $420B
  
     JSR disable_vblank
 
@@ -87,6 +93,8 @@ save_state:
     STA !QSQL_offset
 
     REP #$30
+
+    STZ !temp_pointer   ; clear address for loading SA-1 stack pointer
 
     RTS
 
@@ -172,6 +180,12 @@ restore_state:
         LDA #$4BFF
         MVN $7E,$40
 
+        ; Room Reload Data  ; Copy custom room reload data to another block directly next to it
+        LDX.w #!room_reload_storage_state
+        LDY.w #!room_reload_storage
+        LDA #!reload_storage_size
+        MVN $40,$40
+
         ; SAVERAM
         LDX #$C400          ; Copy SaveRAM $400000-$401FFF to $40C400-$40E3FF
         LDY #$0000
@@ -224,6 +238,8 @@ restore_state:
     REP #$30
     LDA !save_sound_bank_2
     STA !sound_bank_2
+
+    STZ !temp_pointer   ; clear address for loading SA-1 stack pointer
 
     RTS
 
@@ -337,26 +353,52 @@ auto_save_on_room_load:
     REP #$20
 
     ; ability info
-    LDX !ability
-    STX !store_ability
+    LDA !ability
+    STA !store_ability
     LDA !helper_ability
     STA !store_helper_ability
-    LDX !wheelie_rider_state
-    STX !store_wheelie_rider_state
+    LDA !wheelie_rider_state
+    STA !store_wheelie_rider_state
 
     ; health
-    LDX !kirby_hp 
-    STX !store_kirby_hp 
-    LDX !helper_hp 
-    STX !store_helper_hp 
+    LDA !kirby_hp 
+    STA !store_kirby_hp 
+    LDA !helper_hp 
+    STA !store_helper_hp 
+
+    ; items
+    LDA !lives_collected
+    STA !store_lives_collected
+    LDA !tomatoes_collected
+    STA !store_tomatoes_collected
+    LDA !romk_cutscenes_done
+    STA !store_romk_cutscenes
 
     ; mww abilities
+    LDA !mww_ability_data_1
+    STA !store_abilities_1
+    LDA !mww_ability_data_2
+    STA !store_abilities_2
 
     ; invincibility status 
+    LDA !kirby_invincible
+    STA !store_kirby_invincibility_state
+    LDA !kirby_invincible_time
+    STA !store_kirby_invincibility_timer
+    LDA !kirby_speed
+    STA !store_kirby_speed
+
+    LDA !helper_invincible
+    STA !store_helper_invincibility_state
+    LDA !helper_invincible_time
+    STA !store_helper_invincibility_timer
+    LDA !helper_speed
+    STA !store_helper_speed
     
     ; miscellaneous
-    ;LDA !current_music
-    ;STA !store_music
+    LDA !current_music
+    STA !store_music
+
     LDA !RNG
     STA !store_RNG
 
@@ -410,18 +452,50 @@ restore_on_room_restart:
     .skip
 
     ; health
-    LDX !store_kirby_hp
-    STX !kirby_hp
-    LDX !store_helper_hp 
-    STX !helper_hp
+    LDA !store_kirby_hp
+    STA !kirby_hp
+    LDA !store_helper_hp 
+    STA !helper_hp
+
+    ; items
+    LDA !store_lives_collected
+    STA !lives_collected
+    LDA !store_tomatoes_collected
+    STA !tomatoes_collected
+    LDA !store_romk_cutscenes
+    STA !romk_cutscenes_done
 
     ; mww abilities
+    LDA !store_abilities_1
+    STA !mww_ability_data_1
+    LDA !store_abilities_2
+    STA !mww_ability_data_2
 
     ; invincibility status 
+    LDA !store_kirby_invincibility_state
+    STA !kirby_invincible
+    LDA !store_kirby_invincibility_timer
+    STA !kirby_invincible_time
+    LDA !store_kirby_speed
+    STA !kirby_speed
+
+    LDA !store_helper_invincibility_state
+    STA !helper_invincible
+    LDA !store_helper_invincibility_timer
+    STA !helper_invincible_time
+    LDA !store_helper_speed
+    STA !helper_speed
     
     ; miscellaneous
-    ;LDA !current_music
-    ;STA !store_music
+    SEP #$20
+    LDA !store_music
+    CMP !current_music
+    BEQ +
+    STA !current_music
+    REP #$20
+    JSL !load_music
+    +
+
     LDA !store_RNG
     STA !RNG
 
@@ -593,23 +667,23 @@ disable_vblank:
 ; Code responsible for saving and loading the SA-1 stack pointer
 
 ORG $008C9D             ; After waiting for CPU to finish
-    JMP standard      ; Use jump rather than JSR as this will not mess with the stack
+    JMP manage_stack_pointer      ; Use jump rather than JSR as this will not mess with the stack
 
-;ORG $008A03             ; After waiting for lag frame (commented out b/c it broke things and idk if it even worked)
-;    JMP lag_frame
+ORG $008A03             ; After waiting for lag frame (commented out b/c it broke things and idk if it even worked)
+    JMP lag_frame
 
 ORG $00FF00
 
     lag_frame:
         LDA #$01
         STA !temp_pointer
-        BRA +
+        BRA frame_end
 
-    standard:
-        STZ !temp_pointer 
-
+    manage_stack_pointer:
+        STZ !temp_pointer
         + SEP #$20
         LDA !QSQL_transfer_mode     ; mode 01 is save, mode 02 is load
+        BEQ frame_end                    ; if set to zero, don't do anything
         CMP #$01
         BNE +
 
@@ -617,25 +691,32 @@ ORG $00FF00
         LDX !QSQL_offset
         TSC                     ; Transfer stack pointer to A
         STA !temp_stack_pointer_location,X           ; Backup stack pointer
-        BRA .end
+        BRA frame_end
         + CMP #$02
 
-        BNE .end
+        BNE frame_end
         LDX !QSQL_offset
         REP #$20
         LDA !temp_stack_pointer_location,X           ; Load stack pointer address into A
         TCS                                     ; Restore stack pointer
 
-    .end:
+    frame_end:
         SEP #$20
         LDA !temp_pointer
         CMP #$01
         BEQ +
+
+        ; SA-1 lag frame routine
         STZ !QSQL_transfer_mode
         REP #$20
         STZ $2209
         JMP $8CA0           ; Jump back to main routine
-        + PLA
+
+        + REP #$20
+        PLA               ; Push to stack an additional time to get rid of RTS remnant
+        SEP #$20
+        PLA
+        PLA
         PLP 
         JMP $8CCE
 
