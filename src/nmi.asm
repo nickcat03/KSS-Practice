@@ -10,9 +10,9 @@ nmi_code:
     ; Ghost test
     ;JSL $06F25E
 
-    ;LDA !active_frames       ; If the game is currently on a lag frame, skip qsql code
-    ;CMP #$0002
-    ;BCS vblank_return_to_main_routine
+    LDA !active_frames       ; If the game is currently on a lag frame, skip qsql code
+    CMP #$0002
+    BCS vblank_return_to_main_routine
 
     ;SEP #$30
     ;PHB         ; Push data bank onto stack

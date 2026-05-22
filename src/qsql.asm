@@ -143,7 +143,7 @@ restore_state:
     .restore_ram
         ; Restore savestate from SRAM
 
-        JSR save_level_data
+        JSR compare_level_data
         
         ; SA1
         LDX #$8C00          ; Copy SA-1 IRAM $003000-$0037FF to $408C00-$4093FF
@@ -237,7 +237,11 @@ restore_state:
 !current_tileset = $000304
 !state_tileset = $000306
 
-save_level_data:
+compare_level_data:
+    ; this routine is purely meant for saving values so that later we could see if we actually need to load them in
+    ; having these values load in on every state load is redundant and makes loads extremely slow
+    ; this verifies that we only load the level graphics if we actually need them
+
     ; store current room graphics
     SEP #$20
     LDA.w !room_graphics+2
@@ -281,17 +285,14 @@ save_level_data:
 restore_level_data:
     .prepare_level_restore
 
-        LDA #$8000      ; Prevents an infinite loop when loading background data
-        STA $30A1
-
-        ; write the new room graphics pointer to the actual game so that the subroutines pick it up
-        LDA !room_graphics_state
-        STA.w !room_graphics
-        LDA !room_graphics_state+2
-        STA.w !room_graphics+2
+        SEP #$20
+        LDA #$80      ; Prevents an infinite loop when loading background data
+        STA !screen_fade
+        REP #$20
 
     .reload_consumables
         ; always run, it doesn't waste many cycles and there are some edge cases that are impractical to check for
+        ; ironically enough it's probably a good thing this runs because then the state would load too quickly
         JSL load_consumables
 
     .reload_background
@@ -311,7 +312,7 @@ restore_level_data:
 
     pushpc
     ; writing code in bank 01 so that short jumps can be performed in the same bank as the built-in routines
-    ORG $01FFD7
+    ORG $01FFE0
         load_consumables:
             JSR $84DE
             RTL
@@ -449,17 +450,17 @@ restore_current_room:
         JSR enable_vblank
 
         SEP #$30
+
         LDA !subgame
         CMP #$03
         BNE +
         JSR .warp_somewhere_else
-        BRA ++
-        + 
-        LDA !sfx_room_reset
-        STA !current_sfx
-        JSL !play_sfx
-        JSR .reload_saved_values
-        ++
+        LDA !sfx_warp_elsewhere
+        BRA .play_sfx
+        + JSR .reload_saved_values
+
+        .play_sfx
+            JSL !play_sfx
 
         SEP #$20
         INC !reload_room        ; tell game to reload the room
