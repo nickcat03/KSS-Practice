@@ -455,18 +455,18 @@ restore_current_room:
         JSR enable_vblank
 
         SEP #$30
-
         LDA !subgame
         CMP #$03
         BNE +
         JSR .warp_somewhere_else
-        LDA !sfx_warp_elsewhere
-        BRA .play_sfx
-        + JSR .reload_saved_values
+        BRA ++
+        + 
+        LDA !sfx_room_reset
+        STA !current_sfx
+        JSR .reload_saved_values
+        ++
 
-        .play_sfx
-            JSL !play_sfx
-
+        JSL !play_sfx
         SEP #$20
         INC !reload_room        ; tell game to reload the room
         STZ !screen_fade        ; reset screen fade so it fades back in after respawn
