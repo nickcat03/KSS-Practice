@@ -9,6 +9,7 @@
 !temp_stack_pointer_location = $40FFE0
 !music_from_savestate = $408FCA     ; current music RAM ($33CA) from the savestate data
 !helper_ability_from_savestate = $40D8A1    ; current helper ability RAM ($74A1) from the savestate data
+!screen_fade_from_savestate = $40FFFF  ; for saving brightness value upon loading a state
 
 save_state:
 
@@ -151,7 +152,13 @@ restore_state:
         LDA #$07FF
         MVN $00,$40
 
+        LDA !screen_fade
+        STA !screen_fade_from_savestate
+
         JSR restore_level_data
+
+        LDA !screen_fade_from_savestate
+        STA !screen_fade
 
         ; WRAM
         LDX #$2000          ; Copy first portion of WRAM $7E0000-$7E1FFF to $402000-$403FFF
