@@ -285,10 +285,8 @@ compare_level_data:
 restore_level_data:
     .prepare_level_restore
 
-        SEP #$20
-        LDA #$80      ; Prevents an infinite loop when loading background data
+        LDA #$8000      ; Prevents an infinite loop when loading background data
         STA !screen_fade
-        REP #$20
 
     .reload_consumables
         ; always run, it doesn't waste many cycles and there are some edge cases that are impractical to check for
