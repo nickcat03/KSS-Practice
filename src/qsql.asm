@@ -387,6 +387,8 @@ auto_save_on_room_load:
     STA !store_kirby_invincibility_timer
     LDA !kirby_speed
     STA !store_kirby_speed
+    LDA !kirby_inv_flash
+    STA !store_kirby_flashing
 
     LDA !helper_invincible
     STA !store_helper_invincibility_state
@@ -394,6 +396,8 @@ auto_save_on_room_load:
     STA !store_helper_invincibility_timer
     LDA !helper_speed
     STA !store_helper_speed
+    LDA !helper_inv_flash
+    STA !store_helper_flashing
     
     ; miscellaneous
     LDA !current_music
@@ -478,6 +482,8 @@ restore_on_room_restart:
     STA !kirby_invincible_time
     LDA !store_kirby_speed
     STA !kirby_speed
+    LDA !store_kirby_flashing
+    STA !kirby_inv_flash
 
     LDA !store_helper_invincibility_state
     STA !helper_invincible
@@ -485,16 +491,27 @@ restore_on_room_restart:
     STA !helper_invincible_time
     LDA !store_helper_speed
     STA !helper_speed
+    LDA !store_helper_flashing
+    STA !helper_inv_flash
     
     ; miscellaneous
     SEP #$20
+    REP #$10
+    ; don't load new music if it is boss music (the music gets reloaded anyway)
+    ; this is only really intended for invincibility candy
+    LDA !current_music
+    CMP #$05
+    BEQ .skip_music_load
+    CMP #$06
+    BEQ .skip_music_load
     LDA !store_music
     CMP !current_music
-    BEQ +
+    BEQ .skip_music_load
     STA !current_music
-    REP #$20
     JSL !load_music
-    +
+
+    .skip_music_load
+    REP #$30
 
     LDA !store_RNG
     STA !RNG

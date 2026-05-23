@@ -19,7 +19,8 @@ incsrc "graphics/graphics.asm"
 ; All of these are ran together because they are all going to be placed in the blank space in ROM
 ORG $00F140
 incsrc "src/cpu.asm"
-incsrc "src/sa1.asm"
+;incsrc "src/every_frame.asm"
+incsrc "src/gameplay.asm"
 ;incsrc "src/menu.asm"
 incsrc "src/file_select.asm"
 incsrc "src/subgame_title.asm"

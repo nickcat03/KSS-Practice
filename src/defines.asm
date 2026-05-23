@@ -119,8 +119,10 @@
 !wheelie_rider_state    = $7569
 !kirby_invincible       = $35F1
 !kirby_invincible_time  = $35F5
+!kirby_inv_flash        = $75B1
 !helper_invincible      = $35F3
 !helper_invincible_time = $35F7
+!helper_inv_flash       = $75B3
 !kirby_speed            = $74C8
 !helper_speed           = $74CA
 !is_shooting            = $7577     ; shmup section, the "shooting" ability
@@ -155,8 +157,8 @@
 !store_wheelie_rider_state          = !room_reload_storage+$4
 !store_kirby_hp                     = !room_reload_storage+$6
 !store_helper_hp                    = !room_reload_storage+$8
-!store_abilities_1                   = !room_reload_storage+$A
-!store_abilities_2                   = !room_reload_storage+$C
+!store_abilities_1                  = !room_reload_storage+$A
+!store_abilities_2                  = !room_reload_storage+$C
 !store_kirby_invincibility_timer    = !room_reload_storage+$E
 !store_kirby_invincibility_state    = !room_reload_storage+$10
 !store_helper_invincibility_timer   = !room_reload_storage+$12
@@ -168,8 +170,10 @@
 !store_lives_collected              = !room_reload_storage+$1E
 !store_tomatoes_collected           = !room_reload_storage+$20
 !store_romk_cutscenes               = !room_reload_storage+$22
+!store_kirby_flashing               = !room_reload_storage+$24
+!store_helper_flashing              = !room_reload_storage+$26
 
-!reload_storage_size                = $0022
+!reload_storage_size                = $0026
 !room_reload_storage_state          = !room_reload_storage+!reload_storage_size+2
 
 ; subroutines

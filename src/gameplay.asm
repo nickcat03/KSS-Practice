@@ -1,10 +1,13 @@
+; Runs on every frame where the player has control over Kirby
+
 pushpc
-; Jump to SA-1 custom code from main SA-1 routine
-ORG $008A0D
-    JSR sa1_code
+
+ORG $00C1BC
+    JSR every_gameplay_frame
+
 pullpc
 
-sa1_code:
+every_gameplay_frame:
 
 ; Ability / Free Movement Input Handling
 ; A + L/R      = Common abilities
@@ -82,18 +85,8 @@ BRA .free_move_toggle_check
     JSR free_movement
 
 .done:
+    REP #$30
+    LDA $30A1
+    RTS
         
 ; Do not write any additional code past this ending routine (it won't be ran)
-
-return_to_main_routine:
-    REP #$30
-    LDA #$3000          ; run code that was replaced by JSR instruction
-    RTS
-
-
-
-;6B0E
-;0E87
-;0E9D
-
-;744B - set to 1 so you cant go in cannons
