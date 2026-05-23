@@ -22,6 +22,7 @@
 !current_sfx                = $33CB
 !volume                     = $33CC
 !stereo_mono                = $33CD
+!current_ability_sfx        = $00AA
 
 ; menus and various selectable items
 !selected_file              = $6D56
@@ -43,6 +44,7 @@
 !number_of_abilities        = $7B1E
 !mww_ability_data_1         = $7B1B
 !mww_ability_data_2         = $7B1D
+!mww_last_ability_selected  = $36BC
 
 ; subgame addresses
 !sb_gco_boss_status         = $7AE5
@@ -176,8 +178,10 @@
 !store_romk_cutscenes               = !room_reload_storage+$22
 !store_kirby_flashing               = !room_reload_storage+$26
 !store_helper_flashing              = !room_reload_storage+$28
+!store_ability_sfx                  = !room_reload_storage+$2A
+!store_last_ability_selected        = !room_reload_storage+$2C
 
-!reload_storage_size                = $0028
+!reload_storage_size                = $002C
 !room_reload_storage_state          = !room_reload_storage+!reload_storage_size+2
 
 ; subroutines

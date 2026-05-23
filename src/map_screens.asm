@@ -149,14 +149,15 @@ ORG $159E2E
     NOP #2
 
 ; Hijack into a routine that runs once per frame on the MWW map screen
-ORG $159E8C
+ORG $15A313
     JSL mww_map
-
+    NOP
 pullpc
 
 ; MWW World Map code
-mww_map:
-    ;JSL object_shit
+mww_map: 
+    PHX
+
     SEP #$30
     LDA !subgame
     CMP #$05                            ; check if in MWW
@@ -170,8 +171,9 @@ mww_map:
     .merge:
         REP #$30
         ; Replace the code that was used for the hijack
-        LDA $32C4
-        XBA
+        PLX
+        LDX $39
+        LDA $6EC4,X
         RTL
 
 mww_assign_starting_abilities:
@@ -292,19 +294,6 @@ mww_multiply_map_movement_speed:
     
     .no_changes:
         + RTS
-
-object_shit:
-    LDX #$0030
-    LDA #$0030
-    STA $6010
-    LDA #$007C
-    STA $6018
-    JSL $008E41
-    LDA #$007C
-    STA $606C
-    RTL
-
-
 
 
 ; A9D0 object routine

@@ -381,6 +381,8 @@ auto_save_on_room_load:
     STA !store_abilities_1
     LDA !mww_ability_data_2
     STA !store_abilities_2
+    LDA !mww_last_ability_selected
+    STA !store_last_ability_selected
 
     ; invincibility status 
     LDA !kirby_invincible
@@ -401,7 +403,10 @@ auto_save_on_room_load:
     LDA !helper_inv_flash
     STA !store_helper_flashing
     
-    ; miscellaneous
+    ; audio
+    LDA !current_ability_sfx
+    STA !store_ability_sfx
+
     LDA !current_music
     STA !store_music
 
@@ -483,6 +488,8 @@ restore_on_room_restart:
     STA !mww_ability_data_1
     LDA !store_abilities_2
     STA !mww_ability_data_2
+    LDA !store_last_ability_selected
+    STA !mww_last_ability_selected
 
     ; invincibility status 
     LDA !store_kirby_invincibility_state
@@ -511,7 +518,10 @@ restore_on_room_restart:
     LDA !store_helper_flashing
     STA !helper_inv_flash
     
-    ; miscellaneous
+    ; audio
+    LDA !store_ability_sfx
+    STA !current_ability_sfx
+
     SEP #$20
     REP #$10
     ; don't load new music if it is boss music (the music gets reloaded anyway)
