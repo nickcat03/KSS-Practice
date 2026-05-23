@@ -479,7 +479,12 @@ restore_on_room_restart:
     LDA !store_kirby_invincibility_state
     STA !kirby_invincible
     LDA !store_kirby_invincibility_timer
-    STA !kirby_invincible_time
+    BEQ +
+    ; room reload subtracts $5A from this value, so we re-add it here.
+    ; if timer value is $00 then don't add anything
+    CLC
+    ADC #$005A
+    + STA !kirby_invincible_time
     LDA !store_kirby_speed
     STA !kirby_speed
     LDA !store_kirby_flashing
@@ -488,7 +493,10 @@ restore_on_room_restart:
     LDA !store_helper_invincibility_state
     STA !helper_invincible
     LDA !store_helper_invincibility_timer
-    STA !helper_invincible_time
+    BEQ +
+    CLC
+    ADC #$005A
+    + STA !helper_invincible_time
     LDA !store_helper_speed
     STA !helper_speed
     LDA !store_helper_flashing
