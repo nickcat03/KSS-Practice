@@ -16,13 +16,13 @@
 
 ; audio
 !sound_buffer               = $3096
+!current_ability_sfx        = $00AA
 !sound_bank_1               = $00AA
 !sound_bank_2               = $00AB
 !current_music              = $33CA
 !current_sfx                = $33CB
 !volume                     = $33CC
 !stereo_mono                = $33CD
-!current_ability_sfx        = $00AA
 
 ; menus and various selectable items
 !selected_file              = $6D56

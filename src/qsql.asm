@@ -9,6 +9,7 @@
 !temp_stack_pointer_location = $40FFE0
 !music_from_savestate = $408FCA     ; current music RAM ($33CA) from the savestate data
 !helper_ability_from_savestate = $40D8A1    ; current helper ability RAM ($74A1) from the savestate data
+!ability_sfx_from_savestate = $4020AA    ; stores the ability sounds loaded in the state so that they will be reloaded properly
 !screen_fade_from_savestate = $40FFFF  ; for saving brightness value upon loading a state
 
 save_state:
@@ -120,8 +121,6 @@ restore_state:
         JSL !load_music
         +
 
-    LDA !sound_buffer           ; sometimes sounds do not play if this is not saved
-    STA !save_sound_buffer
     LDA !sound_bank_1
     STA !save_sound_bank_1
     REP #$20
@@ -707,3 +706,5 @@ disable_vblank:
     LDA #$0A
     STA !QSQL_timer     ; Set amount of frames until next QSQL is allowed
     RTS
+
+; D2E2 subroutine that loads ability sfx 
