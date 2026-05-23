@@ -23,6 +23,11 @@ ORG $00D019
 ORG $00CDDC
     JSR mute_toggle
 
+; Code for getting Mute button graphics
+ORG $15BCC2
+    JML set_button_gfx
+    NOP #2
+
 pullpc
 
 mute_toggle:

@@ -1,8 +1,3 @@
-; Code for getting Mute button graphics
-ORG $15BCC2
-    JML set_button_gfx
-    NOP #2
-
 ; All sub-games selectable
 ; allow for selection
 ; LDA $7A83 -> LDA #$0005
@@ -20,8 +15,8 @@ ORG $078736
 
 ; Make death animation instant
 ; $B4 -> $01
-ORG $088D9D
-    db $01
+;ORG $088D9D
+;    db $01
 
 ; Set lives to 99 (purely cosmetic)
 ; LDA #$0003 -> LDA #$0063
@@ -83,28 +78,15 @@ ORG $2AD1E5
 ORG $0387F4
     db $FF
 
-; Checkpoints in all rooms
-; At a later point, this should have the option of being disabled by holding a button upon dying
-; (For the time being, I commented it out as the new room reload routine is better for this purpose)
-; BEQ -> BRA
-;ORG $01813D
-;    db $80
-
 ; Always have MWW cursor highlight "Continue"
 ; BEQ -> BRA
 ORG $07DA3E
     db $80
 
-; Disable GCO treasure menu (temporary, as it overrides X button combos)
+; Disable GCO treasure menu (so it doesn't override X button combos)
 ; LDA #$1040 -> LDA #$1000
 ORG $00CB6C
     db $00
-
-; Never display subgame cutscene after inactivity
-; This makes RNG manip impossible so maybe remove this
-; BNE -> BRA
-;ORG $07DD67
-;    db $80
 
 ; Never decrease RoMK timer 
 ; DEC $73A0 -> NOP
@@ -120,20 +102,6 @@ ORG $1EBFB5
 ORG $1EF1EF
     db $80
 
-; Avoid losing abilities when dying:
-; Never lose ability
-; LDA #$0000 -> BRA 1F, NOP
-ORG $03A1FE
-    db $80, $1F, $EA
-; Keep Helper
-; LDA #$FFFF -> RTL 
-ORG $038727
-    RTL
-; Keep Wheelie Rider state
-; STZ $7569 -> NOP x3
-ORG $03A081
-    NOP #3
-
 ; Stop Red Screen Flashing
 ORG $27E529
     RTS
@@ -141,13 +109,6 @@ ORG $27E547
     RTS
 ORG $27E565
     RTS
-
-; For some reason this code causes RoMK cutscenes to replay for some reason...
-; Could be due to the cutscene acting as a "consumable" 
-; Consumables (tomato, candy, etc.) always respawn
-; STA $28 -> STZ $28
-;ORG $00E9DF
-;    STZ $28
 
 ; Change Arena timer color
 ;ORG $598680
