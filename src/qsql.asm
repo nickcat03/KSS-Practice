@@ -373,6 +373,8 @@ auto_save_on_room_load:
     STA !store_tomatoes_collected
     LDA !romk_cutscenes_done
     STA !store_romk_cutscenes
+    LDA !romk_cutscenes_done+2
+    STA !store_romk_cutscenes+2
 
     ; mww abilities
     LDA !mww_ability_data_1
@@ -423,6 +425,7 @@ restore_on_room_restart:
         LDA !store_ability
         STA !ability
         STZ $36C8       ; address used for tracking if swimming. needs to be cleared or game will crash
+        STZ !helper_ability+1   ; clear this byte so that it isn't #$FF if it is
         LDA #$0D      ; Wheel ability (for Wheelie). Forcing this here because you'd only be riding on Wheelie.
         BRA .reload_helper
 
@@ -457,6 +460,8 @@ restore_on_room_restart:
 
     .skip
 
+    REP #$30
+
     ; health
     LDA !store_kirby_hp
     STA !kirby_hp
@@ -470,6 +475,8 @@ restore_on_room_restart:
     STA !tomatoes_collected
     LDA !store_romk_cutscenes
     STA !romk_cutscenes_done
+    LDA !store_romk_cutscenes+2
+    STA !romk_cutscenes_done+2
 
     ; mww abilities
     LDA !store_abilities_1

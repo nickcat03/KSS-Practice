@@ -135,7 +135,7 @@
 !lives_collected        = $14C7     ; persists between rooms (item does not respawn between rooms)
 !tomatoes_collected     = $14CF     ; persists between rooms
 !food_collected         = $14D7     ; gets cleared in between rooms (these always respawn)
-!romk_cutscenes_done    = $771F     ; persists between rooms 
+!romk_cutscenes_done    = $771D     ; persists between rooms, 3 bytes large
 
 ; blank addresses used for storing information
 !respawn_timer              = $7B5A
@@ -174,10 +174,10 @@
 !store_lives_collected              = !room_reload_storage+$1E
 !store_tomatoes_collected           = !room_reload_storage+$20
 !store_romk_cutscenes               = !room_reload_storage+$22
-!store_kirby_flashing               = !room_reload_storage+$24
-!store_helper_flashing              = !room_reload_storage+$26
+!store_kirby_flashing               = !room_reload_storage+$26
+!store_helper_flashing              = !room_reload_storage+$28
 
-!reload_storage_size                = $0026
+!reload_storage_size                = $0028
 !room_reload_storage_state          = !room_reload_storage+!reload_storage_size+2
 
 ; subroutines
