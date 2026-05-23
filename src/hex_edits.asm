@@ -25,8 +25,9 @@ ORG $00D873
 
 ; Don't decrease lives counter
 ; DEC $737A -> NOP
+; Instead replace with resetting free move toggle
 ORG $0387E1
-    NOP #3
+    STZ !toggle_free_move
 
 ;Set BRK vector to game reset subroutine. This makes it so the game is reset on a crash rather than... crashing.
 ;$BCE7 is where the reset subroutine is located.

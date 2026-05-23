@@ -413,6 +413,8 @@ auto_save_on_room_load:
 restore_on_room_restart:
     SEP #$30
 
+    STZ !toggle_free_move
+
     .check_wheelie_rider
         LDA !store_wheelie_rider_state
         STA !wheelie_rider_state 

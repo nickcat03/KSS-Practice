@@ -66,6 +66,10 @@
 !kirby_y_respawn            = $3310
 !room_to_respawn_into       = $32F2
 !camera_lock                = $7368
+!room_size_x                = $3366
+!room_bound_offset_x        = $3364
+!room_size_y                = $3362
+!room_bound_offset_y        = $3360
 
 ; gourmet race timer
 !timer_minutes      = $7A2D
