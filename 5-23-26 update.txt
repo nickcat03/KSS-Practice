@@ -1,0 +1,42 @@
+Practice Hack Update 5/23/26:
+
+Performance Adjustments:
+- Moved various routines that didn't need to be ran once per frame to places where they were more appropriate, saving on cycles overall in the main gameplay loop.
+- Removed HUD edits as they would cause dropped frames due to too many cycles being ran. A separate patch with RNG will be provided, and in the future will be togglable with a menu.
+- Removed a few QoL features for the sake of optimization, such as the screen dimming after inactivity.
+
+Stability Fixes:
+- Heavily updated savestate code to avoid crashing and graphical glitches as much as possible. States will only load in whatever data is necessary for them so they can load as fast as possible, and they are programmed to no longer run their routines on lag frames to avoid lockups.
+-- This is continuing to revise on the newer savestate patch that supports Analogue Pocket. This decreased the amount of SRAM that can be worked with, which is why graphics are now loaded from ROM instead of the entire game state being saved.
+-- A known bug is that loading a state to Fatty Whale from a different area will cause graphical glitches. In this case, reloading the room (R+X) will fix the problem.
+-- A known bug is that saving a state right after a lag frame may cause the saved state to have graphical glitches.
+- Level reload code was heavily reworked so that the state in which the room started in can be loaded without crashing. If anything has changed, it is checked and loaded/unloaded appropriately using in-game routines. Some edge cases may have slipped through the cracks, please let me know if you find anything.
+
+Improvements:
+- Several attributes are now remembered when reloading a room:
+-- Invincibility state
+-- RoMK cutscenes
+-- Items collected (tomatoes, 1ups)
+-- Milky Way Wishes abilities collected
+-- Ability sound effects loaded
+--- Sometimes the game will pause when loading a new ability. This is now accounted for when reloading a room.
+- Added speed boost to Dyna Blade map (Hold R)
+- Made all Dyna Blade stages accessible from a new file
+- Removed Iron Ma'am completely
+- Remapped Milky Way Wishes map speed boost to R
+- Nova is always accessible
+- Dyna Blade and MWW stages can always be quit out of regardless of clear state
+
+Bug Fixes:
+- Fixed problems with switch doors sometimes being the wrong lengths.
+- Prevented enabling free move while riding on Wheelie.
+- Fix multiple issues with Milky Way Wishes ability select, notably Cavios starting with Hammer in the Any% route.
+
+Things to do:
+- Fix a bug where when using the quick ability picker, the sound bank that it saves to goes to the helper bank instead of Kirby's
+-- This causes a few bugs and makes it hard to save sound bank properties into savestates, so it would be nice to fix eventually
+- Develop a menu for level select and other options
+- Add a graphic to the MWW map screen to indicate the ability set you are using (pressing Select on MWW map screen)
+- Because RAM size has been optimized, there is a possibility of having two save state slots if the RAM is expanded once again (this would be supported on Flashcart and MiSTer but not Pocket).
+
+Note: Save data with previous revisions may not be compatible. I moved around a lot of RAM addresses I was using, especially for room reloads.

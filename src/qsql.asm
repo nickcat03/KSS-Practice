@@ -421,6 +421,9 @@ restore_on_room_restart:
 
     STZ !toggle_free_move
 
+    LDA #$01
+    STA !active_frames  ; avoid game hanging if room is reset while loading something else
+
     .check_wheelie_rider
         LDA !store_wheelie_rider_state
         STA !wheelie_rider_state 

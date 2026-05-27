@@ -33,6 +33,8 @@ ORG $0387E1
 ;$BCE7 is where the reset subroutine is located.
 ORG $00FFE6
     dw $E7BC
+ORG $00FFFE
+    dw $E7BC
 
 ; Do not clear the entirety of SRAM 
 ; LDA #$1EFE -> LDA #$1B6F
