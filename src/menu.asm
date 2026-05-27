@@ -3,7 +3,7 @@
 ; EN ROM: $285A43
 ; JP Text Location Pointer: $CFB430
 
-!menu_vram = $2CA4
+!menu_vram = $0000
 !menu_row_size = $0020
 
 !cursor = $1000
@@ -19,9 +19,30 @@ open_custom_menu:
   LDX #bank(font_dma_table)
   JSL !load_dma_table
 
-  ; set BG mode 0
+  JSR save_registers
+
   LDA #$0000
-  STA $003061
+  STA $003061 ; set BG mode 0
+  STA $003063 ; set BG1 tilemap VRAM address and size
+
+  LDA #$0001 ; disable OAM and all other layers but 1
+  STA $003072
+
+  ; set BG tilemap offsets to $3000.w ($6000)
+  ; we only use layer 1 but clobbering them all is easier
+  LDA #$3333
+  STA $003067
+
+  ; clear layer 1 scroll pos
+  LDA #$0000
+  STA $003037
+  STA $003039
+  STA $00303B
+  STA $00303D
+
+  ; max brightness
+  LDA #$000F
+  STA $00305F
 
   ; draw the main menu
   LDA #main_menu
@@ -57,7 +78,69 @@ exit_menu:
   LDX #bank(restore_dma_table)
   JSL !load_dma_table
 
+  JSR restore_registers
+
   RTL
+
+save_registers:
+  LDA $003061 ; BG mode
+  STA $40F6E0
+  LDA $003063 ; BG1 tilemap VRAM address and size
+  STA $40F6E2
+
+  ; set BG tilemap offsets
+  LDA $003067
+  STA $40F6E4
+
+  ; layer 1 scroll pos
+  LDA $003037
+  STA $40F6E6
+  LDA $003039
+  STA $40F6E8
+  LDA $00303B
+  STA $40F6EA
+  LDA $00303D
+  STA $40F6EC
+
+  ; layer select
+  LDA $003072
+  STA $40F6EE
+
+  ; brightness and oam flags
+  LDA $00305F
+  STA $40F6F0
+
+  RTS
+
+restore_registers:
+  LDA $40F6E0
+  STA $003061 ; BG mode
+  LDA $40F6E2
+  STA $003063 ; BG1 tilemap VRAM address and size
+
+  ; set BG tilemap offsets
+  LDA $40F6E4
+  STA $003067
+
+  ; layer 1 scroll pos
+  LDA $40F6E6
+  STA $003037
+  LDA $40F6E8
+  STA $003050
+  LDA $40F6EA
+  STA $00303B
+  LDA $40F6EC
+  STA $00303D
+
+  ; layer select
+  LDA $40F6EE
+  STA $003072
+
+  ; brightness and oam flags
+  LDA $40F6F0
+  STA $00305F
+
+  RTS
 
 ; draw menu in A
 draw_menu:
@@ -82,79 +165,6 @@ draw_menu:
   JSL !write_to_dma_buffer
   RTS
 
-; borked code
-;                 ; save current menu
-;                 STA !current_menu
-; 
-;                 ; write menu title lines
-;                 LDY #$0000
-;                 ; use y to write 0 to option count
-;                 STY !current_menu_option_count
-;                 JSR write_texts
-; 
-;                 ; load first option
-;                 LDY #$0002
-; 
-;                 .next_option:
-;                 LDA ($00), Y
-;                 CMP #$0000
-;                 BEQ .done
-;                 
-;                 INC !current_menu_option_count
-;                 PHA
-;                 JSR write_texts
-;                 PLA
-; 
-;                 INY
-;                 INY
-;                 INY
-; 
-;                 BRA .next_option
-; 
-;                 .done:
-;                 RTS
-             
-; write text in A, A+2 on lines Y and Y+1
-; write_texts:
-;                 PHA
-;                 PHY
-;                 LDX #$0000
-;                 JSR write_text
-;                 PLY
-;                 INY
-;                 PLA
-;                 INC
-;                 INC
-;                 JSR write_text
-;                 RTS
-
-; write text in A (bank X) on line Y
-; write_text:
-;                 ; set transfer mode 03
-;                 PHA
-;                 LDA #$0003
-;                 STA !dma_type
-; 
-;                 ; set source and size
-;                 PLA
-;                 STA !dma_src
-;                 TXA
-;                 STA !dma_src_bank
-;                 LDA #datasize(menu_line_blank)
-;                 STA !dma_size
-; 
-;                 ; calculate destination from line
-;                 LDA #(!menu_vram-!menu_row_size)
-;                 -
-;                 CLC
-;                 ADC #!menu_row_size
-;                 DEY
-;                 BPL -
-;                 STA !dma_dest
-; 
-;                 JSL !write_to_dma_buffer
-;                 RTS
-
 ; DMA tables
 ; If byte 0 is negative, data is decompressed
 ; For mode explanations see https://github.com/Ankouno/KSS-disassembly/blob/9863c88e7f987e71bca858cd6a466ea04b5b8339/Bank00.asm#L869
@@ -167,6 +177,8 @@ db $15, $C2, $12, $00, $E4, $40, $00, $30
 db $83, $30, $0B, $EE, $50, $E5, $00, $30
 ; Entry 2: Decompress EN font to VRAM 3600.w
 db $83, $C0, $06, $70, $F2, $02, $00, $36
+; Entry 3: Back up the area we will use for tilemap data
+db $15, $00, $08, $00, $F7, $40, $00, $00
 ; End of table
 db $FF
 
@@ -174,6 +186,9 @@ restore_dma_table:
 ; Entry 0: Restore data in destination to SRAM in free space at E400
 ; HACK: the first value from the read previously was duplicated, so we start two bytes late
 db $03, $C0, $12, $02, $E4, $40, $00, $30
+; Entry 1: Restore beginning of VRAM
+; HACK: the first value from the read previously was duplicated, so we start two bytes late
+db $03, $00, $08, $02, $F7, $40, $00, $00
 ; End of table
 db $FF
 

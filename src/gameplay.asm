@@ -9,22 +9,6 @@ pullpc
 
 every_gameplay_frame:
 
-; custom menu code
-; if the menu is already open, don't check for hotkeys to avoid recursion
-LDA !custom_menu_enabled
-BNE return_to_main_routine
-
-; on R+Start, open the custom menu
-LDA !p1controller_hold
-AND #!btn_r
-BEQ +
-LDA !p1controller_frame
-CMP #!btn_start
-BNE +
-JSL open_custom_menu
-+
-
-
 ; Ability / Free Movement Input Handling
 ; A + L/R      = Common abilities
 ; A + L + R    = Cycle abilities

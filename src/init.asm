@@ -4,7 +4,6 @@ pushpc
 
 org $00BBCC
   JSL init
-  continue_from_init:
 
 pullpc
 
@@ -14,4 +13,6 @@ init:
 
   ; code which was replaced
   JSL $0084BE
-  JML continue_from_init
+
+  ; return
+  RTL
