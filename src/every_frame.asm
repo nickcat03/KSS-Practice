@@ -10,7 +10,7 @@ sa1_code:
     ; custom menu code
     ; if the menu is already open, don't check for hotkeys to avoid recursion
     LDA !custom_menu_enabled
-    BNE return_to_main_routine
+    BNE .done
 
     ; on R+Start, open the custom menu
     LDA !p1controller_hold
