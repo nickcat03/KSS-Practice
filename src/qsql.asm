@@ -304,6 +304,8 @@ restore_level_data:
         ; always run, it doesn't waste many cycles and there are some edge cases that are impractical to check for
         ; ironically enough it's probably a good thing this runs because then the state would load too quickly
         JSL load_consumables
+        ; to-do: add a check for if in the exact same room because this writes over fatty whale graphics
+        ; or rewrite fatty whale graphics over it
 
     .reload_background
         LDA.w !state_background
