@@ -2,6 +2,17 @@
 ; JP ROM: $2550EE
 ; EN ROM: $285A43
 ; JP Text Location Pointer: $CFB430
+ 
+struct MenuOffsets $000000
+  .Title: skip 2
+  .ChoiceCount: skip 2
+endstruct
+
+struct Choices extends MenuOffsets
+  .Text: skip 2
+  .Code: skip 2
+endstruct
+
 
 !menu_vram = $0040
 !menu_row_size = $0020
@@ -12,6 +23,7 @@
 !current_menu = $1002
 !current_menu_option_count = $1004
 
+!dp_menu = $41
 !dp_scratch = $45
 
 open_custom_menu:
@@ -74,6 +86,12 @@ open_custom_menu:
     RTL
   +
 
+  ; open main menu
+  LDA #menu_main
+  STA !custom_menu_pointer
+  LDA #$0000
+  STA !custom_menu_cursor
+
 ; main loop
 custom_menu:
   JSL !update_layers_input
@@ -111,10 +129,27 @@ custom_menu:
     LDY #$0001
     JSR draw_string
 
-    ; LDA #test_string
-    ; LDX #$0001
-    ; LDY #$0003
-    ; JSR draw_string
+    ; write footer
+    LDA #menu_footer
+    LDX #$0001
+    LDY #$001A
+    JSR draw_string
+
+    LDA !custom_menu_pointer
+    STA !dp_menu
+
+    ; set bank
+    SEP #$20
+    LDA.b #bank(menu_main)
+    STA !dp_menu+2
+    REP #$20
+
+    ; draw menu title
+    LDY.w MenuOffsets.Title
+    LDA [!dp_menu], Y
+    LDX #$0001
+    LDY #$0003
+    JSR draw_string
     RTL
   +
 
@@ -149,6 +184,11 @@ save_registers:
   STA $40F6C4
   LDA !dp_scratch+4
   STA $40F6C6
+
+  LDA !dp_menu
+  STA $40F6C8
+  LDA !dp_menu+2
+  STA $40F6CA
 
   LDA $003061 ; BG mode
   STA $40F6E0
@@ -207,6 +247,11 @@ restore_registers:
   STA !dp_scratch+2
   LDA $40F6C6
   STA !dp_scratch+4
+
+  LDA $40F6C8
+  STA !dp_menu
+  LDA $40F6CA
+  STA !dp_menu+2
 
   LDA $40F6E0
   STA $003061 ; BG mode
@@ -396,27 +441,19 @@ db $FF
 
 menu_header:
 %text("KSS Practice Hack * 05/27/2026","SUPADERA HAKKU * 05/27/2026")
-
-struct MenuOffsets $000000
-  .Title: skip 2
-  .ChoiceCount: skip 2
-endstruct
-
-struct Choices extends MenuOffsets
-  .Text: skip 2
-  .Code: skip 2
-endstruct
+menu_footer:
+%lang_swap_text("SEL oseba nihongo","Press SELECT for English")
 
 option_noop:
   RTS
 
 menu_main:
-  %text("* Main menu *", "マインメンユー")
-  dw $0003
-  %text("Boss Warp", "ボースへいこう")
-  dw option_noop
-  %text("Set RNG", "らんそうせってい")
-  dw option_noop
-  %text("Kirby Color", "カービィのいろ")
-  dw option_noop
+  dw .title, $0003
+  dw .opt1, option_noop
+  dw .opt2, option_noop
+  dw .opt3, option_noop
+  .title: %text("* Main menu *", "マインメンユー")
+  .opt1: %text("Boss Warp", "ボースへいこう")
+  .opt2: %text("Set RNG", "らんそうせってい")
+  .opt3: %text("Kirby Color", "カービィのいろ")
 
