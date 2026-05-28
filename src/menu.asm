@@ -24,8 +24,8 @@ open_custom_menu:
   STA !custom_menu_language
 
   ; load fonts
-  LDA #font_dma_table
-  LDX #bank(font_dma_table)
+  LDA.w #font_dma_table
+  LDX.W #bank(font_dma_table)
   JSL !load_dma_table
 
   JSR save_registers
@@ -60,8 +60,8 @@ open_custom_menu:
   LDA #$000F
   STA $00305F
 
-  LDA #.set_palette
-  LDX #bank(.set_palette)
+  LDA.w #.set_palette
+  LDX.w #bank(.set_palette)
   JSL !sa1_executesnes 
   BRA +
   
@@ -97,8 +97,8 @@ custom_menu:
   +
 
   ; build menu on snes cpu
-  LDA #.build_menu
-  LDX #bank(.build_menu)
+  LDA.w #.build_menu
+  LDX.w #bank(.build_menu)
   JSL !sa1_executesnes 
   BRA +
   
@@ -134,8 +134,8 @@ exit_menu:
   JSL !update_layers_input
 
   ; restore clobbered VRAM
-  LDA #restore_dma_table
-  LDX #bank(restore_dma_table)
+  LDA.w #restore_dma_table
+  LDX.w #bank(restore_dma_table)
   JSL !load_dma_table
 
   JSR restore_registers
@@ -186,8 +186,8 @@ save_registers:
   LDA $00309B
   STA $40F6F6
 
-  LDA #.backup_palette
-  LDX #bank(.backup_palette)
+  LDA.w #.backup_palette
+  LDX.w #bank(.backup_palette)
   JSL !sa1_executesnes 
   BRA +
   
@@ -244,8 +244,8 @@ restore_registers:
   LDA $40F6F6
   STA $00309B
 
-  LDA #.restore_palette
-  LDX #bank(.restore_palette)
+  LDA.w #.restore_palette
+  LDX.w #bank(.restore_palette)
   JSL !sa1_executesnes 
   BRA +
   
