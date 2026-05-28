@@ -154,6 +154,7 @@
 !save_sound_bank_2          = $40FFFB
 !toggle_custom_colors       = $40FFFD
 !custom_menu_enabled        = $40FFC0
+!custom_menu_language       = $40FFC2
 
 ; for saving certain values on room reload 
 !room_reload_storage                = $40FF40

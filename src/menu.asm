@@ -18,6 +18,11 @@ open_custom_menu:
   LDA #$0001
   STA !custom_menu_enabled
 
+  ; ensure current language <= 1
+  LDA !custom_menu_language
+  AND #$0001
+  STA !custom_menu_language
+
   ; load fonts
   LDA #font_dma_table
   LDX #bank(font_dma_table)
@@ -82,6 +87,15 @@ custom_menu:
   BEQ exit_menu
   +
 
+  ; switch language on select
+  LDA !p1controller_frame
+  CMP #!btn_select
+  BNE +
+    LDA !custom_menu_language
+    EOR #$0001
+    STA !custom_menu_language
+  +
+
   ; build menu on snes cpu
   LDA #.build_menu
   LDX #bank(.build_menu)
@@ -97,10 +111,10 @@ custom_menu:
     LDY #$0001
     JSR draw_string
 
-    LDA #test_string
-    LDX #$0001
-    LDY #$0003
-    JSR draw_string
+    ; LDA #test_string
+    ; LDX #$0001
+    ; LDY #$0003
+    ; JSR draw_string
     RTL
   +
 
@@ -248,15 +262,22 @@ restore_registers:
 ; string addr in A, x in X, y in Y
 draw_string:
   STA !dp_scratch
+
+  ; set banks
   SEP #$20
-  LDA.b #bank(test_string)
+  LDA.b #bank(menu_header)
   STA !dp_scratch+2
   LDA.b #bank(!menu_mirror)
   STA !dp_scratch+5
   REP #$20
-  
+
+  ; move up one tile if it's jp because tails are above
+  LDA !custom_menu_language
+  STA !dp_scratch+3
   ; calculate destination start addr
   TYA
+  SBC !dp_scratch+3
+  
   ; y * 64
   ASL A
   ASL A
@@ -271,8 +292,14 @@ draw_string:
   ADC #!menu_mirror
   STA !dp_scratch+3
 
+  ; load pointer to language string
+  LDA !custom_menu_language
+  ASL A
+  TAY
+  LDA [!dp_scratch], Y
+  STA !dp_scratch
+
   LDX #$0001
-  
   .loop:
   LDA [!dp_scratch]
   ; if the character is FFFF, stop
@@ -367,29 +394,29 @@ db $03, $FE, $07, $02, $F7, $40, $00, $00
 ; End of table
 db $FF
 
-; Menus!
-; Menu format:
-; 2 bytes - title L1
-; 2 bytes - title L2
-; options:
-;   2 bytes - text L1 ( break if $0000 )
-;   2 bytes - text L2
-;   2 bytes - option function pointer
-;
 menu_header:
-%en("KSS Practice Hack * 05/27/2026")
+%text("KSS Practice Hack * 05/27/2026","SUPADERA HAKKU * 05/27/2026")
 
-test_string:
-%en("yyggy funy test")
+struct MenuOffsets $000000
+  .Title: skip 2
+  .ChoiceCount: skip 2
+endstruct
 
-main_menu:
-%en(" KSS Practice Hack * 05/27/2026 ")
-%en(" ")
-%en("  * Main menu * ")
-%en("  > Boss Warp")
-%en("    Set RNG")
-%en("    Kirby color")
-%en("   ")
+struct Choices extends MenuOffsets
+  .Text: skip 2
+  .Code: skip 2
+endstruct
 
-menu_end: ; asar needs a label after each db to use datasize()
+option_noop:
+  RTS
+
+menu_main:
+  %text("* Main menu *", "マインメンユー")
+  dw $0003
+  %text("Boss Warp", "ボースへいこう")
+  dw option_noop
+  %text("Set RNG", "らんそうせってい")
+  dw option_noop
+  %text("Kirby Color", "カービィのいろ")
+  dw option_noop
 

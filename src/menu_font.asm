@@ -153,8 +153,15 @@ endmacro
 
 macro jp(...)
         %tail_mapping()
-        dw "<...>"
+        dw "<...>", $FFFE
         %text_mapping()
-        dw "<...>"
+        dw "<...>", $FFFF
 endmacro
 
+macro text(en_text, jp_text)
+        dw ?en_label
+        dw ?jp_label
+
+        ?en_label: %en("<en_text>")
+        ?jp_label: %jp("<jp_text>")
+endmacro
