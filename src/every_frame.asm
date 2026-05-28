@@ -13,9 +13,14 @@ sa1_code:
     BNE .done
 
     ; on R+Start, open the custom menu
-    LDA !p1controller_hold
+    LDA !p1controller_hold  ; skip if there is a conflict with reset combo
+    AND #$2030              ; checks if L+R+Select are being held
+    CMP #$2030
+    BEQ +
+
     AND #!btn_r
     BEQ +
+    
     LDA !p1controller_frame
     CMP #!btn_start
     BNE +

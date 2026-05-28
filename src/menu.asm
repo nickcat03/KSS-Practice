@@ -86,7 +86,7 @@ custom_menu:
   +
 
   ; write menu mirror to PPU
-  JSR write_mirror
+  ;JSR write_mirror
 
   ; loop
   BRA custom_menu
