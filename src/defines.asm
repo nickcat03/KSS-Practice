@@ -203,6 +203,7 @@
 !draw_pause_menu            = $CF999B
 !dim_screen                 = $C005C7
 !update_layers_input        = $008A06
+!sa1_executesnes            = $008C6D
 
 ; internal dma queue
 !write_to_dma_buffer        = $00875a

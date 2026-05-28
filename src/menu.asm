@@ -3,7 +3,7 @@
 ; EN ROM: $285A43
 ; JP Text Location Pointer: $CFB430
 
-!menu_vram = $0000
+!menu_vram = $0040
 !menu_row_size = $0020
 
 !cursor = $1000
@@ -33,6 +33,13 @@ open_custom_menu:
   LDA #$3333
   STA $003067
 
+  ; disable hdma for fatty whale fight etc
+  LDA #$0000
+  STA $003092
+  STA $00309C
+  LDA #$84BB
+  STA $00309B
+
   ; clear layer 1 scroll pos
   LDA #$0000
   STA $003037
@@ -44,7 +51,23 @@ open_custom_menu:
   LDA #$000F
   STA $00305F
 
+  LDA #.set_palette
+  LDX #bank(.set_palette)
+  JSL !sa1_executesnes 
+  BRA +
+  
+  .set_palette
+    ; palette
+    LDA #$1576
+    STA $7E0502
+    LDA #$0000
+    STA $7E0504
+    RTL
+  +
+
   ; draw the main menu
+  JSR clear_screen
+
   LDA #main_menu
   LDX #bank(main_menu)
   JSR draw_menu
@@ -61,6 +84,9 @@ custom_menu:
   CMP #!btn_start
   BEQ exit_menu
   +
+
+  ; write menu mirror to PPU
+  JSR write_mirror
 
   ; loop
   BRA custom_menu
@@ -110,6 +136,27 @@ save_registers:
   LDA $00305F
   STA $40F6F0
 
+  ; HDMA toggle
+  LDA $003092
+  STA $40F6F2
+  ; order matters here
+  LDA $00309C
+  STA $40F6F4
+  LDA $00309B
+  STA $40F6F6
+
+  LDA #.backup_palette
+  LDX #bank(.backup_palette)
+  JSL !sa1_executesnes 
+  BRA +
+  
+  .backup_palette
+    LDA $7E0502
+    STA $40F6F8
+    LDA $7E0504
+    STA $40F6FA
+    RTL
+  +
   RTS
 
 restore_registers:
@@ -140,7 +187,31 @@ restore_registers:
   LDA $40F6F0
   STA $00305F
 
+  ; HDMA toggle
+  LDA $40F6F2
+  STA $003092
+  ; order matters here
+  LDA $40F6F4
+  STA $00309C
+  LDA $40F6F6
+  STA $00309B
+
+  LDA #.restore_palette
+  LDX #bank(.restore_palette)
+  JSL !sa1_executesnes 
+  BRA +
+  
+  .restore_palette
+    LDA $40F6F8
+    STA $7E0502
+    LDA $40F6FA
+    STA $7E0504
+    RTL
+  +
+
   RTS
+
+  
 
 ; draw menu in A
 draw_menu:
@@ -165,6 +236,51 @@ draw_menu:
   JSL !write_to_dma_buffer
   RTS
 
+clear_screen:
+  ; OLD code
+  ; set transfer mode 03
+  LDA #$0006
+  STA !dma_type
+
+  ; set source and size
+  LDA #clear_tile
+  STA !dma_src
+  LDA #bank(clear_tile)
+  STA !dma_src_bank
+  LDA #$0740
+  STA !dma_size
+
+  ; set dest
+  LDA #$0000
+  STA !dma_dest
+
+  JSL !write_to_dma_buffer
+  RTS
+
+write_mirror:
+  ; set transfer mode 03
+  LDA #$0003
+  STA !dma_type
+
+  ; set source and size
+  LDA #$7FF000
+  STA !dma_src
+  LDA #$007F
+  STA !dma_src_bank
+  LDA #$0740
+  STA !dma_size
+
+  ; set dest
+  LDA #$0000
+  STA !dma_dest
+
+  JSL !write_to_dma_buffer
+  RTS
+  
+
+clear_tile:
+dw $2000
+
 ; DMA tables
 ; If byte 0 is negative, data is decompressed
 ; For mode explanations see https://github.com/Ankouno/KSS-disassembly/blob/9863c88e7f987e71bca858cd6a466ea04b5b8339/Bank00.asm#L869
@@ -188,7 +304,7 @@ restore_dma_table:
 db $03, $C0, $12, $02, $E4, $40, $00, $30
 ; Entry 1: Restore beginning of VRAM
 ; HACK: the first value from the read previously was duplicated, so we start two bytes late
-db $03, $00, $08, $02, $F7, $40, $00, $00
+db $03, $FE, $07, $02, $F7, $40, $00, $00
 ; End of table
 db $FF
 
@@ -200,15 +316,17 @@ db $FF
 ;   2 bytes - text L1 ( break if $0000 )
 ;   2 bytes - text L2
 ;   2 bytes - option function pointer
+;
 
+skip align 64
 main_menu:
-%en("       Main Menu 1      ")
-%en("  The quick brown fox   ")
-%en("jumped over the lazy dog")
-%en("  THE QUICK BROWN FOX   ")
-%en("JUMPED OVER THE LAZY DOG")
-%en("       Main Menu 6      ")
-%en("       Main Menu 7      ")
+%en(" KSS Practice Hack * 05/27/2026 ")
+%en(" ")
+%en("  * Main menu * ")
+%en("  > Boss Warp")
+%en("    Set RNG")
+%en("    Kirby color")
+%en("   ")
 
 menu_end: ; asar needs a label after each db to use datasize()
 
