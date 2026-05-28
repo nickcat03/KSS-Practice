@@ -296,9 +296,11 @@ compare_level_data:
 
 restore_level_data:
     .prepare_level_restore
-
         LDA #$8000      ; Prevents an infinite loop when loading background data
         STA !screen_fade
+
+    ;.reload_fatty_whale
+    ;    JSL $D52924
 
     .reload_consumables
         ; always run, it doesn't waste many cycles and there are some edge cases that are impractical to check for
@@ -317,10 +319,6 @@ restore_level_data:
         BEQ .reload_fatty_whale
         JSL load_tileset
     
-    .reload_fatty_whale
-        ; Check to see if we are currently in a room with Fatty Whale
-        LDA !subgame
-        JSL $D52924
 
     .end_level_restore
         RTS
