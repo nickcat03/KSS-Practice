@@ -240,18 +240,18 @@ macro tail_mapping()
         
 endmacro
 
-macro en(...)
+macro en(str)
         %text_mapping()
-        dw "<...>", $FFFE
+        dw "<str>", $FFFE
         %tail_mapping()
-        dw "<...>", $FFFF
+        dw "<str>", $FFFF
 endmacro
 
-macro jp(...)
+macro jp(str)
         %tail_mapping()
-        dw "<...>"
+        dw "<str>"
         %text_mapping()
-        dw "<...>"
+        dw "<str>"
 endmacro
 
 macro text(en_text, jp_text)
