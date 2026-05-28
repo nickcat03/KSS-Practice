@@ -88,11 +88,6 @@ save_state:
  
     JSR disable_vblank
 
-    LDA #$01
-    STA !QSQL_transfer_mode             ; Tell SA-1 to save stack pointer
-    LDA #$02
-    STA !QSQL_offset
-
     REP #$30
 
     STZ !temp_pointer   ; clear address for loading SA-1 stack pointer
@@ -224,11 +219,6 @@ restore_state:
         STA $420B       ;  so Start DMA transfer on channel 0 (LSB of $420B)
 
     JSR disable_vblank
-
-    LDA #$02
-    STA !QSQL_transfer_mode         ; Tell SA-1 to restore stack pointer
-    LDA #$02
-    STA !QSQL_offset
 
     LDA !save_sound_buffer          ; apply previous sound buffer so consecutive sound plays
     STA !sound_buffer

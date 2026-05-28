@@ -145,8 +145,7 @@
 !mww_ability_route          = $7B5E
 !mww_planet_rta             = $7B60
 !QSQL_timer                 = $7B62
-!QSQL_transfer_mode         = $7B64
-!QSQL_offset                = $7B66
+!QSQL_transfer              = $7B64
 !is_reloading_room          = $7B68
 !toggle_free_move           = $7B70
 !mute_toggle                = $7B7E
