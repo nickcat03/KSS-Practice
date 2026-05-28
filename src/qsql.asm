@@ -304,8 +304,6 @@ restore_level_data:
         ; always run, it doesn't waste many cycles and there are some edge cases that are impractical to check for
         ; ironically enough it's probably a good thing this runs because then the state would load too quickly
         JSL load_consumables
-        ; to-do: add a check for if in the exact same room because this writes over fatty whale graphics
-        ; or rewrite fatty whale graphics over it
 
     .reload_background
         LDA.w !state_background
@@ -316,8 +314,13 @@ restore_level_data:
     .reload_tileset
         LDA.w !state_tileset
         CMP.w !current_tileset
-        BEQ .end_level_restore
+        BEQ .reload_fatty_whale
         JSL load_tileset
+    
+    .reload_fatty_whale
+        ; Check to see if we are currently in a room with Fatty Whale
+        LDA !subgame
+        JSL $D52924
 
     .end_level_restore
         RTS

@@ -249,9 +249,9 @@ endmacro
 
 macro jp(str)
         %tail_mapping()
-        dw "<str>"
+        dw "<str>", $FFFE
         %text_mapping()
-        dw "<str>"
+        dw "<str>", $FFFF
 endmacro
 
 macro text(en_text, jp_text)
