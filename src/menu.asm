@@ -6,9 +6,13 @@
 !menu_vram = $0040
 !menu_row_size = $0020
 
+!menu_mirror = $7FF000
+
 !cursor = $1000
 !current_menu = $1002
 !current_menu_option_count = $1004
+
+!dp_scratch = $45
 
 open_custom_menu:
   LDA #$0001
@@ -65,13 +69,6 @@ open_custom_menu:
     RTL
   +
 
-  ; draw the main menu
-  JSR clear_screen
-
-  LDA #main_menu
-  LDX #bank(main_menu)
-  JSR draw_menu
-
 ; main loop
 custom_menu:
   JSL !update_layers_input
@@ -85,8 +82,31 @@ custom_menu:
   BEQ exit_menu
   +
 
+  ; build menu on snes cpu
+  LDA #.build_menu
+  LDX #bank(.build_menu)
+  JSL !sa1_executesnes 
+  BRA +
+  
+  .build_menu
+    JSR clear_screen
+
+    ; write header
+    LDA #menu_header
+    LDX #$0001
+    LDY #$0001
+    JSR draw_string
+
+    LDA #test_string
+    LDX #$0001
+    LDY #$0003
+    JSR draw_string
+    RTL
+  +
+
+  ; back on SA-1
   ; write menu mirror to PPU
-  ;JSR write_mirror
+  JSR write_mirror
 
   ; loop
   BRA custom_menu
@@ -109,6 +129,13 @@ exit_menu:
   RTL
 
 save_registers:
+  LDA !dp_scratch
+  STA $40F6C2
+  LDA !dp_scratch+2
+  STA $40F6C4
+  LDA !dp_scratch+4
+  STA $40F6C6
+
   LDA $003061 ; BG mode
   STA $40F6E0
   LDA $003063 ; BG1 tilemap VRAM address and size
@@ -160,6 +187,13 @@ save_registers:
   RTS
 
 restore_registers:
+  LDA $40F6C2
+  STA !dp_scratch
+  LDA $40F6C4
+  STA !dp_scratch+2
+  LDA $40F6C6
+  STA !dp_scratch+4
+
   LDA $40F6E0
   STA $003061 ; BG mode
   LDA $40F6E2
@@ -211,50 +245,75 @@ restore_registers:
 
   RTS
 
+; string addr in A, x in X, y in Y
+draw_string:
+  STA !dp_scratch
+  SEP #$20
+  LDA.b #bank(test_string)
+  STA !dp_scratch+2
+  LDA.b #bank(!menu_mirror)
+  STA !dp_scratch+5
+  REP #$20
+  
+  ; calculate destination start addr
+  TYA
+  ; y * 64
+  ASL A
+  ASL A
+  ASL A
+  ASL A
+  ASL A
+  ASL A
+  ; add X*2
+  STX !dp_scratch+3
+  ASL !dp_scratch+3
+  ADC !dp_scratch+3
+  ADC #!menu_mirror
+  STA !dp_scratch+3
+
+  LDX #$0001
+  
+  .loop:
+  LDA [!dp_scratch]
+  ; if the character is FFFF, stop
+  CMP #$FFFF
+  BEQ .done
+  ; if the character is FFFE, move down a line and restore X pos
+  CMP #$FFFE
+  BNE +
+    LDA #$0040 ; line height
+    ADC !dp_scratch+3
+    STX !dp_scratch+3
+    ASL !dp_scratch+3
+    SBC !dp_scratch+3
+    STA !dp_scratch+3
+    BRA .increment
+  +
+  ; write tile
+  STA [!dp_scratch+3]
+  .increment:
+  INC !dp_scratch
+  INC !dp_scratch
+  INC !dp_scratch+3
+  INC !dp_scratch+3
+  INX
+  BRA .loop
+
+  .done:
+  RTS
   
 
-; draw menu in A
-draw_menu:
-  PHA
-  ; set transfer mode 03
-  LDA #$0003
-  STA !dma_type
-
-  PLA
-  ; set source and size
-  STA !dma_src
-  TXA
-  STA !dma_src_bank
-  ; menu size - 70
-  LDA #$0380
-  STA !dma_size
-
-  ; set dest
-  LDA #!menu_vram
-  STA !dma_dest
-
-  JSL !write_to_dma_buffer
-  RTS
 
 clear_screen:
-  ; OLD code
-  ; set transfer mode 03
-  LDA #$0006
-  STA !dma_type
-
-  ; set source and size
-  LDA #clear_tile
-  STA !dma_src
-  LDA #bank(clear_tile)
-  STA !dma_src_bank
-  LDA #$0740
-  STA !dma_size
-
-  ; set dest
   LDA #$0000
-  STA !dma_dest
-
-  JSL !write_to_dma_buffer
+  LDX #$800
+  -
+  STA !menu_mirror, X
+  DEX
+  DEX
+  BNE -
+  STA !menu_mirror, X
+  
   RTS
 
 write_mirror:
@@ -263,7 +322,7 @@ write_mirror:
   STA !dma_type
 
   ; set source and size
-  LDA #$7FF000
+  LDA #!menu_mirror
   STA !dma_src
   LDA #$007F
   STA !dma_src_bank
@@ -317,8 +376,12 @@ db $FF
 ;   2 bytes - text L2
 ;   2 bytes - option function pointer
 ;
+menu_header:
+%en("KSS Practice Hack * 05/27/2026")
 
-skip align 64
+test_string:
+%en("yyggy funy test")
+
 main_menu:
 %en(" KSS Practice Hack * 05/27/2026 ")
 %en(" ")

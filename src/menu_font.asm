@@ -145,14 +145,10 @@ macro tail_mapping()
 endmacro
 
 macro en(...)
-        fillbyte $00
-        fill align 64
         %text_mapping()
-        dw "<...>"
-        fill align 64
+        dw "<...>", $FFFE
         %tail_mapping()
-        dw "<...>"
-        fill align 64
+        dw "<...>", $FFFF
 endmacro
 
 macro jp(...)
