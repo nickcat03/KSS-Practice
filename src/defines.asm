@@ -21,6 +21,7 @@
 !sound_bank_2               = $00AB
 !current_music              = $33CA
 !current_sfx                = $33CB
+!current_sfx_long           = $0033CB
 !volume                     = $33CC
 !stereo_mono                = $33CD
 
@@ -229,6 +230,7 @@
 ; useless subroutines that ill keep here anyway cuz theyre nice to have somewhere
 !debug_reload_display       = $DBE7
 !play_sfx                   = $D155
+!play_sfx_long              = $00D155
 
 ; controller buttons
 !btn_b      = $8000

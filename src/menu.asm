@@ -6,6 +6,7 @@
 struct MenuOffsets $000000
   .Title: skip 2
   .ChoiceCount: skip 2
+  .UpMenu: skip 2
 endstruct
 
 struct Choices extends MenuOffsets
@@ -18,10 +19,17 @@ endstruct
 
 !menu_mirror = $7FF000
 
-!cursor_sprite = $0093
+!cursor_sprite = $00E8
 
 !dp_menu = $41
 !dp_scratch = $45
+
+!sfx_open = $41
+!sfx_select = $32
+!sfx_back = $28
+
+!palette_fg = $0000
+!palette_bg = $1576 
 
 open_custom_menu:
   LDA #$0001
@@ -76,9 +84,9 @@ open_custom_menu:
   
   .set_palette
     ; palette
-    LDA #$1576
+    LDA #!palette_bg
     STA $7E0502
-    LDA #$0000
+    LDA #!palette_fg
     STA $7E0504
     RTL
   +
@@ -88,6 +96,13 @@ open_custom_menu:
   STA !custom_menu_pointer
   LDA #$0000
   STA !custom_menu_cursor
+
+  ; play sfx
+  SEP #$20
+  LDA #!sfx_open
+  STA !current_sfx_long
+  REP #$20
+  JSR play_sound_on_snes
 
 ; main loop
 custom_menu:
@@ -105,26 +120,72 @@ custom_menu:
   LDA !p1controller_hold
   AND #!btn_r
   BEQ +
-  LDA !p1controller_frame
-  CMP #!btn_start
-  BEQ exit_menu
+    LDA !p1controller_frame
+    CMP #!btn_start
+    BNE ++
+      JMP exit_menu
+    ++
   +
 
   ; cursor movement
   JSR update_cursor
 
+  ; go up a menu
+  LDA !p1controller_frame
+  CMP #!btn_b
+  BNE +
+    ; play sfx
+    SEP #$20
+    LDA #!sfx_back
+    STA !current_sfx_long
+    REP #$20
+    JSR play_sound_on_snes
+
+    ; get next menu pointer
+    LDY.w #MenuOffsets.UpMenu
+    LDA [!dp_menu], Y
+
+    ; if it's 0000, exit the menu
+    BNE ++
+      JMP exit_menu
+    ++
+
+    ; set menu
+    STA !custom_menu_pointer
+    LDA #$0000
+    STA !custom_menu_cursor
+    JMP custom_menu
+  +
+
   ; do the thing
   LDA !p1controller_frame
   CMP #!btn_a
   BNE +
-    ; load the first menu function for now
-    LDA.w #MenuOffsets.Choices[0].Code
-    ADC !custom_menu_pointer
+    ; prep sound effect
+    SEP #$20
+    LDA #!sfx_select
+    STA !current_sfx_long
+    REP #$20
+    ; load the first menu function pointer
+    LDA !custom_menu_cursor
     TAX
-    DEX ; TODO: why is this necessary?
+    LDA.w #MenuOffsets.Choices[0].Code
+    CLC
+    ADC !custom_menu_pointer
+    ; add the offset to get to the right index
+    CPX #$0000
+    BEQ .done_adding
+    .add_loop:
+      CLC
+      ADC.w #sizeof(MenuOffsets.Choices)
+      DEX
+      BNE .add_loop
+    .done_adding:
+    TAX
     JSR ($0000, X)
+    JSR play_sound_on_snes
     ; restart loop in case menu changed
-    BRA custom_menu
+    JMP custom_menu
   +
 
   ; switch language on select
@@ -145,7 +206,7 @@ custom_menu:
   JSR write_mirror
 
   ; loop
-  BRA custom_menu
+  JMP custom_menu
 update_cursor:
   LDA !p1controller_frame
   CMP #!btn_up
@@ -190,7 +251,6 @@ exit_menu:
   JSL !load_dma_table
 
   JSR restore_registers
-
   RTL
 
 draw_screen:
@@ -358,6 +418,17 @@ save_registers:
   +
   RTS
 
+play_sound_on_snes:
+  LDA.w #.onSNES
+  LDX.w #bank(.onSNES)
+  JSL !sa1_executesnes 
+  BRA +
+  .onSNES
+    JSL !play_sfx_long
+    RTL
+  +
+  RTS
+
 restore_registers:
   LDA $40F6C2
   STA !dp_scratch
@@ -465,33 +536,43 @@ draw_string:
   STA !dp_scratch
 
   LDX #$0001
+  SEP #$20
   .loop:
+  LDA #$00
   LDA [!dp_scratch]
-  ; if the character is FFFF, stop
-  CMP #$FFFF
+  ; if the character is FF, stop
+  CMP #$FF
   BEQ .done
-  ; if the character is FFFE, move down a line and restore X pos
-  CMP #$FFFE
+  ; if the character is FE, move down a line and restore X pos
+  CMP #$FE
   BNE +
+    REP #$20
     LDA #$0040 ; line height
     ADC !dp_scratch+3
     STX !dp_scratch+3
     ASL !dp_scratch+3
     SBC !dp_scratch+3
     STA !dp_scratch+3
+    SEP #$20
     BRA .increment
   +
+  ; clear upper bytes
+  REP #$20
+  AND #$00FF
   ; write tile
   STA [!dp_scratch+3]
+  SEP #$20
   .increment:
-  INC !dp_scratch
+  REP #$20
   INC !dp_scratch
   INC !dp_scratch+3
   INC !dp_scratch+3
   INX
+  SEP #$20
   BRA .loop
 
   .done:
+  REP #$20
   RTS
   
 
@@ -543,7 +624,7 @@ db $15, $C2, $12, $00, $E4, $40, $00, $30
 ; Entry 1: Decompress JP font to VRAM 3000.w ($6000) (same as vanilla)
 db $83, $30, $0B, $EE, $50, $E5, $00, $30
 ; Entry 2: Decompress EN font to VRAM 3600.w
-db $83, $C0, $06, $70, $F2, $02, $00, $36
+db $83, $C0, $06, $70, $F2, $02, $80, $34
 ; Entry 3: Back up the area we will use for tilemap data
 db $15, $00, $08, $00, $F7, $40, $00, $00
 ; End of table
@@ -567,37 +648,124 @@ menu_footer:
 option_noop:
   RTS
 
+set_menu_and_cursor:
+  STA !custom_menu_pointer
+  LDA #$0000
+  STA !custom_menu_cursor
+  RTS
+
+back_to_main:
+  LDA #menu_main
+  JSR set_menu_and_cursor
+  RTS
+
+back_one:
+  ; get next menu pointer
+  LDY.w #MenuOffsets.UpMenu
+  LDA [!dp_menu], Y
+  JSR set_menu_and_cursor
+  RTS
+  
+
 menu_main:
-  dw .title, $0003
+  dw .title, $0003, $0000
   dw .opt1, .opt1_code
   dw .opt2, option_noop
+  dw .opt3, .opt3_code
   dw .opt3, option_noop
-  dw .opt3, option_noop
-  .title: %text("* Main menu *", "マインメンユー")
-  .opt1:  %text("Boss Warp", "ボースへいこう")
+  .title: %text("* Main menu *", "マイン　メンユー")
+  .opt1:  %text("Warp", "ボースへいこう")
   .opt2:  %text("Set RNG", "らんそうせってい")
   .opt3:  %text("Kirby Color", "カービィのいろ")
   .opt1_code:
-    LDA #menu_sub
-    STA !custom_menu_pointer
-    LDA #$0000
-    STA !custom_menu_cursor
+    LDA #menu_warp
+    JSR set_menu_and_cursor
+    RTS
+  .opt3_code:
+    LDA #menu_colors
+    JSR set_menu_and_cursor
     RTS
 
-menu_sub:
-  dw .title, $0001
+menu_warp:
+  dw .title, $0007, menu_main
   dw .opt1, .opt1_code
-  .title: %text("* Sub Menu *", "マインメンユー")
-  .opt1:  %text("Back", "ボースへいこう")
+  dw .opt2, .opt2_code
+  dw .opt3, .opt3_code
+  dw .opt4, .opt4_code
+  dw .opt5, .opt5_code
+  dw .opt6, .opt6_code
+  dw .opt7, back_one
+  .title: %text("* Warp Menu *", "PLACEHOLDER")
+  .opt1:  %text("Spring Breeze", "PLACEHOLDER")
+  .opt2:  %text("Dyna Blade", "PLACEHOLDER")
+  .opt3:  %text("Gourmet Race", "PLACEHOLDER")
+  .opt4:  %text("GCO", "PLACEHOLDER")
+  .opt5:  %text("ROMK", "PLACEHOLDER")
+  .opt6:  %text("MWW", "PLACEHOLDER")
+  .opt7:  %text("Back", "PLACEHOLDER")
   .opt1_code:
-    LDA #menu_main
-    STA !custom_menu_pointer
-    LDA #$0000
-    STA !custom_menu_cursor
+    LDA #menu_warp_spring
+    JSR set_menu_and_cursor
     RTS
+  .opt2_code:
+    LDA #menu_warp_dyna
+    JSR set_menu_and_cursor
+    RTS
+  .opt3_code:
+    LDA #menu_warp_gourmet
+    JSR set_menu_and_cursor
+    RTS
+  .opt4_code:
+    LDA #menu_warp_gco
+    JSR set_menu_and_cursor
+    RTS
+  .opt5_code:
+    LDA #menu_warp_romk
+    JSR set_menu_and_cursor
+    RTS
+  .opt6_code:
+    LDA #menu_warp_mww
+    JSR set_menu_and_cursor
+    RTS
+
+menu_warp_spring:
+  dw .title, $0001, menu_warp
+  dw .opt1, back_one
+  .title: %text("* Spring Warps *", "PLACEHOLDER")
+  .opt1:  %text("Back", "PLACEHOLDER")
+
+menu_warp_dyna:
+  dw .title, $0001, menu_warp
+  dw .opt1, back_one
+  .title: %text("* Dyna Warps *", "PLACEHOLDER")
+  .opt1:  %text("Back", "PLACEHOLDER")
+
+menu_warp_gourmet:
+  dw .title, $0001, menu_warp
+  dw .opt1, back_one
+  .title: %text("* Gourmet Warps *", "PLACEHOLDER")
+  .opt1:  %text("Back", "PLACEHOLDER")
+
+menu_warp_gco:
+  dw .title, $0001, menu_warp
+  dw .opt1, back_one
+  .title: %text("* GCO Warps *", "PLACEHOLDER")
+  .opt1:  %text("Back", "PLACEHOLDER")
+
+menu_warp_romk:
+  dw .title, $0001, menu_warp
+  dw .opt1, back_one
+  .title: %text("* ROMK Warps *", "PLACEHOLDER")
+  .opt1:  %text("Back", "PLACEHOLDER")
+
+menu_warp_mww:
+  dw .title, $0001, menu_warp
+  dw .opt1, back_one
+  .title: %text("* MWW Warps *", "PLACEHOLDER")
+  .opt1:  %text("Back", "PLACEHOLDER")
 
 menu_colors:
-  dw .title, $000B
+  dw .title, $000B, menu_main
   dw .opt1, .setcolor_code
   dw .opt2, .setcolor_code
   dw .opt3, .setcolor_code
@@ -608,24 +776,24 @@ menu_colors:
   dw .opt8, .setcolor_code
   dw .opt9, .setcolor_code
   dw .opt10, .setcolor_code
-  dw .opt11, .setcolor_code
-  .title: %text("* Kirby Color *", "マインメンユー")
-  .opt1:  %text("Flash", "ボースへいこう")
-  .opt2:  %text("Pink", "ボースへいこう")
-  .opt3:  %text("Red", "ボースへいこう")
-  .opt4:  %text("Yellow", "ボースへいこう")
-  .opt5:  %text("Light blue", "ボースへいこう")
-  .opt6:  %text("Blue", "ボースへいこう")
-  .opt7:  %text("Sapphire", "ボースへいこう")
-  .opt8:  %text("Purple", "ボースへいこう")
-  .opt9:  %text("Brown", "ボースへいこう")
-  .opt10:  %text("Chalk", "ボースへいこう")
-  .opt11:  %text("Back", "ボースへいこう")
+  dw .opt11, back_to_main
+  .title: %text("* Kirby Color *", "PLACEHOLDER")
+  .opt1:  %text("Default", "PLACEHOLDER")
+  .opt2:  %text("Pink (Always)", "PLACEHOLDER")
+  .opt3:  %text("Red", "PLACEHOLDER")
+  .opt4:  %text("Yellow", "PLACEHOLDER")
+  .opt5:  %text("Light blue", "PLACEHOLDER")
+  .opt6:  %text("Blue", "PLACEHOLDER")
+  .opt7:  %text("Sapphire", "PLACEHOLDER")
+  .opt8:  %text("Purple", "PLACEHOLDER")
+  .opt9:  %text("Brown", "PLACEHOLDER")
+  .opt10:  %text("Chalk", "PLACEHOLDER")
+  .opt11:  %text("Back", "PLACEHOLDER")
   .setcolor_code:
+    LDA !custom_menu_cursor
+    STA !toggle_custom_colors
     LDA #menu_main
-    STA !custom_menu_pointer
-    LDA #$0000
-    STA !custom_menu_cursor
+    JSR set_menu_and_cursor
     RTS
 
 
