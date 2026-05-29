@@ -13,15 +13,12 @@ struct Choices extends MenuOffsets
   .Code: skip 2
 endstruct
 
-
 !menu_vram = $0040
 !menu_row_size = $0020
 
 !menu_mirror = $7FF000
 
-!cursor = $1000
-!current_menu = $1002
-!current_menu_option_count = $1004
+!cursor_sprite = $0093
 
 !dp_menu = $41
 !dp_scratch = $45
@@ -94,6 +91,14 @@ open_custom_menu:
 
 ; main loop
 custom_menu:
+  ; setup dp_menu
+  LDA !custom_menu_pointer
+  STA !dp_menu
+  SEP #$20
+  LDA.b #bank(menu_main)
+  STA !dp_menu+2
+  REP #$20
+
   JSL !update_layers_input
 
   ; exit on R+Start
@@ -103,6 +108,23 @@ custom_menu:
   LDA !p1controller_frame
   CMP #!btn_start
   BEQ exit_menu
+  +
+
+  ; cursor movement
+  JSR update_cursor
+
+  ; do the thing
+  LDA !p1controller_frame
+  CMP #!btn_a
+  BNE +
+    ; load the first menu function for now
+    LDA.w #MenuOffsets.Choices[0].Code
+    ADC !custom_menu_pointer
+    TAX
+    DEX ; TODO: why is this necessary?
+    JSR ($0000, X)
+    ; restart loop in case menu changed
+    BRA custom_menu
   +
 
   ; switch language on select
@@ -115,50 +137,44 @@ custom_menu:
   +
 
   ; build menu on snes cpu
-  LDA.w #.build_menu
-  LDX.w #bank(.build_menu)
+  LDA.w #draw_screen
+  LDX.w #bank(draw_screen)
   JSL !sa1_executesnes 
-  BRA +
-  
-  .build_menu
-    JSR clear_screen
 
-    ; write header
-    LDA #menu_header
-    LDX #$0001
-    LDY #$0001
-    JSR draw_string
-
-    ; write footer
-    LDA #menu_footer
-    LDX #$0001
-    LDY #$001A
-    JSR draw_string
-
-    LDA !custom_menu_pointer
-    STA !dp_menu
-
-    ; set bank
-    SEP #$20
-    LDA.b #bank(menu_main)
-    STA !dp_menu+2
-    REP #$20
-
-    ; draw menu title
-    LDY.w MenuOffsets.Title
-    LDA [!dp_menu], Y
-    LDX #$0001
-    LDY #$0003
-    JSR draw_string
-    RTL
-  +
-
-  ; back on SA-1
   ; write menu mirror to PPU
   JSR write_mirror
 
   ; loop
   BRA custom_menu
+update_cursor:
+  LDA !p1controller_frame
+  CMP #!btn_up
+  BNE +
+    LDA !custom_menu_cursor
+    DEC
+    CMP #$FFFF
+    BNE ++
+      ; wrap to end
+      LDY.w #MenuOffsets.ChoiceCount
+      LDA [!dp_menu], Y
+      DEC
+    ++
+    STA !custom_menu_cursor
+  +
+  LDA !p1controller_frame
+  CMP #!btn_down
+  BNE +
+  LDA !custom_menu_cursor
+  INC
+  LDY.w #MenuOffsets.ChoiceCount
+  CMP [!dp_menu], Y
+  BNE ++
+    ; wrap to begin
+    LDA #$0000
+  ++
+  STA !custom_menu_cursor
+  +
+  RTS
 
 exit_menu:
   LDA #$0000
@@ -176,6 +192,108 @@ exit_menu:
   JSR restore_registers
 
   RTL
+
+draw_screen:
+  JSR clear_screen
+
+  ; write header
+  LDA #menu_header
+  LDX #$0001
+  LDY #$0001
+  JSR draw_string
+
+  ; write footer
+  LDA #menu_footer
+  LDX #$0001
+  LDY #$001A
+  JSR draw_string
+
+  ; draw menu title
+  LDY.w #MenuOffsets.Title
+  LDA [!dp_menu], Y
+  LDX #$0001
+  LDY #$0003
+  JSR draw_string
+
+  ; draw menu options
+  ; X = iterator, Y = current text index
+  LDX #$0000
+  LDY.w #MenuOffsets.Choices[0].Text
+  PHY
+  .choice_print_loop
+    PLY
+
+    ; load text of current choice
+    LDA [!dp_menu], Y
+    PHX
+    PHY
+    PHA
+
+    ; calculate display Y
+    TXA
+    ASL A
+    ADC #$0005
+    TAY
+
+    ; display X is always 3
+    LDX #$0003
+
+    PLA
+    JSR draw_string
+    PLY
+    PLX
+
+    ; move Y to next offset
+    TYA
+    CLC
+    ADC.w #sizeof(MenuOffsets.Choices)
+    TAY
+
+    ; increase loop counter
+    INX
+
+    PHY
+    ; check for loop
+    TXA
+    LDY.w #MenuOffsets.ChoiceCount
+    CMP [!dp_menu], Y
+  BNE .choice_print_loop
+  PLY
+
+  ; draw cursor
+  LDA !custom_menu_cursor
+
+  ; starts 2 down
+  CLC
+  ADC #$0002
+
+  ; y * 128 (moves two lines at a time)
+  ASL A
+  INC ; on an odd line... just trust ok
+  ASL A
+  ASL A
+  ASL A
+  ASL A
+  ASL A
+  ASL A
+
+  ; second column
+  CLC
+  ADC #$0002
+
+  ADC #!menu_mirror
+  STA !dp_scratch
+  ; set bank
+  SEP #$20
+  LDA.b #bank(!menu_mirror)
+  STA !dp_scratch+2
+  REP #$20
+
+  LDA #!cursor_sprite
+  STA [!dp_scratch]
+
+  RTL
+
 
 save_registers:
   LDA !dp_scratch
@@ -306,6 +424,7 @@ restore_registers:
 
 ; string addr in A, x in X, y in Y
 draw_string:
+  CLC
   STA !dp_scratch
 
   ; set banks
@@ -320,6 +439,7 @@ draw_string:
   LDA !custom_menu_language
   STA !dp_scratch+3
   ; calculate destination start addr
+  INY
   TYA
   SBC !dp_scratch+3
   
@@ -449,11 +569,63 @@ option_noop:
 
 menu_main:
   dw .title, $0003
-  dw .opt1, option_noop
+  dw .opt1, .opt1_code
   dw .opt2, option_noop
   dw .opt3, option_noop
+  dw .opt3, option_noop
   .title: %text("* Main menu *", "マインメンユー")
-  .opt1: %text("Boss Warp", "ボースへいこう")
-  .opt2: %text("Set RNG", "らんそうせってい")
-  .opt3: %text("Kirby Color", "カービィのいろ")
+  .opt1:  %text("Boss Warp", "ボースへいこう")
+  .opt2:  %text("Set RNG", "らんそうせってい")
+  .opt3:  %text("Kirby Color", "カービィのいろ")
+  .opt1_code:
+    LDA #menu_sub
+    STA !custom_menu_pointer
+    LDA #$0000
+    STA !custom_menu_cursor
+    RTS
+
+menu_sub:
+  dw .title, $0001
+  dw .opt1, .opt1_code
+  .title: %text("* Sub Menu *", "マインメンユー")
+  .opt1:  %text("Back", "ボースへいこう")
+  .opt1_code:
+    LDA #menu_main
+    STA !custom_menu_pointer
+    LDA #$0000
+    STA !custom_menu_cursor
+    RTS
+
+menu_colors:
+  dw .title, $000B
+  dw .opt1, .setcolor_code
+  dw .opt2, .setcolor_code
+  dw .opt3, .setcolor_code
+  dw .opt4, .setcolor_code
+  dw .opt5, .setcolor_code
+  dw .opt6, .setcolor_code
+  dw .opt7, .setcolor_code
+  dw .opt8, .setcolor_code
+  dw .opt9, .setcolor_code
+  dw .opt10, .setcolor_code
+  dw .opt11, .setcolor_code
+  .title: %text("* Kirby Color *", "マインメンユー")
+  .opt1:  %text("Flash", "ボースへいこう")
+  .opt2:  %text("Pink", "ボースへいこう")
+  .opt3:  %text("Red", "ボースへいこう")
+  .opt4:  %text("Yellow", "ボースへいこう")
+  .opt5:  %text("Light blue", "ボースへいこう")
+  .opt6:  %text("Blue", "ボースへいこう")
+  .opt7:  %text("Sapphire", "ボースへいこう")
+  .opt8:  %text("Purple", "ボースへいこう")
+  .opt9:  %text("Brown", "ボースへいこう")
+  .opt10:  %text("Chalk", "ボースへいこう")
+  .opt11:  %text("Back", "ボースへいこう")
+  .setcolor_code:
+    LDA #menu_main
+    STA !custom_menu_pointer
+    LDA #$0000
+    STA !custom_menu_cursor
+    RTS
+
 

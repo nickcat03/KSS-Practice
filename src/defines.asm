@@ -157,6 +157,7 @@
 !custom_menu_language       = $40FFC2
 !custom_menu_pointer        = $40FFC4
 !custom_menu_cursor         = $40FFC6
+!custom_menu_action         = $40FFC8
 
 ; for saving certain values on room reload 
 !room_reload_storage                = $40FF40

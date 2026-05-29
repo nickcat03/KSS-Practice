@@ -263,8 +263,8 @@ macro text(en_text, jp_text)
 endmacro
 
 macro lang_swap_text(en_text, jp_text)
-        dw ?jp_label
         dw ?en_label
+        dw ?jp_label
 
         ?en_label: %jp("<en_text>")
         ?jp_label: %en("<jp_text>")
