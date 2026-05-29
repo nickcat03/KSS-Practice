@@ -83,8 +83,11 @@
 ; various miscellaneous things
 !animation_timer        = $6E4C
 !reload_room            = $7392
+!reload_room_long       = $007392
 !screen_fade            = $30A1
+!screen_fade_long       = $0030A1
 !screen_brightness      = $305F
+!screen_brightness_long = $00305F
 !replay_cutscene        = $332A     ; this variable might do more than just handle cutscenes
 !move_cam_hud           = $3330     ;/ these...
 !is_paused              = $7368     ;\ ... two seem to do the same thing?

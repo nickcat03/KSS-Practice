@@ -184,6 +184,11 @@ custom_menu:
     TAX
     JSR ($0000, X)
     JSR play_sound_on_snes
+    ; exit if menu is now $0000
+    LDA !custom_menu_pointer
+    BNE ++
+      JMP exit_menu
+    ++
     ; restart loop in case menu changed
     JMP custom_menu
   +
@@ -747,10 +752,34 @@ menu_warp_gourmet:
   .opt1:  %text("Back", "PLACEHOLDER")
 
 menu_warp_gco:
-  dw .title, $0001, menu_warp
-  dw .opt1, back_one
+  dw .title, $0002, menu_warp
+  dw .opt1, .opt1_code
+  dw .opt2, back_one
   .title: %text("* GCO Warps *", "PLACEHOLDER")
-  .opt1:  %text("Back", "PLACEHOLDER")
+  .opt1:  %text("Fatty Whale","PLACEHOLDER")
+  .opt2:  %text("Back", "PLACEHOLDER")
+  .opt1_code:
+    SEP #$20
+    LDA #$37
+    STA !room_to_respawn_into
+    ;LDA #$02
+    ;STA !replay_cutscene ; use the "second" respawn coordinates(?)
+    ; current_sfx will be played when this returns
+    LDA !sfx_warp_elsewhere
+    STA !current_sfx_long
+    REP #$20
+    LDA #$003C
+    STA !kirby_x_respawn
+    LDA #$009C
+    STA !kirby_y_respawn
+    LDA #$0001
+    STA !reload_room_long
+    ; set current menu to $0000 to exit cleanly
+    LDA #$0000
+    STA !custom_menu_pointer
+    STA !screen_brightness_long
+    STA !screen_fade_long
+    RTS
 
 menu_warp_romk:
   dw .title, $0001, menu_warp
