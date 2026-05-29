@@ -316,7 +316,7 @@ restore_level_data:
     .reload_tileset
         LDA.w !state_tileset
         CMP.w !current_tileset
-        BEQ .reload_fatty_whale
+        BEQ .end_level_restore
         JSL load_tileset
     
 

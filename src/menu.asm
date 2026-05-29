@@ -560,9 +560,9 @@ db $03, $FE, $07, $02, $F7, $40, $00, $00
 db $FF
 
 menu_header:
-%text("KSS Practice Hack * 05/27/2026","SUPADERA HAKKU * 05/27/2026")
+%text("KSS Practice Hack * 05/27/2026","スパデラ　ハック * 05/27/2026")
 menu_footer:
-%lang_swap_text("SEL oseba nihongo","Press SELECT for English")
+%lang_swap_text("SEL おせば　にほんご","Press SELECT for English")
 
 option_noop:
   RTS
