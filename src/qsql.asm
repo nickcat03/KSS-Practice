@@ -244,18 +244,26 @@ restore_state:
 !room_graphics_state = $408EF6
 
 ; using random spots in WRAM for these because they're temporary and we're loading the state anyway
-!current_background = $000300
-!state_background = $000302
-!current_tileset = $000304
-!state_tileset = $000306
+!current_fatty_whale = $000300
+!state_fatty_whale = $000302
+!current_background = $000304
+!state_background = $000306
+!current_tileset = $000308
+!state_tileset = $00030A
 
 compare_level_data:
     ; this routine is purely meant for saving values so that later we could see if we actually need to load them in
     ; having these values load in on every state load is redundant and makes loads extremely slow
     ; this verifies that we only load the level graphics if we actually need them
 
+    ; see if fatty whale is in the current room
+    SEP #$30
+    LDA !subgame
+    LDX !room_number
+    JSR check_fatty_whale
+    STA !current_fatty_whale
+
     ; store current room graphics
-    SEP #$20
     LDA.w !room_graphics+2
     PHA
     PLB
@@ -290,7 +298,7 @@ compare_level_data:
     LDA #$00
     PHA
     PLB   ; Set data bank back to zero (this is what the original routine uses)
-    REP #$20
+    REP #$30
 
     RTS
 
@@ -299,15 +307,22 @@ restore_level_data:
         LDA #$8000      ; Prevents an infinite loop when loading background data
         STA !screen_fade
 
-    ;.reload_fatty_whale
-    ;    JSL $D52924
+        ; check fatty whale status
+        SEP #$30
+        LDA !subgame
+        LDX !room_number
+        JSR check_fatty_whale
+        STA !state_fatty_whale
+        BNE .reload_background  ; skip consumables reload if Fatty Whale exists
 
     .reload_consumables
-        ; always run, it doesn't waste many cycles and there are some edge cases that are impractical to check for
+        ; always run (unless fatty whale check skips it), it doesn't waste many cycles and there are some edge cases that are impractical to check for
         ; ironically enough it's probably a good thing this runs because then the state would load too quickly
+        REP #$30
         JSL load_consumables
 
     .reload_background
+        REP #$30
         LDA.w !state_background
         CMP.w !current_background
         BEQ .reload_tileset
@@ -318,9 +333,23 @@ restore_level_data:
         CMP.w !current_tileset
         BEQ .end_level_restore
         JSL load_tileset
-    
 
+    ; Load Fatty Whale last so we ensure its graphics always override the buffer
+    .reload_fatty_whale
+        SEP #$30
+        LDA !state_fatty_whale
+        BNE .load_fatty_whale_room
+        BRA .end_level_restore
+
+        .load_fatty_whale_room
+            ; see if we are already in a room where Fatty Whale graphics are loaded, so we don't need to reload them again.
+            LDA !current_fatty_whale
+            BNE .end_level_restore
+            REP #$30
+            JSL $D52924
+    
     .end_level_restore
+        REP #$30
         RTS
 
     pushpc
@@ -337,7 +366,38 @@ restore_level_data:
             RTL
     pullpc
 
+check_fatty_whale:
+    ; check subgame
+    CMP #$03
+    BEQ .gco
+    CMP #$05
+    BEQ .mww
+    CMP #$06
+    BEQ .arena
+    BRA .false
 
+    .gco
+    CPX #$37
+    BEQ .true
+    BRA .false
+
+    .mww
+    CPX #$08
+    BEQ .true
+    BRA .false
+
+    .arena
+    CPX #$09
+    BEQ .true
+    BRA .false
+
+    .true
+        LDA #$01
+        RTS
+
+    .false
+        LDA #$00
+        RTS
 
 ; Save stuff such as HP, ability, invincibility timer, RNG, etc.
 auto_save_on_room_load:

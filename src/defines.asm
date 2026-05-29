@@ -29,6 +29,7 @@
 !timer_for_various_file_select_things   = $6724
 !game_mode                  = $7390
 !subgame                    = $32EA
+!room_number                = $32F2
 !corkboard_cursor           = $7A85
 !subgame_menu_cursor        = $7B23
 !romk_chapter               = $7A67
