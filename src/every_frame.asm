@@ -11,6 +11,7 @@ sa1_code:
     !sa1_adjustment = #$0000
 
     LDA !sa1_adjustment
+    INC A
     - DEC A
     BNE -
 
