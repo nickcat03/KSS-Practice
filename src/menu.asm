@@ -847,8 +847,7 @@ db $03, $FE, $07, $02, $F7, $40, $00, $00
 ; End of table
 db $FF
 
-menu_header:
-%text("KSS Practice Hack * 05/31/2026","スパデラ　ハック * ２０２６/０５/３１")
+menu_header: %text("KSS Practice Hack ★ 05/31/2026","スパデラ れんしゅう　ハック ★ ３１/０５/２０２６")
 
 option_noop:
   RTS
@@ -873,19 +872,13 @@ back_one:
 
 
 menu_main:
-  dw .title, $0005, $0000
-  db bank(.title)
-  dw .opt1, .opt1_code
-  dw .opt2, .opt2_code
-  dw .opt3, .opt3_code
-  dw .opt4, .opt4_code
-  dw .opt5, .opt5_code
-  .title: %text("Main Menu", "マイン　メンユー")
-  .opt1:  %text("Warp Menu", "ワープ　メニュー")
-  .opt2:  %text("MWW Abilities", "MWW Abilities")
-  .opt3:  %text("Kirby Color", "カービィ の いろ")
-  .opt4:  %text("Audio", "Audio")
-  .opt5:  %lang_swap_text("にほんご　メニュー", "English menu")
+  dw text_main, $0005, $0000
+  db bank(text)
+  dw text_warp, .opt1_code
+  dw text_mww_abilities, .opt2_code
+  dw text_color, .opt3_code
+  dw text_audio, .opt4_code
+  dw text_language, .opt5_code
   .opt1_code:
     LDA #menu_warp
     JSR set_menu_and_cursor
@@ -909,7 +902,7 @@ menu_main:
     RTS
 
 menu_warp:
-  dw text_warp_title, $0007, menu_main
+  dw text_warp, $0007, menu_main
   db bank(text)
   dw text_spring, .opt1_code
   dw text_dyna, .opt2_code
@@ -1056,7 +1049,7 @@ menu_mww_abilities:
     RTS
 
 menu_colors:
-  dw text_colors_title, $000B, menu_main
+  dw text_color, $000B, menu_main
   db bank(text)
   dw text_colors_opt1, .setcolor_code
   dw text_colors_opt2, .setcolor_code
@@ -1083,7 +1076,7 @@ menu_colors:
     RTS
 
 menu_audio:
-  dw text_audio_title, $0003, menu_main
+  dw text_audio, $0003, menu_main
   db bank(text)
   dw text_audio_opt1, .stereomono_code
   dw text_audio_opt2, .stereomono_code
@@ -1109,42 +1102,43 @@ text:
   .back: %text("Back", "もどる")
   .off: %text("Off", "OFF")
 
-  .spring:  %text("Spring Breeze", "はるかぜとともに")
+  .main:     %text("Main Menu", "マイン　メンユー")
+  .nothing:  %text("Do nothing", "なにを　しない")
+  .color:    %text("Kirby Color", "カービィの いろ")
+  .language: %lang_swap_text("にほんご　メニュー", "English menu")
+
+  .spring:  %text("Spring Breeze", "はるかぜと ともに")
   .dyna:    %text("Dyna Blade", "ダィナブレィド")
-  .gourmet: %text("Gourmet Race", "グルメレース")
-  .gco:     %text("Great Cave Offensive", "どうくつだいさくせん")
-  .romk:    %text("Revenge of Meta Knight", "メタナイトのぎゃくしゅう")
-  .mww:     %text("Milky Way Wishes", "ぎんがにねがいを")
+  .gourmet: %text("Gourmet Race", "グルメ レース")
+  .gco:     %text("Great Cave Offensive", "どうくつ だいさくせん")
+  .romk:    %text("Revenge of Meta Knight", "メタナイトの ぎゃくしゅう")
+  .mww:     %text("Milky Way Wishes", "ぎんがに ねがいを")
 
   .nova:    %text("Nova","ノヴァ")
   .marx:    %text("Marx","マルク")
-  .whale:   %text("Fatty Whale","ファッティホエール")
-  .windows: %text("Battle Windows","バトルウィンドウズ")
+  .whale:   %text("Fatty Whale","ファッティ ホエール")
+  .windows: %text("Battle Windows","バトル ウィンドウズ")
   .tower:   %text("Old Tower","こだい　の　とう")
   .garden:  %text("Garden","しんぴ　の　らくえん")
 
-  .combo:   %text("Combo Cannon","にれんしゅほう")
+  .combo:   %text("Combo Cannon","にれん しゅほう")
   .reactor: %text("Reactor","リアクター")
   .meta:    %text("Meta Knight","メタナイト")
 
-  .warp
-    ..title: %text("Warp Menu", "ワープ　メンユー")
-    ..dynafight:  %text("Dyna Boss","ダィナブレィド　と　たたかう")
+  .warp:    %text("Warp Menu", "ワープ　メニュー")
+    ..dynafight: %text("Dyna Boss","ダィナブレィドと　たたかう")
 
-  .mww_abilities
-    ..title: %text("MWW Abilities", "MWW Abilities")
+  .mww_abilities: %text("MWW Abilities", "MWW Abilities")
     ..opt1: %text("No change", "No change")
     ..opt2: %text("Any%", "Any%")
     ..opt3: %text("Any% (Plasma)", "Any% (Plasma)")
     ..opt4: %text("100%", "100%")
 
-  .audio
-    ..title: %text("Audio Settings", "Audio Settings")
+  .audio: %text("Audio Settings", "Audio Settings")
     ..opt1: %text("Stereo", "Stereo")
     ..opt2: %text("Mono", "Mono")
 
   .colors
-    ..title: %text("Kirby Color", "カービィ　の　いろ")
     ..opt1:  %text("Default", "おまかせ　（スタンダード）")
     ..opt2:  %text("Pink (Always)", "ピンク　（いつも）")
     ..opt3:  %text("Red", "レッド")
