@@ -29,8 +29,11 @@
 !selected_file              = $6D56
 !timer_for_various_file_select_things   = $6724
 !game_mode                  = $7390
+!advance_game_mode          = $7392
 !subgame                    = $32EA
 !room_number                = $32F2
+!level_number               = $32EE     ; dyna level, mww planet
+!level_number_long          = $0032EE
 !corkboard_cursor           = $7A85
 !subgame_menu_cursor        = $7B23
 !romk_chapter               = $7A67
@@ -68,6 +71,8 @@
 !kirby_y_pos                = $6A02
 !kirby_x_respawn            = $330C
 !kirby_y_respawn            = $3310
+!kirby_x_respawn_long       = $00330C
+!kirby_y_respawn_long       = $003310
 !room_to_respawn_into       = $32F2
 !camera_lock                = $7368
 !room_size_x                = $3366
@@ -163,6 +168,8 @@
 !custom_menu_pointer        = $40FFC4
 !custom_menu_cursor         = $40FFC6
 !custom_menu_action         = $40FFC8
+!custom_menu_subgame_warp   = $40FFCA
+!custom_menu_level_table    = $66       ; called as $3766 in menu code
 
 ; for saving certain values on room reload 
 !room_reload_storage                = $40FF40
@@ -195,6 +202,7 @@
 
 ; subroutines
 !reset_game                 = $BCE7
+!check_game_reset           = $BCDE
 !update_romk_vram           = $07E55D
 !assign_ability_data        = $029C71
 !assign_helper_data         = $029D2F

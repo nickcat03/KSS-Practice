@@ -35,6 +35,9 @@ BRA .free_move_toggle_check
     LDA !wheelie_rider_state    ; don't activate while riding on wheelie or game will crash
     BNE .free_move_check_done
 
+    LDA !is_shooting            ; don't activate while in shmup mode
+    BNE .free_move_check_done 
+
     LDA !p1controller_hold
     AND #$0030                  ; L + R held?
     CMP #$0030

@@ -15,8 +15,8 @@ ORG $078736
 
 ; Make death animation instant
 ; $B4 -> $01
-;ORG $088D9D
-;    db $01
+ORG $088D9D
+    db $01
 
 ; Set lives to 99 (purely cosmetic)
 ; LDA #$0003 -> LDA #$0063

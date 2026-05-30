@@ -106,6 +106,10 @@ open_custom_menu:
 
 ; main loop
 custom_menu:
+  ; allow for resetting the game while also in this menu
+  ; jumps to custom routine in init.asm that lets us jump to the reset game routine from bank $00
+  JSL check_reset
+
   ; setup dp_menu
   LDA !custom_menu_pointer
   STA !dp_menu
@@ -159,8 +163,8 @@ custom_menu:
 
   ; do the thing
   LDA !p1controller_frame
-  CMP #!btn_a
-  BNE +
+  AND #!btn_a|!btn_y
+  BEQ +
     ; prep sound effect
     SEP #$20
     LDA #!sfx_select
@@ -613,6 +617,117 @@ write_mirror:
 
   JSL !write_to_dma_buffer
   RTS
+
+
+; Code for handling room warps
+
+!subgame_long = $0032EA
+!room_number_long = $0032F2
+!level_long = $0032EE
+!cutscene_long = $00332A
+!kirby_x_long = $00330C 
+!kirby_y_long = $003310
+
+pushpc
+ORG $01DF960
+  warp_to_level:
+    STA !custom_menu_level_table
+
+    SEP #$30
+
+    LDA #$1D
+    PHA
+    PLB
+    
+    LDY #$00
+
+    ; current_sfx will be played when this returns
+    LDA !sfx_warp_elsewhere
+    STA !current_sfx_long
+
+    ; Start writing level data
+    LDA !custom_menu_subgame_warp
+    STA !subgame_long
+
+    LDA (!custom_menu_level_table)
+    STA !room_number_long
+
+    INY
+
+    LDA (!custom_menu_level_table),Y
+    STA !level_long
+
+    REP #$20
+
+    INY
+
+    LDA (!custom_menu_level_table),Y
+    STA !cutscene_long
+
+    INY
+    INY
+
+    LDA (!custom_menu_level_table),Y
+    STA !kirby_x_long
+
+    INY
+    INY
+
+    LDA (!custom_menu_level_table),Y
+    STA !kirby_y_long
+
+    LDA #$0001
+    STA !reload_room_long
+
+    ;LDA #$03
+    ;CMP !game_mode 
+    ;BEQ +
+    ;LDA #$03
+    ;STA !game_mode
+    ;REP #$20
+    ;JSL $00C177
+    ;SEP #$20
+    ;+
+
+    ; set current menu to $0000 to exit cleanly
+
+    SEP #$30
+    
+    LDA #$00
+    PHA
+    PLB
+
+    REP #$30
+    LDA #$0000
+    STA !custom_menu_pointer
+    STA !screen_brightness_long
+    STA !screen_fade_long
+    RTL
+
+    ; Tables for level warp data
+    ; values in parenthesis are 8-bit, rest are 16-bit
+    ; (level number, room), cutscene, kirby x, kirby y
+    ; ($32EE, $32F2), $332A, $330C, $3310
+
+    ; Dyna Blade
+    dyna_boss:            dw $0402, $0001, $0000, $0000
+
+    ; Great Cave Offensive
+    gco_fatty_whale:      dw $0037, $0002, $003C, $009C
+    gco_windows:          dw $0036, $0002, $003C, $009C
+    gco_tower_entrance:   dw $0013, $0002, $012C, $0054
+    gco_garden_entrance:  dw $004C, $0002, $00B4, $0054
+
+    ; Revenge of Meta Knight
+    romk_combo_cannon:    dw $0305, $0002, $0024, $0084
+    romk_reactor:         dw $0505, $0002, $0024, $0084
+    romk_metaknight_boss: dw $0602, $0002, $003C, $0084
+
+    ; Milky Way Wishes
+    mww_heart_of_nova:    dw $0801, $0001, $0000, $0000
+    mww_marx:             dw $0802, $0001, $0000, $0000
+
+pullpc
   
 
 clear_tile:
@@ -646,7 +761,7 @@ db $03, $FE, $07, $02, $F7, $40, $00, $00
 db $FF
 
 menu_header:
-%text("KSS Practice Hack * 05/27/2026","スパデラ　ハック * 05/27/2026")
+%text("KSS Practice Hack * 05/29/2026","スパデラ　ハック * ２９/５/２０２６")
 menu_footer:
 %lang_swap_text("SEL おせば　にほんご","Press SELECT for English")
 
@@ -670,7 +785,7 @@ back_one:
   LDA [!dp_menu], Y
   JSR set_menu_and_cursor
   RTS
-  
+
 
 menu_main:
   dw .title, $0003, $0000
@@ -678,9 +793,9 @@ menu_main:
   dw .opt2, option_noop
   dw .opt3, .opt3_code
   dw .opt3, option_noop
-  .title: %text("* Main menu *", "マイン　メンユー")
+  .title: %text("* Main Menu *", "マイン　メンユー")
   .opt1:  %text("Warp", "ボースへいこう")
-  .opt2:  %text("Set RNG", "らんそうせってい")
+  .opt2:  %text("Test", "らんそうせってい")
   .opt3:  %text("Kirby Color", "カービィのいろ")
   .opt1_code:
     LDA #menu_warp
@@ -704,31 +819,43 @@ menu_warp:
   .opt1:  %text("Spring Breeze", "PLACEHOLDER")
   .opt2:  %text("Dyna Blade", "PLACEHOLDER")
   .opt3:  %text("Gourmet Race", "PLACEHOLDER")
-  .opt4:  %text("GCO", "PLACEHOLDER")
-  .opt5:  %text("ROMK", "PLACEHOLDER")
-  .opt6:  %text("MWW", "PLACEHOLDER")
+  .opt4:  %text("Great Cave Offensive", "PLACEHOLDER")
+  .opt5:  %text("Revenge of Meta Knight", "PLACEHOLDER")
+  .opt6:  %text("Milky Way Wishes", "PLACEHOLDER")
   .opt7:  %text("Back", "PLACEHOLDER")
   .opt1_code:
+    LDA #$0000
+    STA !custom_menu_subgame_warp
     LDA #menu_warp_spring
     JSR set_menu_and_cursor
     RTS
   .opt2_code:
+    LDA #$0001
+    STA !custom_menu_subgame_warp
     LDA #menu_warp_dyna
     JSR set_menu_and_cursor
     RTS
   .opt3_code:
+    LDA #$0002
+    STA !custom_menu_subgame_warp
     LDA #menu_warp_gourmet
     JSR set_menu_and_cursor
     RTS
   .opt4_code:
+    LDA #$0003
+    STA !custom_menu_subgame_warp
     LDA #menu_warp_gco
     JSR set_menu_and_cursor
     RTS
   .opt5_code:
+    LDA #$0004
+    STA !custom_menu_subgame_warp
     LDA #menu_warp_romk
     JSR set_menu_and_cursor
     RTS
   .opt6_code:
+    LDA #$0005
+    STA !custom_menu_subgame_warp
     LDA #menu_warp_mww
     JSR set_menu_and_cursor
     RTS
@@ -740,10 +867,16 @@ menu_warp_spring:
   .opt1:  %text("Back", "PLACEHOLDER")
 
 menu_warp_dyna:
-  dw .title, $0001, menu_warp
-  dw .opt1, back_one
+  dw .title, $0002, menu_warp
+  dw .opt1, .opt1_code
+  dw .opt2, back_one
   .title: %text("* Dyna Warps *", "PLACEHOLDER")
-  .opt1:  %text("Back", "PLACEHOLDER")
+  .opt1:  %text("Dyna Boss","PLACEHOLDER")
+  .opt2:  %text("Back", "PLACEHOLDER")
+  .opt1_code:
+    LDA.w #dyna_boss
+    JSL warp_to_level
+    RTS
 
 menu_warp_gourmet:
   dw .title, $0001, menu_warp
@@ -752,46 +885,76 @@ menu_warp_gourmet:
   .opt1:  %text("Back", "PLACEHOLDER")
 
 menu_warp_gco:
-  dw .title, $0002, menu_warp
+  dw .title, $0005, menu_warp
   dw .opt1, .opt1_code
-  dw .opt2, back_one
+  dw .opt2, .opt2_code
+  dw .opt3, .opt3_code
+  dw .opt4, .opt4_code
+  dw .opt5, back_one
   .title: %text("* GCO Warps *", "PLACEHOLDER")
   .opt1:  %text("Fatty Whale","PLACEHOLDER")
-  .opt2:  %text("Back", "PLACEHOLDER")
+  .opt2:  %text("Windows","P")
+  .opt3:  %text("Tower","P")
+  .opt4:  %text("Garden","P")
+  .opt5:  %text("Back", "P")
   .opt1_code:
-    SEP #$20
-    LDA #$37
-    STA !room_to_respawn_into
-    ;LDA #$02
-    ;STA !replay_cutscene ; use the "second" respawn coordinates(?)
-    ; current_sfx will be played when this returns
-    LDA !sfx_warp_elsewhere
-    STA !current_sfx_long
-    REP #$20
-    LDA #$003C
-    STA !kirby_x_respawn
-    LDA #$009C
-    STA !kirby_y_respawn
-    LDA #$0001
-    STA !reload_room_long
-    ; set current menu to $0000 to exit cleanly
-    LDA #$0000
-    STA !custom_menu_pointer
-    STA !screen_brightness_long
-    STA !screen_fade_long
+    LDA.w #gco_fatty_whale
+    JSL warp_to_level
+    RTS
+  .opt2_code:
+    LDA.w #gco_windows
+    JSL warp_to_level
+    RTS
+  .opt3_code:
+    LDA.w #gco_tower_entrance
+    JSL warp_to_level
+    RTS
+  .opt4_code:
+    LDA.w #gco_garden_entrance
+    JSL warp_to_level
     RTS
 
 menu_warp_romk:
-  dw .title, $0001, menu_warp
-  dw .opt1, back_one
-  .title: %text("* ROMK Warps *", "PLACEHOLDER")
-  .opt1:  %text("Back", "PLACEHOLDER")
+  dw .title, $0004, menu_warp
+  dw .opt1, .opt1_code
+  dw .opt2, .opt2_code
+  dw .opt3, .opt3_code
+  dw .opt4, back_one
+  .title: %text("* RoMK Warps *", "P")
+  .opt1:  %text("Cannon","P")
+  .opt2:  %text("Reactor","P")
+  .opt3:  %text("Meta Knight","P")
+  .opt4:  %text("Back", "P")
+  .opt1_code:
+    LDA.w #romk_combo_cannon
+    JSL warp_to_level
+    RTS
+  .opt2_code:
+    LDA.w #romk_reactor
+    JSL warp_to_level
+    RTS
+  .opt3_code:
+    LDA.w #romk_metaknight_boss
+    JSL warp_to_level
+    RTS
 
 menu_warp_mww:
-  dw .title, $0001, menu_warp
-  dw .opt1, back_one
+  dw .title, $0003, menu_warp
+  dw .opt1, .opt1_code
+  dw .opt2, .opt2_code
+  dw .opt3, back_one
   .title: %text("* MWW Warps *", "PLACEHOLDER")
-  .opt1:  %text("Back", "PLACEHOLDER")
+  .opt1:  %text("Nova","P")
+  .opt2:  %text("Marx","P")
+  .opt3:  %text("Back", "P")
+  .opt1_code:
+    LDA.w #mww_heart_of_nova
+    JSL warp_to_level
+    RTS
+  .opt2_code:
+    LDA.w #mww_marx
+    JSL warp_to_level
+    RTS
 
 menu_colors:
   dw .title, $000B, menu_main

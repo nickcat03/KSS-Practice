@@ -574,8 +574,8 @@ restore_on_room_restart:
     STA !helper_inv_flash
     
     ; audio
-    LDA !store_ability_sfx
-    STA !current_ability_sfx
+    ;LDA !store_ability_sfx
+    ;STA !current_ability_sfx
 
     SEP #$20
     REP #$10
@@ -628,16 +628,9 @@ restore_current_room:
         JSR enable_vblank
 
         SEP #$30
-        LDA !subgame
-        CMP #$03
-        BNE +
-        JSR .warp_somewhere_else
-        BRA ++
-        + 
         LDA !sfx_room_reset
         STA !current_sfx
         JSR .reload_saved_values
-        ++
 
         JSL !play_sfx
         SEP #$20
@@ -668,66 +661,6 @@ restore_current_room:
         BRA ++
         + JSR auto_save_on_room_load
         ++ SEP #$30
-        RTS
-
-    .warp_somewhere_else:
-        REP #$20
-        LDA !p1controller_hold
-        AND #$0820
-        CMP #$0820
-        BNE +
-        LDX #$37            ; Fatty Whale
-        STX !room_to_respawn_into
-        LDA #$003C
-        STA !kirby_x_respawn
-        LDA #$009C
-        STA !kirby_y_respawn
-        BRA .finalize_warp
-        + LDA !p1controller_hold 
-        AND #$0120
-        CMP #$0120
-        BNE +
-        LDX #$36            ; Battle Windows
-        STX !room_to_respawn_into
-        LDA #$003C
-        STA !kirby_x_respawn
-        LDA #$009C
-        STA !kirby_y_respawn
-        BRA .finalize_warp
-        + LDA !p1controller_hold 
-        AND #$0420
-        CMP #$0420
-        BNE +
-        LDX #$13            ; Old Tower
-        STX !room_to_respawn_into
-        LDA #$012C
-        STA !kirby_x_respawn
-        LDA #$0054
-        STA !kirby_y_respawn
-        BRA .finalize_warp
-        + LDA !p1controller_hold 
-        AND #$0220
-        CMP #$0220
-        BNE +
-        LDX #$4C            ; Garden
-        STX !room_to_respawn_into
-        LDA #$00B4
-        STA !kirby_x_respawn
-        LDA #$0054
-        STA !kirby_y_respawn
-        BRA .finalize_warp
-        + JSR .reload_saved_values
-        LDA !sfx_room_reset
-        STA !current_sfx
-        RTS
-
-    .finalize_warp:
-        SEP #$30
-        LDA #$02
-        STA !replay_cutscene            ; use the "second" respawn coordinates
-        STZ !is_reloading_room
-        LDA !sfx_warp_elsewhere
-        STA !current_sfx
         RTS
 
 enable_vblank:

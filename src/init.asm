@@ -7,6 +7,11 @@ org $00BBCC
 
 pullpc
 
+; game reset long jump in bank $00
+check_reset:
+  JSR !check_game_reset
+  RTL
+
 init:
   LDA #$0000
   STA !custom_menu_enabled
