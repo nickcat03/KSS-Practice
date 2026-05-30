@@ -7,6 +7,7 @@ struct MenuOffsets $000000
   .Title: skip 2
   .ChoiceCount: skip 2
   .UpMenu: skip 2
+  .TextBank: skip 1
 endstruct
 
 struct Choices extends MenuOffsets
@@ -267,12 +268,22 @@ draw_screen:
 
   ; write header
   LDA #menu_header
+  STA !dp_scratch
+  SEP #$20
+  LDA #bank(menu_header)
+  STA !dp_scratch+2
+  REP #$20
   LDX #$0001
   LDY #$0001
   JSR draw_string
 
   ; write footer
   LDA #menu_footer
+  STA !dp_scratch
+  SEP #$20
+  LDA #bank(menu_footer)
+  STA !dp_scratch+2
+  REP #$20
   LDX #$0001
   LDY #$001A
   JSR draw_string
@@ -280,6 +291,12 @@ draw_screen:
   ; draw menu title
   LDY.w #MenuOffsets.Title
   LDA [!dp_menu], Y
+  STA !dp_scratch
+  SEP #$20
+  LDY.w #MenuOffsets.TextBank
+  LDA [!dp_menu], Y
+  STA !dp_scratch+2
+  REP #$20
   LDX #$0001
   LDY #$0003
   JSR draw_string
@@ -308,6 +325,14 @@ draw_screen:
     LDX #$0003
 
     PLA
+    STA !dp_scratch
+    SEP #$20
+    PHY
+    LDY.w #MenuOffsets.TextBank
+    LDA [!dp_menu], Y
+    PLY
+    STA !dp_scratch+2
+    REP #$20
     JSR draw_string
     PLY
     PLX
@@ -502,18 +527,17 @@ restore_registers:
 
   RTS
 
-; string addr in A, x in X, y in Y
+; string addr (24-bit) in dp_scratch, x in X, y in Y
 draw_string:
   CLC
-  STA !dp_scratch
 
   ; set banks
+  PHY
   SEP #$20
-  LDA.b #bank(menu_header)
-  STA !dp_scratch+2
   LDA.b #bank(!menu_mirror)
   STA !dp_scratch+5
   REP #$20
+  PLY
 
   ; move up one tile if it's jp because tails are above
   LDA !custom_menu_language
@@ -789,6 +813,7 @@ back_one:
 
 menu_main:
   dw .title, $0003, $0000
+  db bank(.title)
   dw .opt1, .opt1_code
   dw .opt2, option_noop
   dw .opt3, .opt3_code
@@ -807,22 +832,15 @@ menu_main:
     RTS
 
 menu_warp:
-  dw .title, $0007, menu_main
-  dw .opt1, .opt1_code
-  dw .opt2, .opt2_code
-  dw .opt3, .opt3_code
-  dw .opt4, .opt4_code
-  dw .opt5, .opt5_code
-  dw .opt6, .opt6_code
-  dw .opt7, back_one
-  .title: %text("* Warp Menu *", "PLACEHOLDER")
-  .opt1:  %text("Spring Breeze", "PLACEHOLDER")
-  .opt2:  %text("Dyna Blade", "PLACEHOLDER")
-  .opt3:  %text("Gourmet Race", "PLACEHOLDER")
-  .opt4:  %text("Great Cave Offensive", "PLACEHOLDER")
-  .opt5:  %text("Revenge of Meta Knight", "PLACEHOLDER")
-  .opt6:  %text("Milky Way Wishes", "PLACEHOLDER")
-  .opt7:  %text("Back", "PLACEHOLDER")
+  dw text_warp_title, $0007, menu_main
+  db bank(text)
+  dw text_warp_opt1, .opt1_code
+  dw text_warp_opt2, .opt2_code
+  dw text_warp_opt3, .opt3_code
+  dw text_warp_opt4, .opt4_code
+  dw text_warp_opt5, .opt5_code
+  dw text_warp_opt6, .opt6_code
+  dw text_warp_opt7, back_one
   .opt1_code:
     LDA #$0000
     STA !custom_menu_subgame_warp
@@ -862,12 +880,14 @@ menu_warp:
 
 menu_warp_spring:
   dw .title, $0001, menu_warp
+  db bank(.title)
   dw .opt1, back_one
   .title: %text("* Spring Warps *", "PLACEHOLDER")
   .opt1:  %text("Back", "PLACEHOLDER")
 
 menu_warp_dyna:
   dw .title, $0002, menu_warp
+  db bank(.title)
   dw .opt1, .opt1_code
   dw .opt2, back_one
   .title: %text("* Dyna Warps *", "PLACEHOLDER")
@@ -880,12 +900,14 @@ menu_warp_dyna:
 
 menu_warp_gourmet:
   dw .title, $0001, menu_warp
+  db bank(.title)
   dw .opt1, back_one
   .title: %text("* Gourmet Warps *", "PLACEHOLDER")
   .opt1:  %text("Back", "PLACEHOLDER")
 
 menu_warp_gco:
   dw .title, $0005, menu_warp
+  db bank(.title)
   dw .opt1, .opt1_code
   dw .opt2, .opt2_code
   dw .opt3, .opt3_code
@@ -916,6 +938,7 @@ menu_warp_gco:
 
 menu_warp_romk:
   dw .title, $0004, menu_warp
+  db bank(.title)
   dw .opt1, .opt1_code
   dw .opt2, .opt2_code
   dw .opt3, .opt3_code
@@ -940,6 +963,7 @@ menu_warp_romk:
 
 menu_warp_mww:
   dw .title, $0003, menu_warp
+  db bank(.title)
   dw .opt1, .opt1_code
   dw .opt2, .opt2_code
   dw .opt3, back_one
@@ -957,30 +981,19 @@ menu_warp_mww:
     RTS
 
 menu_colors:
-  dw .title, $000B, menu_main
-  dw .opt1, .setcolor_code
-  dw .opt2, .setcolor_code
-  dw .opt3, .setcolor_code
-  dw .opt4, .setcolor_code
-  dw .opt5, .setcolor_code
-  dw .opt6, .setcolor_code
-  dw .opt7, .setcolor_code
-  dw .opt8, .setcolor_code
-  dw .opt9, .setcolor_code
-  dw .opt10, .setcolor_code
-  dw .opt11, back_to_main
-  .title: %text("* Kirby Color *", "PLACEHOLDER")
-  .opt1:  %text("Default", "PLACEHOLDER")
-  .opt2:  %text("Pink (Always)", "PLACEHOLDER")
-  .opt3:  %text("Red", "PLACEHOLDER")
-  .opt4:  %text("Yellow", "PLACEHOLDER")
-  .opt5:  %text("Light blue", "PLACEHOLDER")
-  .opt6:  %text("Blue", "PLACEHOLDER")
-  .opt7:  %text("Sapphire", "PLACEHOLDER")
-  .opt8:  %text("Purple", "PLACEHOLDER")
-  .opt9:  %text("Brown", "PLACEHOLDER")
-  .opt10:  %text("Chalk", "PLACEHOLDER")
-  .opt11:  %text("Back", "PLACEHOLDER")
+  dw text_colors_title, $000B, menu_main
+  db bank(text)
+  dw text_colors_opt1, .setcolor_code
+  dw text_colors_opt2, .setcolor_code
+  dw text_colors_opt3, .setcolor_code
+  dw text_colors_opt4, .setcolor_code
+  dw text_colors_opt5, .setcolor_code
+  dw text_colors_opt6, .setcolor_code
+  dw text_colors_opt7, .setcolor_code
+  dw text_colors_opt8, .setcolor_code
+  dw text_colors_opt9, .setcolor_code
+  dw text_colors_opta, .setcolor_code
+  dw text_colors_optb, back_to_main
   .setcolor_code:
     LDA !custom_menu_cursor
     STA !toggle_custom_colors
@@ -989,3 +1002,34 @@ menu_colors:
     RTS
 
 
+pushpc
+org $29F780
+
+text:
+
+  .warp
+    ..title: %text("* Warp Menu *", "PLACEHOLDER")
+    ..opt1:  %text("Spring Breeze", "PLACEHOLDER")
+    ..opt2:  %text("Dyna Blade", "PLACEHOLDER")
+    ..opt3:  %text("Gourmet Race", "PLACEHOLDER")
+    ..opt4:  %text("Great Cave Offensive", "PLACEHOLDER")
+    ..opt5:  %text("Revenge of Meta Knight", "PLACEHOLDER")
+    ..opt6:  %text("Milky Way Wishes", "PLACEHOLDER")
+    ..opt7:  %text("Back", "PLACEHOLDER")
+
+  .colors
+    ..title: %text("* Kirby Color *", "PLACEHOLDER")
+    ..opt1:  %text("Default", "PLACEHOLDER")
+    ..opt2:  %text("Pink (Always)", "PLACEHOLDER")
+    ..opt3:  %text("Red", "PLACEHOLDER")
+    ..opt4:  %text("Yellow", "PLACEHOLDER")
+    ..opt5:  %text("Light blue", "PLACEHOLDER")
+    ..opt6:  %text("Blue", "PLACEHOLDER")
+    ..opt7:  %text("Sapphire", "PLACEHOLDER")
+    ..opt8:  %text("Purple", "PLACEHOLDER")
+    ..opt9:  %text("Brown", "PLACEHOLDER")
+    ..opta:  %text("Chalk", "PLACEHOLDER")
+    ..optb:  %text("Back", "PLACEHOLDER")
+
+assert pc() <= $29FFFF
+pullpc
