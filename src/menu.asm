@@ -277,17 +277,6 @@ draw_screen:
   LDY #$0001
   JSR draw_string
 
-  ; write footer
-  LDA #menu_footer
-  STA !dp_scratch
-  SEP #$20
-  LDA #bank(menu_footer)
-  STA !dp_scratch+2
-  REP #$20
-  LDX #$0001
-  LDY #$001A
-  JSR draw_string
-
   ; draw menu title
   LDY.w #MenuOffsets.Title
   LDA [!dp_menu], Y
@@ -573,6 +562,9 @@ draw_string:
   .loop:
   LDA #$00
   LDA [!dp_scratch]
+  ; if the character is 00, skip writing
+  CMP #$00
+  BEQ .increment
   ; if the character is FF, stop
   CMP #$FF
   BEQ .done
@@ -587,6 +579,21 @@ draw_string:
     SBC !dp_scratch+3
     STA !dp_scratch+3
     SEP #$20
+    BRA .increment
+  +
+  ; if the character is FD, move up a line
+  ; (for drawing eng text in JP mode)
+  CMP #$FD
+  BNE +
+    REP #$20
+    LDA !dp_scratch+3
+    SBC #$0040 ; line height
+    STA !dp_scratch+3
+    SEP #$20
+    ; counteract below increments
+    DEX
+    DEC !dp_scratch+3
+    DEC !dp_scratch+3
     BRA .increment
   +
   ; clear upper bytes
@@ -786,8 +793,6 @@ db $FF
 
 menu_header:
 %text("KSS Practice Hack * 05/29/2026","スパデラ　ハック * ２９/５/２０２６")
-menu_footer:
-%lang_swap_text("SEL おせば　にほんご","Press SELECT for English")
 
 option_noop:
   RTS
@@ -812,16 +817,17 @@ back_one:
 
 
 menu_main:
-  dw .title, $0003, $0000
+  dw .title, $0004, $0000
   db bank(.title)
   dw .opt1, .opt1_code
   dw .opt2, option_noop
   dw .opt3, .opt3_code
-  dw .opt3, option_noop
-  .title: %text("* Main Menu *", "マイン　メンユー")
-  .opt1:  %text("Warp", "ボースへいこう")
-  .opt2:  %text("Test", "らんそうせってい")
-  .opt3:  %text("Kirby Color", "カービィのいろ")
+  dw .opt4, .opt4_code
+  .title: %text("Main Menu", "マイン　メンユー")
+  .opt1:  %text("Warp Menu", "ワープ　メニュー")
+  .opt2:  %text("Do nothing", "なに　を　しない")
+  .opt3:  %text("Kirby Color", "カービィ の いろ")
+  .opt4:  %lang_swap_text("にほんご　メニュー", "English menu")
   .opt1_code:
     LDA #menu_warp
     JSR set_menu_and_cursor
@@ -830,16 +836,21 @@ menu_main:
     LDA #menu_colors
     JSR set_menu_and_cursor
     RTS
+  .opt4_code:
+    LDA !custom_menu_language
+    EOR #$0001
+    STA !custom_menu_language
+    RTS
 
 menu_warp:
   dw text_warp_title, $0007, menu_main
   db bank(text)
-  dw text_warp_opt1, .opt1_code
-  dw text_warp_opt2, .opt2_code
-  dw text_warp_opt3, .opt3_code
-  dw text_warp_opt4, .opt4_code
-  dw text_warp_opt5, .opt5_code
-  dw text_warp_opt6, .opt6_code
+  dw text_spring, .opt1_code
+  dw text_dyna, .opt2_code
+  dw text_gourmet, .opt3_code
+  dw text_gco, .opt4_code
+  dw text_romk, .opt5_code
+  dw text_mww, .opt6_code
   dw text_back, back_one
   .opt1_code:
     LDA #$0000
@@ -879,46 +890,33 @@ menu_warp:
     RTS
 
 menu_warp_spring:
-  dw .title, $0001, menu_warp
-  db bank(.title)
-  dw .opt1, back_one
-  .title: %text("* Spring Warps *", "PLACEHOLDER")
-  .opt1:  %text("Back", "PLACEHOLDER")
+  dw text_spring, $0001, menu_warp
+  db bank(text)
+  dw text_back, back_one
 
 menu_warp_dyna:
-  dw .title, $0002, menu_warp
-  db bank(.title)
-  dw .opt1, .opt1_code
-  dw .opt2, back_one
-  .title: %text("* Dyna Warps *", "PLACEHOLDER")
-  .opt1:  %text("Dyna Boss","PLACEHOLDER")
-  .opt2:  %text("Back", "PLACEHOLDER")
+  dw text_dyna, $0002, menu_warp
+  db bank(text)
+  dw text_warp_dynafight, .opt1_code
+  dw text_back, back_one
   .opt1_code:
     LDA.w #dyna_boss
     JSL warp_to_level
     RTS
 
 menu_warp_gourmet:
-  dw .title, $0001, menu_warp
-  db bank(.title)
-  dw .opt1, back_one
-  .title: %text("* Gourmet Warps *", "PLACEHOLDER")
-  .opt1:  %text("Back", "PLACEHOLDER")
+  dw text_gourmet, $0001, menu_warp
+  db bank(text)
+  dw text_back, back_one
 
 menu_warp_gco:
-  dw .title, $0005, menu_warp
-  db bank(.title)
-  dw .opt1, .opt1_code
-  dw .opt2, .opt2_code
-  dw .opt3, .opt3_code
-  dw .opt4, .opt4_code
-  dw .opt5, back_one
-  .title: %text("* GCO Warps *", "PLACEHOLDER")
-  .opt1:  %text("Fatty Whale","PLACEHOLDER")
-  .opt2:  %text("Windows","P")
-  .opt3:  %text("Tower","P")
-  .opt4:  %text("Garden","P")
-  .opt5:  %text("Back", "P")
+  dw text_gco, $0005, menu_warp
+  db bank(text)
+  dw text_whale, .opt1_code
+  dw text_windows, .opt2_code
+  dw text_tower, .opt3_code
+  dw text_garden, .opt4_code
+  dw text_back, back_one
   .opt1_code:
     LDA.w #gco_fatty_whale
     JSL warp_to_level
@@ -937,17 +935,12 @@ menu_warp_gco:
     RTS
 
 menu_warp_romk:
-  dw .title, $0004, menu_warp
-  db bank(.title)
-  dw .opt1, .opt1_code
-  dw .opt2, .opt2_code
-  dw .opt3, .opt3_code
-  dw .opt4, back_one
-  .title: %text("* RoMK Warps *", "P")
-  .opt1:  %text("Cannon","P")
-  .opt2:  %text("Reactor","P")
-  .opt3:  %text("Meta Knight","P")
-  .opt4:  %text("Back", "P")
+  dw text_romk, $0004, menu_warp
+  db bank(text)
+  dw text_combo, .opt1_code
+  dw text_reactor, .opt2_code
+  dw text_meta, .opt3_code
+  dw text_back, back_one
   .opt1_code:
     LDA.w #romk_combo_cannon
     JSL warp_to_level
@@ -962,15 +955,11 @@ menu_warp_romk:
     RTS
 
 menu_warp_mww:
-  dw .title, $0003, menu_warp
-  db bank(.title)
-  dw .opt1, .opt1_code
-  dw .opt2, .opt2_code
-  dw .opt3, back_one
-  .title: %text("* MWW Warps *", "PLACEHOLDER")
-  .opt1:  %text("Nova","P")
-  .opt2:  %text("Marx","P")
-  .opt3:  %text("Back", "P")
+  dw text_mww, $0003, menu_warp
+  db bank(text)
+  dw text_nova, .opt1_code
+  dw text_marx, .opt2_code
+  dw text_back, back_one
   .opt1_code:
     LDA.w #mww_heart_of_nova
     JSL warp_to_level
@@ -1008,17 +997,30 @@ org $29F780
 text:
   .back: %text("Back", "もどる")
 
+  .spring:  %text("Spring Breeze", "はるかぜとともに")
+  .dyna:    %text("Dyna Blade", "ダィナブレィド")
+  .gourmet: %text("Gourmet Race", "グルメレース")
+  .gco:     %text("Great Cave Offensive", "どうくつだいさくせん")
+  .romk:    %text("Revenge of Meta Knight", "メタナイトのぎゃくしゅう")
+  .mww:     %text("Milky Way Wishes", "ぎんがにねがいを")
+
+  .nova:    %text("Nova","ノヴァ")
+  .marx:    %text("Marx","マルク")
+  .whale:   %text("Fatty Whale","ファッティホエール")
+  .windows: %text("Battle Windows","バトルウィンドウズ")
+  .tower:   %text("Old Tower","こだい　の　とう")
+  .garden:  %text("Garden","しんぴ　の　らくえん")
+
+  .combo:   %text("Combo Cannon","にれんしゅほう")
+  .reactor: %text("Reactor","リアクター")
+  .meta:    %text("Meta Knight","メタナイト")
+
   .warp
-    ..title: %text("* Warp Menu *", "＊　ワープ　メンユー　＊")
-    ..opt1:  %text("Spring Breeze", "はるかぜとともに")
-    ..opt2:  %text("Dyna Blade", "ダィナブレィド")
-    ..opt3:  %text("Gourmet Race", "グルメレース")
-    ..opt4:  %text("Great Cave Offensive", "どうくつだいさくせん")
-    ..opt5:  %text("Revenge of Meta Knight", "メタナイトのぎゃくしゅう")
-    ..opt6:  %text("Milky Way Wishes", "ぎんがにねがいを")
+    ..title: %text("Warp Menu", "ワープ　メンユー")
+    ..dynafight:  %text("Dyna Boss","ダィナブレィド　と　たたかう")
 
   .colors
-    ..title: %text("* Kirby Color *", "＊　カービィ　の　いろ　＊")
+    ..title: %text("Kirby Color", "カービィ　の　いろ")
     ..opt1:  %text("Default", "おまかせ　（スタンダード）")
     ..opt2:  %text("Pink (Always)", "ピンク　（いつも）")
     ..opt3:  %text("Red", "レッド")

@@ -83,6 +83,7 @@ macro text_mapping()
         '>' = $E3
         '★' = $E4
         '*' = $ED
+        '＊' = $ED
         ':' = $EF
         '(' = $E2
         ')' = $E3
@@ -246,6 +247,8 @@ macro text_mapping()
         'ン' = $7F
 
         ; Dakuten / Handakuten Katakana
+        'ヴ' = $02
+
         'ガ' = $55
         'ギ' = $56
         'グ' = $57
@@ -396,6 +399,7 @@ macro tail_mapping()
         '>' = $00
         '★' = $00
         '*' = $00
+        '＊' = $ED
         ':' = $00
         '(' = $00
         ')' = $00
@@ -559,6 +563,8 @@ macro tail_mapping()
         'ン' = $00
 
         ; Dakuten / Handakuten Katakana
+        'ヴ' = $0F
+
         'ガ' = $0F
         'ギ' = $0F
         'グ' = $0F
@@ -648,10 +654,15 @@ macro text(en_text, jp_text)
         ?jp_label: %jp("<jp_text>")
 endmacro
 
-macro lang_swap_text(en_text, jp_text)
+macro lang_swap_text(jp_text, en_text)
         dw ?en_label
         dw ?jp_label
 
-        ?en_label: %jp("<en_text>")
-        ?jp_label: %en("<jp_text>")
+        ?en_label: db $FD
+                %jp("<jp_text>")
+        ?jp_label: db $FE
+                %text_mapping()
+                db "<en_text>", $FE
+                %tail_mapping()
+                db $00, "<en_text>", $FF
 endmacro
