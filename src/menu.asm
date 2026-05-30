@@ -840,7 +840,7 @@ menu_warp:
   dw text_warp_opt4, .opt4_code
   dw text_warp_opt5, .opt5_code
   dw text_warp_opt6, .opt6_code
-  dw text_warp_opt7, back_one
+  dw text_back, back_one
   .opt1_code:
     LDA #$0000
     STA !custom_menu_subgame_warp
@@ -993,7 +993,7 @@ menu_colors:
   dw text_colors_opt8, .setcolor_code
   dw text_colors_opt9, .setcolor_code
   dw text_colors_opta, .setcolor_code
-  dw text_colors_optb, back_to_main
+  dw text_back, back_to_main
   .setcolor_code:
     LDA !custom_menu_cursor
     STA !toggle_custom_colors
@@ -1006,30 +1006,29 @@ pushpc
 org $29F780
 
 text:
+  .back: %text("Back", "もどる")
 
   .warp
-    ..title: %text("* Warp Menu *", "PLACEHOLDER")
-    ..opt1:  %text("Spring Breeze", "PLACEHOLDER")
-    ..opt2:  %text("Dyna Blade", "PLACEHOLDER")
-    ..opt3:  %text("Gourmet Race", "PLACEHOLDER")
-    ..opt4:  %text("Great Cave Offensive", "PLACEHOLDER")
-    ..opt5:  %text("Revenge of Meta Knight", "PLACEHOLDER")
-    ..opt6:  %text("Milky Way Wishes", "PLACEHOLDER")
-    ..opt7:  %text("Back", "PLACEHOLDER")
+    ..title: %text("* Warp Menu *", "＊　ワープ　メンユー　＊")
+    ..opt1:  %text("Spring Breeze", "はるかぜとともに")
+    ..opt2:  %text("Dyna Blade", "ダィナブレィド")
+    ..opt3:  %text("Gourmet Race", "グルメレース")
+    ..opt4:  %text("Great Cave Offensive", "どうくつだいさくせん")
+    ..opt5:  %text("Revenge of Meta Knight", "メタナイトのぎゃくしゅう")
+    ..opt6:  %text("Milky Way Wishes", "ぎんがにねがいを")
 
   .colors
-    ..title: %text("* Kirby Color *", "PLACEHOLDER")
-    ..opt1:  %text("Default", "PLACEHOLDER")
-    ..opt2:  %text("Pink (Always)", "PLACEHOLDER")
-    ..opt3:  %text("Red", "PLACEHOLDER")
-    ..opt4:  %text("Yellow", "PLACEHOLDER")
-    ..opt5:  %text("Light blue", "PLACEHOLDER")
-    ..opt6:  %text("Blue", "PLACEHOLDER")
-    ..opt7:  %text("Sapphire", "PLACEHOLDER")
-    ..opt8:  %text("Purple", "PLACEHOLDER")
-    ..opt9:  %text("Brown", "PLACEHOLDER")
-    ..opta:  %text("Chalk", "PLACEHOLDER")
-    ..optb:  %text("Back", "PLACEHOLDER")
+    ..title: %text("* Kirby Color *", "＊　カービィ　の　いろ　＊")
+    ..opt1:  %text("Default", "おまかせ　（スタンダード）")
+    ..opt2:  %text("Pink (Always)", "ピンク　（いつも）")
+    ..opt3:  %text("Red", "レッド")
+    ..opt4:  %text("Yellow", "イエロー")
+    ..opt5:  %text("Light blue", "ソーダ")
+    ..opt6:  %text("Blue", "ブルー")
+    ..opt7:  %text("Sapphire", "サファイア")
+    ..opt8:  %text("Purple", "ラベンダー")
+    ..opt9:  %text("Brown", "チョコレート")
+    ..opta:  %text("Chalk", "モノトーン")
 
 assert pc() <= $29FFFF
 pullpc
