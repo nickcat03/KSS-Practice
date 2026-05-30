@@ -7,6 +7,13 @@ pullpc
 ; This code will run on every single frame on the SA-1
 
 sa1_code:
+    ; run artificial cycles
+    !sa1_adjustment = #$0000
+
+    LDA !sa1_adjustment
+    - DEC A
+    BNE -
+
     ; custom menu code
     ; if the menu is already open, don't check for hotkeys to avoid recursion
     LDA !custom_menu_enabled
