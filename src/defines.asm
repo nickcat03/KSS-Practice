@@ -152,7 +152,7 @@
 ; blank addresses used for storing information
 !respawn_timer              = $7B5A
 !temp_pointer               = $7B5C
-!mww_ability_route          = $7B5E
+!mww_ability_route          = $7B71
 !mww_planet_rta             = $7B60
 !QSQL_timer                 = $7B62
 !QSQL_transfer              = $7B64

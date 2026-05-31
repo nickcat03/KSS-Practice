@@ -166,7 +166,6 @@ mww_map:
     CMP #$06                            ; check if on world map screen
     BNE .merge
     JSR mww_assign_starting_abilities
-    JSR mww_toggle_ability_route
     JSR mww_multiply_map_movement_speed
     .merge:
         REP #$30
@@ -183,6 +182,11 @@ mww_assign_starting_abilities:
 
     SEP #$20
     LDA !mww_ability_route
+    ; set to zero if it is out of range
+    CMP #$04
+    BCC +
+    STZ !mww_ability_route
+    +
     CMP #$00                ; if auto ability select is set to off, don't run
     BEQ .merge
     LDA !mww_current_planet
@@ -227,23 +231,6 @@ mww_assign_starting_abilities:
 
     .finalize_any: 
         STZ !abilities_saved_3      ; no powers in this address should be collected in any%
-
-    .merge:
-        RTS
-
-mww_toggle_ability_route:
-
-    REP #$20
-    LDA !p1controller_frame
-    CMP #$2000                      ; pressing select
-    BNE .merge
-    SEP #$20
-    LDA !mww_ability_route 
-    CMP #$03                        ; if it is set at 100%, set it to Off
-    BNE +
-    STZ !mww_ability_route 
-    BRA .merge
-    + INC !mww_ability_route        ; in any other scenario, increase the value
 
     .merge:
         RTS

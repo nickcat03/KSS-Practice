@@ -4,7 +4,6 @@
 !sfx_save_state = #$0C
 !sfx_load_state = #$10
 !sfx_room_reset = #$28
-!sfx_warp_elsewhere = #$48
 
 !temp_stack_pointer_location = $40FFE0
 !music_from_savestate = $408FCA     ; current music RAM ($33CA) from the savestate data

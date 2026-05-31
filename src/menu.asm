@@ -28,9 +28,11 @@ endstruct
 !sfx_open = $41
 !sfx_select = $32
 !sfx_back = $28
+!sfx_warp_elsewhere = $48
+!sfx_ability = $44
 
 !palette_fg = $0000
-!palette_bg = $1576 
+!palette_bg = $1576
 
 open_custom_menu:
   LDA #$0001
@@ -199,13 +201,13 @@ custom_menu:
   +
 
   ; switch language on select
-  LDA !p1controller_frame
-  CMP #!btn_select
-  BNE +
-    LDA !custom_menu_language
-    EOR #$0001
-    STA !custom_menu_language
-  +
+  ;LDA !p1controller_frame
+  ;CMP #!btn_select
+  ;BNE +
+  ;  LDA !custom_menu_language
+  ;  EOR #$0001
+  ;  STA !custom_menu_language
+  ;+
 
   ; build menu on snes cpu
   LDA.w #draw_screen
@@ -673,7 +675,7 @@ ORG $01DF960
     LDY #$00
 
     ; current_sfx will be played when this returns
-    LDA !sfx_warp_elsewhere
+    LDA #!sfx_warp_elsewhere
     STA !current_sfx_long
 
     ; Start writing level data
@@ -820,16 +822,20 @@ menu_main:
   dw .title, $0004, $0000
   db bank(.title)
   dw .opt1, .opt1_code
-  dw .opt2, option_noop
+  dw .opt2, .opt2_code
   dw .opt3, .opt3_code
   dw .opt4, .opt4_code
   .title: %text("Main Menu", "マイン　メンユー")
   .opt1:  %text("Warp Menu", "ワープ　メニュー")
-  .opt2:  %text("Do nothing", "なに　を　しない")
+  .opt2:  %text("MWW Abilities", "MWW Abilities")
   .opt3:  %text("Kirby Color", "カービィ の いろ")
   .opt4:  %lang_swap_text("にほんご　メニュー", "English menu")
   .opt1_code:
     LDA #menu_warp
+    JSR set_menu_and_cursor
+    RTS
+  .opt2_code:
+    LDA #menu_mww_abilities
     JSR set_menu_and_cursor
     RTS
   .opt3_code:
@@ -969,6 +975,26 @@ menu_warp_mww:
     JSL warp_to_level
     RTS
 
+menu_mww_abilities:
+  dw text_mww_abilities, $0004, menu_main
+  db bank(text)
+  dw text_mww_abilities_opt1, .setmwwability_code
+  dw text_mww_abilities_opt2, .setmwwability_code
+  dw text_mww_abilities_opt3, .setmwwability_code
+  dw text_mww_abilities_opt4, .setmwwability_code
+  .setmwwability_code
+    LDA !custom_menu_cursor
+    STA !mww_ability_route
+
+    SEP #$30
+    LDA #!sfx_ability
+    STA !current_sfx_long
+    REP #$30
+
+    LDA #menu_main
+    JSR set_menu_and_cursor
+    RTS
+
 menu_colors:
   dw text_colors_title, $000B, menu_main
   db bank(text)
@@ -986,6 +1012,12 @@ menu_colors:
   .setcolor_code:
     LDA !custom_menu_cursor
     STA !toggle_custom_colors
+
+    SEP #$30
+    LDA #!sfx_ability
+    STA !current_sfx_long
+    REP #$30
+
     LDA #menu_main
     JSR set_menu_and_cursor
     RTS
@@ -1018,6 +1050,13 @@ text:
   .warp
     ..title: %text("Warp Menu", "ワープ　メンユー")
     ..dynafight:  %text("Dyna Boss","ダィナブレィド　と　たたかう")
+
+  .mww_abilities
+    ..title: %text("MWW Abilities", "MWW Abilities")
+    ..opt1: %text("Off", "Off")
+    ..opt2: %text("Any", "Any")
+    ..opt3: %text("Any (Plasma)", "Any (Plasma)")
+    ..opt4: %text("100", "100")
 
   .colors
     ..title: %text("Kirby Color", "カービィ　の　いろ")
