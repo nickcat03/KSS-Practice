@@ -169,6 +169,7 @@
 !custom_menu_cursor         = $40FFC6
 !custom_menu_action         = $40FFC8
 !custom_menu_subgame_warp   = $40FFCA
+!autoboot_corkboard         = $40FFCC
 !custom_menu_level_table    = $66       ; called as $3766 in menu code
 
 ; for saving certain values on room reload 

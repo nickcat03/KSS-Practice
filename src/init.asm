@@ -24,6 +24,15 @@ init:
   STA !toggle_custom_colors
   +
 
+  ; decide whether to boot into original title screen or corkboard
+  LDA !autoboot_corkboard
+  ; check if it is above 2 (most likely on first boot)
+  CMP #$0002
+  BCC +
+  LDA #$0000
+  STA !autoboot_corkboard
+  +
+  STA !game_mode
 
   ; code which was replaced
   JSL $0084BE

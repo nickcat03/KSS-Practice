@@ -126,4 +126,7 @@ cycle_abilities:
 quick_select_ability:
     LDY #$0002
     JSL !assign_ability_data
+    ;LDX #$0218
+    ;JSL $03D877
+    ;JSL $03A26B
     RTS

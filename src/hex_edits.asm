@@ -8,6 +8,10 @@ ORG $15B644
 ORG $15B831
     LDA #$007F
 
+;
+ORG $00BBF7
+    NOP #3
+
 ; Make file deletion instant
 ; LDA #$00B4 -> LDA #$0000
 ORG $078736
