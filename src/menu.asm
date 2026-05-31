@@ -761,6 +761,27 @@ ORG $01DF960
     mww_marx:             dw $0802, $0001, $0000, $0000
 
 pullpc
+
+
+; audio settings code
+turn_on_mute:
+  LDA #$01
+  STA !mute_toggle
+  STZ !volume
+  BRA finalize_apuio
+
+stereo_mono:
+  STA !stereo_mono  ; use menu cursor to store if stereo or mono
+  LDA !mute_toggle
+  BEQ +
+  STZ !mute_toggle
+  LDA #$FF 
+  STA !volume 
+
+finalize_apuio:
+  TXA
+  + REP #$20
+  RTS
   
 
 clear_tile:
@@ -803,7 +824,7 @@ db $03, $FE, $07, $02, $F7, $40, $00, $00
 db $FF
 
 menu_header:
-%text("KSS Practice Hack * 05/29/2026","スパデラ　ハック * ２９/５/２０２６")
+%text("KSS Practice Hack * 05/31/2026","スパデラ　ハック * ３１/５/２０２６")
 
 option_noop:
   RTS
@@ -828,17 +849,19 @@ back_one:
 
 
 menu_main:
-  dw .title, $0004, $0000
+  dw .title, $0005, $0000
   db bank(.title)
   dw .opt1, .opt1_code
   dw .opt2, .opt2_code
   dw .opt3, .opt3_code
   dw .opt4, .opt4_code
+  dw .opt5, .opt5_code
   .title: %text("Main Menu", "マイン　メンユー")
   .opt1:  %text("Warp Menu", "ワープ　メニュー")
   .opt2:  %text("MWW Abilities", "MWW Abilities")
   .opt3:  %text("Kirby Color", "カービィ の いろ")
-  .opt4:  %lang_swap_text("にほんご　メニュー", "English menu")
+  .opt4:  %text("Audio", "Audio")
+  .opt5:  %lang_swap_text("にほんご　メニュー", "English menu")
   .opt1_code:
     LDA #menu_warp
     JSR set_menu_and_cursor
@@ -852,6 +875,10 @@ menu_main:
     JSR set_menu_and_cursor
     RTS
   .opt4_code:
+    LDA #menu_audio
+    JSR set_menu_and_cursor
+    RTS
+  .opt5_code:
     LDA !custom_menu_language
     EOR #$0001
     STA !custom_menu_language
@@ -1031,6 +1058,25 @@ menu_colors:
     JSR set_menu_and_cursor
     RTS
 
+menu_audio:
+  dw text_audio_title, $0003, menu_main
+  db bank(text)
+  dw text_audio_opt1, .stereomono_code
+  dw text_audio_opt2, .stereomono_code
+  dw text_audio_opt3, .audiooff_code
+  .stereomono_code:
+    SEP #$20
+    LDA !custom_menu_cursor
+    JSR stereo_mono
+    LDA #menu_main
+    JSR set_menu_and_cursor
+    RTS
+  .audiooff_code:
+    SEP #$20
+    JSR turn_on_mute
+    LDA #menu_main
+    JSR set_menu_and_cursor
+    RTS
 
 pushpc
 org $29F780
@@ -1066,6 +1112,12 @@ text:
     ..opt2: %text("Any%", "Any%")
     ..opt3: %text("Any% (Plasma)", "Any% (Plasma)")
     ..opt4: %text("100%", "100%")
+
+  .audio
+    ..title: %text("Audio Settings", "Audio Settings")
+    ..opt1: %text("Stereo", "Stereo")
+    ..opt2: %text("Mono", "Mono")
+    ..opt3: %text("Off", "Off")
 
   .colors
     ..title: %text("Kirby Color", "カービィ　の　いろ")

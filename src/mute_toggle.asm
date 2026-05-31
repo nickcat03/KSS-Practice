@@ -31,15 +31,14 @@ ORG $15BCC2
 pullpc
 
 mute_toggle:
-
-TAX             ; store accumulator so it can be used again when leaving routine
-LDA !corkboard_cursor
-CMP #$0A        ; if not highlighting Stereo Mono button, do not run this
-BEQ +
-TXA
-STA !stereo_mono
-RTS
-+
+    TAX             ; store accumulator so it can be used again when leaving routine
+    LDA !corkboard_cursor
+    CMP #$0A        ; if not highlighting Stereo Mono button, do not run this
+    BEQ +
+    TXA
+    STA !stereo_mono
+    RTS
+    +
 change_audio_output:                
     LDA !mute_toggle
     CMP #$01                ; if muted
@@ -64,7 +63,7 @@ change_audio_output:
         STZ !stereo_mono    ; switch to stereo
 
     .finalize_apuio
-        LDA #$16
+        LDA !current_music
         JSL !load_music
         TXA
         RTS

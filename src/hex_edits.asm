@@ -18,11 +18,6 @@ ORG $078736
 ORG $088D9D
     db $01
 
-; Set lives to 99 (purely cosmetic)
-; LDA #$0003 -> LDA #$0063
-ORG $00D873
-    LDA #$0063
-
 ; Don't decrease lives counter
 ; DEC $737A -> NOP
 ; Instead replace with resetting free move toggle
