@@ -824,7 +824,7 @@ db $03, $FE, $07, $02, $F7, $40, $00, $00
 db $FF
 
 menu_header:
-%text("KSS Practice Hack * 05/31/2026","スパデラ　ハック * ３１/５/２０２６")
+%text("KSS Practice Hack * 05/31/2026","スパデラ　ハック * ２０２６/０５/３１")
 
 option_noop:
   RTS

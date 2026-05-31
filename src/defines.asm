@@ -32,7 +32,7 @@
 !advance_game_mode          = $7392
 !subgame                    = $32EA
 !room_number                = $32F2
-!level_number               = $32EE     ; dyna level, mww planet
+!level_number               = $32EE     ; dyna level, romk chapter, mww planet
 !level_number_long          = $0032EE
 !corkboard_cursor           = $7A85
 !subgame_menu_cursor        = $7B23

@@ -88,6 +88,10 @@ ORG $00CB6C
 ; DEC $73A0 -> NOP
 ORG $00C227
     NOP #3
+; Make RoMK timer reaching zero not kill you (usually for warping into RoMK room from other subgame)
+; BEQ -> BRA
+ORG $029078
+    db $80
 
 ; Always spawn Chests and Copy Essences
 ; all BEQ -> BRA 
