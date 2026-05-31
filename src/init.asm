@@ -18,8 +18,6 @@ check_gamemode_on_change:
   BEQ +
 
   LDX #$0003
-  ;LDA #$0000
-  ;STA !is_warping
 
   + STX !game_mode
   RTS

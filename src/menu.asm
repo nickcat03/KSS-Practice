@@ -671,7 +671,7 @@ ORG $01DF960
       LDA !game_mode
       CMP #$0003
       BEQ .reset_warp
-      
+
       LDA #$0001      ; set warp to 1 to tell the game swap to set the game mode to 3 later
       BRA .apply_warp
       
@@ -1087,7 +1087,7 @@ menu_audio:
   db bank(text)
   dw text_audio_opt1, .stereomono_code
   dw text_audio_opt2, .stereomono_code
-  dw text_audio_opt3, .audiooff_code
+  dw text_off, .audiooff_code
   .stereomono_code:
     SEP #$20
     LDA !custom_menu_cursor
@@ -1107,6 +1107,7 @@ org $29F780
 
 text:
   .back: %text("Back", "もどる")
+  .off: %text("Off", "OFF")
 
   .spring:  %text("Spring Breeze", "はるかぜとともに")
   .dyna:    %text("Dyna Blade", "ダィナブレィド")
@@ -1132,7 +1133,7 @@ text:
 
   .mww_abilities
     ..title: %text("MWW Abilities", "MWW Abilities")
-    ..opt1: %text("Off", "Off")
+    ..opt1: %text("No change", "No change")
     ..opt2: %text("Any%", "Any%")
     ..opt3: %text("Any% (Plasma)", "Any% (Plasma)")
     ..opt4: %text("100%", "100%")
@@ -1141,7 +1142,6 @@ text:
     ..title: %text("Audio Settings", "Audio Settings")
     ..opt1: %text("Stereo", "Stereo")
     ..opt2: %text("Mono", "Mono")
-    ..opt3: %text("Off", "Off")
 
   .colors
     ..title: %text("Kirby Color", "カービィ　の　いろ")
