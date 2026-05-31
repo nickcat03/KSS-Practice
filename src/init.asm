@@ -16,6 +16,15 @@ init:
   LDA #$0000
   STA !custom_menu_enabled
 
+  ; set custom colors to zero if they are in an invalid range
+  LDA !toggle_custom_colors
+  CMP #$000A
+  BCC +
+  LDA #$0000
+  STA !toggle_custom_colors
+  +
+
+
   ; code which was replaced
   JSL $0084BE
 

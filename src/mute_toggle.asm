@@ -99,3 +99,7 @@ set_button_gfx:
         LDA $33CD 
         AND #$00FF
         JML $CABCC8     ; jump to code which checks for if Stereo or Mono
+
+
+; Table for "Off" audio button graphics
+off_button_graphics: db $B4, $06, $B5, $06, $B6, $06, $B7, $06, $B8, $06, $B9, $06, $BA, $06, $BB, $06, $BC, $06
