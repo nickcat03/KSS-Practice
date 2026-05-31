@@ -666,6 +666,22 @@ ORG $01DF960
   warp_to_level:
     STA !custom_menu_level_table
 
+    ; check current gamemode, if not in the actual game state, set an address so that the next game mode change gets set to the game state
+    .check_game_mode
+      LDA !game_mode
+      CMP #$0003
+      BEQ .reset_warp
+      
+      LDA #$0001      ; set warp to 1 to tell the game swap to set the game mode to 3 later
+      BRA .apply_warp
+      
+    .reset_warp
+      LDA #$0000    ; set this to 0 if already in the game state just in case it was set to 1 somehow
+
+    .apply_warp
+      STA !is_warping
+
+
     SEP #$30
 
     LDA #$1D
@@ -712,18 +728,7 @@ ORG $01DF960
     LDA #$0001
     STA !reload_room_long
 
-    ;LDA #$03
-    ;CMP !game_mode 
-    ;BEQ +
-    ;LDA #$03
-    ;STA !game_mode
-    ;REP #$20
-    ;JSL $00C177
-    ;SEP #$20
-    ;+
-
     ; set current menu to $0000 to exit cleanly
-
     SEP #$30
     
     LDA #$00
@@ -759,6 +764,25 @@ ORG $01DF960
     ; Milky Way Wishes
     mww_heart_of_nova:    dw $0801, $0001, $0000, $0000
     mww_marx:             dw $0802, $0001, $0000, $0000
+
+
+; hijacks from different gamemodes so that you can warp from anywhere
+; title screen
+ORG $00BDF3
+  JSR check_gamemode_on_change
+; corkboard
+ORG $00BE38
+  JSR check_gamemode_on_change
+; sound test
+ORG $00C6FB
+  JSR check_gamemode_on_change
+; mini-games
+ORG $00C715
+  JSR check_gamemode_on_change
+
+; for loading room coordinates correctly (they are usually otherwise reset to the first set)
+ORG $00D947
+  JSR check_gamemode_on_coordinates_load
 
 pullpc
 

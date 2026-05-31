@@ -8,7 +8,8 @@ ORG $15B644
 ORG $15B831
     LDA #$007F
 
-;
+; Remove original code for clearing gamemode on boot (custom init code is overriding this)
+; LDA #$0000 -> NOP
 ORG $00BBF7
     NOP #3
 
