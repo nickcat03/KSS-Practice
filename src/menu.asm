@@ -773,11 +773,20 @@ dw $2000
 font_dma_table:
 ; Entry 0: Back up existing data in destination to SRAM in free space at E400
 ; HACK: the first value is duplicated, so we read two extra bytes
-db $15, $C2, $12, $00, $E4, $40, $00, $30
+db $15
+dw $12C2
+dl $40E400
+dw $3000
 ; Entry 1: Decompress JP font to VRAM 3000.w ($6000) (same as vanilla)
-db $83, $30, $0B, $EE, $50, $E5, $00, $30
+db $83
+dw $0890
+dl jp_text_start
+dw $3000
 ; Entry 2: Decompress EN font to VRAM 3600.w
-db $83, $C0, $06, $70, $F2, $02, $80, $34
+db $83
+dw $06C0
+dl en_text_start
+dw $3480
 ; Entry 3: Back up the area we will use for tilemap data
 db $15, $00, $08, $00, $F7, $40, $00, $00
 ; End of table
@@ -1054,9 +1063,9 @@ text:
   .mww_abilities
     ..title: %text("MWW Abilities", "MWW Abilities")
     ..opt1: %text("Off", "Off")
-    ..opt2: %text("Any", "Any")
-    ..opt3: %text("Any (Plasma)", "Any (Plasma)")
-    ..opt4: %text("100", "100")
+    ..opt2: %text("Any%", "Any%")
+    ..opt3: %text("Any% (Plasma)", "Any% (Plasma)")
+    ..opt4: %text("100%", "100%")
 
   .colors
     ..title: %text("Kirby Color", "カービィ　の　いろ")

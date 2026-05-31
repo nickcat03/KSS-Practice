@@ -14,4 +14,8 @@ ORG $2CDE6E
 
 ; Insert compressed English text graphics into blank spot in ROM
 ORG $02F270
-    incbin "graphics/bin/pause_menu_english_text.bin"
+    jp_text_start:
+        incbin "graphics/bin/jp_text.bin"
+    en_text_start:
+        incbin "graphics/bin/en_text.bin"
+
