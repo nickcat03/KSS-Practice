@@ -35,21 +35,10 @@ ORG $158067
 
 ; Each pivot point has a hard-coded value, how fast you move and how many frames you move.
 
-!multiplier = 04
-
-; 373D address to read from for dyna blade data
-; Read break on addr $0A7D63 SA-1
-; 67B6
-; 6830
-
 ; CA7F49 code for setting addresses for one of several directions you can take
-; Instead of writing the specific address, make a pointer table and then jump to another subroutine before the main one and then write the address to A and X?
 
 ; Have timer and speed adjust dynamically when holding R:
 ; (Note, find a place to hijack into that runs once every frame)
-
-; Speed: 6B86
-; Timer: 673C
 
 !move_speed_x = $6B87
 !move_speed_y = $6C01
@@ -127,13 +116,6 @@ adjust_dyna_move_speed:
         LDY $39
         LDA $6F3E,Y
         RTL
-
-; if R held:
-; If Speed = 0: .merge
-; If Speed = 1: speed = 4
-; Elif Speed = FF: speed = FC
-; Timer Dec by 3
-; .merge
 
 
 ; --- MILKY WAY WISHES ---
@@ -218,7 +200,7 @@ mww_assign_starting_abilities:
         STA !number_of_abilities
         LDA !mww_ability_route
         CMP #$02
-        BEQ .finalize_any           ; Check if Plasma setting is on. If it is off, remove Plasma if it is toggled.
+        BEQ .finalize_any           ; Check if Plasma setting is on. If it is off, remove Plasma.
         LDA !abilities_saved_1
         AND #%01000000              ; Only allow Hammer to be collected
         STA !abilities_saved_1 
