@@ -708,10 +708,6 @@ ORG $01DF960
     LDA #!sfx_warp_elsewhere
     STA !current_sfx_long
 
-    ; Start writing level data
-    LDA !custom_menu_subgame_warp
-    STA !subgame_long
-
     LDA (!custom_menu_level_table)
     STA !room_number_long
 
@@ -723,6 +719,10 @@ ORG $01DF960
     REP #$20
 
     INY
+
+    ; Start writing level data
+    LDA !custom_menu_subgame_warp
+    STA !subgame_long
 
     LDA (!custom_menu_level_table),Y
     STA !cutscene_long
@@ -749,12 +749,45 @@ ORG $01DF960
     PHA
     PLB
 
-    REP #$30
-    LDA #$0000
-    STA !custom_menu_pointer
-    STA !screen_brightness_long
-    STA !screen_fade_long
-    RTL
+    ; apply the map to warp to after defeating a stage
+    ; also apply ability config if warping to MWW
+    LDA !subgame
+    CMP #$05  ; MWW
+    BNE +
+
+    LDA #$02
+    STA !map_to_load_into
+
+    ; load in MWW ability state
+    LDX !level_number
+    JSL convert_planet_id
+    INX   ; increment the planet count because we are warping to the end of the level
+    JSL mww_assign_starting_abilities
+
+    REP #$20
+    SEP #$10
+    BRA .end_transfer
+
+    +
+    CMP #$02  ; Dyna
+    BNE +
+    STZ !map_to_load_into
+    BRA .end_transfer
+
+    +
+    CMP #$04  ; RoMK
+    BNE +
+    LDA #$01
+    STA !map_to_load_into
+
+    +
+    .end_transfer
+      REP #$30
+      LDA #$0000
+      STA !custom_menu_pointer
+      STA !screen_brightness_long
+      STA !screen_fade_long
+      RTL
 
     ; Tables for level warp data
     ; values in parenthesis are 8-bit, rest are 16-bit
@@ -1280,7 +1313,7 @@ text:
   .nova:    %text("Nova","ノヴァ")
   .marx:    %text("Marx","マルク")
   .whale:   %text("Fatty Whale","ファッティ ホエール")
-  .crystal: %text("Crystal", "Crystal")
+  .crystal: %text("Crystal Area", "Crystal Area")
   .windows: %text("Battle Windows","バトル ウィンドウズ")
   .tower:   %text("Old Tower","こだい　の　とう")
   .garden:  %text("Garden","しんぴ　の　らくえん")

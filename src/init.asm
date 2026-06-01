@@ -20,6 +20,15 @@ init:
   STA !toggle_custom_colors
   +
 
+  ; set mww ability route to zero if it is in an invalid range
+  SEP #$20
+  LDA !mww_ability_route
+  CMP #$04
+  BCC +
+  STZ !mww_ability_route
+  + 
+  REP #$20
+
   ; set sa-1 adjustment to zero if it is in an invalid range
   LDA !sa1_adjustment
   CMP #$0005

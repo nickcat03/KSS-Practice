@@ -40,6 +40,7 @@
 !romk_chapter_to_be_loaded  = $7B25
 !cutscene_loaded            = $33C6
 !file_delete_menu           = $679E
+!map_to_load_into           = $73AE
 
 ;Milky Way Wishes 
 !mww_current_planet         = $7A6B
