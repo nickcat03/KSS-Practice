@@ -1156,6 +1156,7 @@ menu_sa1adjustment:
   dw text2_back, back_one
   .sa1_code
     LDA !custom_menu_cursor
+    ASL
     STA !sa1_adjustment
 
     LDA #menu_main

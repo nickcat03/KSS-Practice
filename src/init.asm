@@ -22,7 +22,7 @@ init:
 
   ; set sa-1 adjustment to zero if it is in an invalid range
   LDA !sa1_adjustment
-  CMP #$0003
+  CMP #$0005
   BCC +
   LDA #$0000
   STA !sa1_adjustment
@@ -31,14 +31,33 @@ init:
   ; decide whether to boot into original title screen or corkboard
   LDA !autoboot_corkboard
   ; check if it is above 2 (most likely on first boot)
-  SEP #$20
+  SEP #$30
   CMP #$02
   BCC +
   LDA #$00
   STA !autoboot_corkboard
   +
   STA !game_mode
-  REP #$20
+
+  ; load in file 1 save data if we're autobooting to corkboard
+  BEQ .skip_save_load
+  LDX #$00
+  LDY #$00
+  JSL $00EBE8
+
+  ; load corkboard cursor
+  LDA $7F06
+  AND #$00FF
+  CMP #$00FF
+  BNE +
+  LDA #$0000
+  + STA $7A8F
+
+  JSL $CAB827
+
+  .skip_save_load:
+  
+  REP #$30
 
   ; code which was replaced
   JSL $0084BE

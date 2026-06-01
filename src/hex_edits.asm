@@ -13,6 +13,11 @@ ORG $15B831
 ORG $00BBF7
     NOP #3
 
+; Remove original code for resetting subgame cursor on boot
+; STZ $7A8F -> NOP
+ORG $00D7E1
+    NOP #3
+
 ; Make file deletion instant
 ; LDA #$00B4 -> LDA #$0000
 ORG $078736
