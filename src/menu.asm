@@ -766,9 +766,11 @@ ORG $01DF960
 
     ; Great Cave Offensive
     gco_fatty_whale:      dw $0037, $0002, $003C, $009C
+    gco_crystal:          dw $000D, $0002, $009C, $003C
     gco_windows:          dw $0036, $0002, $003C, $009C
     gco_tower_entrance:   dw $0013, $0002, $012C, $0054
     gco_garden_entrance:  dw $004C, $0002, $00B4, $0054
+    gco_wham_bam:         dw $0039, $0002, $01D4, $009C
 
     ; Revenge of Meta Knight
     romk_combo_cannon:    dw $0305, $0002, $0024, $0084
@@ -776,6 +778,11 @@ ORG $01DF960
     romk_metaknight_boss: dw $0602, $0002, $003C, $0084
 
     ; Milky Way Wishes
+    mww_ghameleo_arm:     dw $0408, $0002, $003C, $009C
+    mww_heavy_lobster:    dw $0408, $0002, $003C, $009C
+    mww_wham_bam:         dw $0408, $0002, $003C, $009C
+    mww_fatty_whale:      dw $0408, $0002, $003C, $009C
+    mww_battle_windows:   dw $0408, $0002, $003C, $009C
     mww_heart_of_nova:    dw $0801, $0001, $0000, $0000
     mww_marx:             dw $0802, $0001, $0000, $0000
 
@@ -1006,27 +1013,37 @@ menu_warp_gourmet:
   dw text_back, back_one
 
 menu_warp_gco:
-  dw text_gco, $0005, menu_warp
+  dw text_gco, $0007, menu_warp
   db bank(text)
   dw text_whale, .opt1_code
-  dw text_windows, .opt2_code
-  dw text_tower, .opt3_code
-  dw text_garden, .opt4_code
+  dw text_crystal, .opt2_code
+  dw text_windows, .opt3_code
+  dw text_tower, .opt4_code
+  dw text_garden, .opt5_code
+  dw text_whambam, .opt6_code
   dw text_back, back_one
   .opt1_code:
     LDA.w #gco_fatty_whale
     JSL warp_to_level
     RTS
   .opt2_code:
-    LDA.w #gco_windows
+    LDA.w #gco_crystal
     JSL warp_to_level
     RTS
   .opt3_code:
-    LDA.w #gco_tower_entrance
+    LDA.w #gco_windows
     JSL warp_to_level
     RTS
   .opt4_code:
+    LDA.w #gco_tower_entrance
+    JSL warp_to_level
+    RTS
+  .opt5_code:
     LDA.w #gco_garden_entrance
+    JSL warp_to_level
+    RTS
+  .opt6_code:
+    LDA.w #gco_wham_bam
     JSL warp_to_level
     RTS
 
@@ -1051,16 +1068,41 @@ menu_warp_romk:
     RTS
 
 menu_warp_mww:
-  dw text_mww, $0003, menu_warp
+  dw text_mww, $0008, menu_warp
   db bank(text)
-  dw text_nova, .opt1_code
-  dw text_marx, .opt2_code
+  dw text_ghameleo, .opt1_code
+  dw text_lobster, .opt2_code
+  dw text_whambam, .opt3_code
+  dw text_whale, .opt4_code
+  dw text_windows, .opt5_code
+  dw text_nova, .opt6_code
+  dw text_marx, .opt7_code
   dw text_back, back_one
   .opt1_code:
-    LDA.w #mww_heart_of_nova
+    LDA.w #mww_ghameleo_arm
     JSL warp_to_level
     RTS
   .opt2_code:
+    LDA.w #mww_heavy_lobster
+    JSL warp_to_level
+    RTS
+  .opt3_code:
+    LDA.w #mww_wham_bam
+    JSL warp_to_level
+    RTS
+  .opt4_code:
+    LDA.w #mww_fatty_whale
+    JSL warp_to_level
+    RTS
+  .opt5_code:
+    LDA.w #mww_battle_windows
+    JSL warp_to_level
+    RTS
+  .opt6_code:
+    LDA.w #mww_heart_of_nova
+    JSL warp_to_level
+    RTS
+  .opt7_code:
     LDA.w #mww_marx
     JSL warp_to_level
     RTS
@@ -1238,13 +1280,18 @@ text:
   .nova:    %text("Nova","ノヴァ")
   .marx:    %text("Marx","マルク")
   .whale:   %text("Fatty Whale","ファッティ ホエール")
+  .crystal: %text("Crystal", "Crystal")
   .windows: %text("Battle Windows","バトル ウィンドウズ")
   .tower:   %text("Old Tower","こだい　の　とう")
   .garden:  %text("Garden","しんぴ　の　らくえん")
+  .whambam: %text("Wham Bam", "Wham Bam")
 
   .combo:   %text("Combo Cannon","にれん しゅほう")
   .reactor: %text("Reactor","リアクター")
   .meta:    %text("Meta Knight","メタナイト")
+
+  .ghameleo: %text("Ghameleo", "Ghameleo")
+  .lobster: %text("Lobster", "Lobster")
 
   .warp:    %text("Warp Menu", "ワープ　メニュー")
     ..dynafight: %text("Dyna Boss","ダィナブレィドと　たたかう")
