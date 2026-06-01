@@ -171,6 +171,7 @@
 !custom_menu_subgame_warp   = $40FFCA
 !is_warping                 = $40FFCC
 !autoboot_corkboard         = $40FFCE
+!toggle_screen_flash        = $40FFD0
 !custom_menu_level_table    = $66       ; called as $3766 in menu code
 
 ; for saving certain values on room reload 

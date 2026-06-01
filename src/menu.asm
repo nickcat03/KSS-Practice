@@ -889,13 +889,14 @@ back_one:
 
 
 menu_main:
-  dw text_main, $0005, $0000
+  dw text_main, $0006, $0000
   db bank(text)
   dw text_warp, .opt1_code
   dw text_mww_abilities, .opt2_code
   dw text_color, .opt3_code
   dw text_audio, .opt4_code
-  dw text_language, .opt5_code
+  dw text_autoboot, .opt5_code
+  dw text_language, .opt6_code
   .opt1_code:
     LDA #menu_warp
     JSR set_menu_and_cursor
@@ -913,6 +914,10 @@ menu_main:
     JSR set_menu_and_cursor
     RTS
   .opt5_code:
+    LDA #menu_autoboot
+    JSR set_menu_and_cursor
+    RTS
+  .opt6_code:
     LDA !custom_menu_language
     EOR #$0001
     STA !custom_menu_language
@@ -1112,6 +1117,18 @@ menu_audio:
     JSR set_menu_and_cursor
     RTS
 
+menu_autoboot:
+  dw text_autoboot, $0002, menu_main
+  db bank(text)
+  dw text_off, .autoboot_code
+  dw text_on, .autoboot_code
+  .autoboot_code:
+    LDA !custom_menu_cursor
+    STA !autoboot_corkboard
+    LDA #menu_main
+    JSR set_menu_and_cursor
+    RTS
+
 pushpc
 org $29F780
 
@@ -1166,6 +1183,8 @@ text:
     ..opt8:  %text("Purple", "ラベンダー")
     ..opt9:  %text("Brown", "チョコレート")
     ..opta:  %text("Chalk", "モノトーン")
+  
+  .autoboot: %text("Skip Title Screen", "タイトル　がめん　を　とばす")
 
 assert pc() <= $29FFFF
 pullpc
