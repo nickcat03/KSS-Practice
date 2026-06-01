@@ -1146,10 +1146,16 @@ menu_about:
   db bank(text)
   dw text_about_1, option_noop
   dw text_about_2, option_noop
-  dw text_about_3, option_noop
+  dw text_about_3, .aero_sound
   dw text_about_4, option_noop
   dw text_about_5, option_noop
   dw text_back, back_one
+  .aero_sound:
+    SEP #$30
+    LDA #$54
+    STA !current_sfx_long
+    REP #$30
+    RTS
 
 menu_autoboot:
   dw text_autoboot, $0003, menu_main
