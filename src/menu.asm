@@ -75,6 +75,8 @@ open_custom_menu:
   STA $003039
   STA $00303B
   STA $00303D
+  STA $00305B
+  STA $00305D
 
   ; max brightness
   LDA #$000F
@@ -412,6 +414,12 @@ save_registers:
   LDA $00303D
   STA $40F6EC
 
+  ; layer 1 scroll offset
+  LDA $00305B
+  STA $40F6CC
+  LDA $00305D
+  STA $40F6CE
+
   ; layer select
   LDA $003072
   STA $40F6EE
@@ -485,6 +493,12 @@ restore_registers:
   STA $00303B
   LDA $40F6EC
   STA $00303D
+
+  ; layer 1 scroll offset
+  LDA $40F6CC
+  STA $00305B
+  LDA $40F6CE
+  STA $00305D
 
   ; layer select
   LDA $40F6EE
@@ -833,7 +847,10 @@ dw $06C0
 dl en_text_start
 dw $3480
 ; Entry 3: Back up the area we will use for tilemap data
-db $15, $00, $08, $00, $F7, $40, $00, $00
+db $15
+dw $0800
+dl $40F700
+dw $0000
 ; End of table
 db $FF
 
@@ -1101,6 +1118,7 @@ org $29F780
 text:
   .back: %text("Back", "もどる")
   .off: %text("Off", "OFF")
+  .on: %text("On", "ON")
 
   .main:     %text("Main Menu", "マイン　メンユー")
   .nothing:  %text("Do nothing", "なにを　しない")
