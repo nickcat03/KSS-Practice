@@ -20,6 +20,14 @@ init:
   STA !toggle_custom_colors
   +
 
+  ; set sa-1 adjustment to zero if it is in an invalid range
+  LDA !sa1_adjustment
+  CMP #$0003
+  BCC +
+  LDA #$0000
+  STA !sa1_adjustment
+  +
+
   ; decide whether to boot into original title screen or corkboard
   LDA !autoboot_corkboard
   ; check if it is above 2 (most likely on first boot)

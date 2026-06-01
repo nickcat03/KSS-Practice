@@ -89,6 +89,7 @@ macro text_mapping()
         '(' = $E2
         ')' = $E3
         '%' = $3C
+        '$' = $3F
 
         ; -- Japanese --
         ; Hiragana
@@ -407,6 +408,7 @@ macro tail_mapping()
         '(' = $00
         ')' = $00
         '%' = $00
+        '$' = $00
 
         ; -- Japanese --
         ; Hiragana

@@ -889,7 +889,7 @@ back_one:
 
 
 menu_main:
-  dw text_main, $0008, $0000
+  dw text_main, $0009, $0000
   db bank(text)
   dw text_warp, .opt1_code
   dw text_mww_abilities, .opt2_code
@@ -897,8 +897,9 @@ menu_main:
   dw text_audio, .opt4_code
   dw text_noflash, .opt5_code
   dw text_autoboot, .opt6_code
-  dw text_about, .opt7_code
-  dw text_language, .opt8_code
+  dw text_sa1adjustment, .opt7_code
+  dw text_about, .opt8_code
+  dw text_language, .opt9_code
   .opt1_code:
     LDA #menu_warp
     JSR set_menu_and_cursor
@@ -924,10 +925,14 @@ menu_main:
     JSR set_menu_and_cursor
     RTS
   .opt7_code:
-    LDA #menu_about
+    LDA #menu_sa1adjustment
     JSR set_menu_and_cursor
     RTS
   .opt8_code:
+    LDA #menu_about
+    JSR set_menu_and_cursor
+    RTS
+  .opt9_code:
     LDA !custom_menu_language
     EOR #$0001
     STA !custom_menu_language
@@ -1130,10 +1135,11 @@ menu_audio:
     RTS
 
 menu_noflash:
-  dw text_noflash, $0002, menu_main
+  dw text_noflash, $0003, menu_main
   db bank(text)
   dw text_on, .noflash_code
   dw text_off, .noflash_code
+  dw text_back, back_one
   .noflash_code:
     LDA !custom_menu_cursor
     STA !toggle_screen_flash
@@ -1141,21 +1147,53 @@ menu_noflash:
     JSR set_menu_and_cursor
     RTS
 
+menu_sa1adjustment:
+  dw text2_sa1adjustment, $0004, menu_main
+  db bank(text2)
+  dw text2_off, .sa1_code
+  dw text2_sa1adjustment_1, .sa1_code
+  dw text2_sa1adjustment_2, .sa1_code
+  dw text2_back, back_one
+  .sa1_code
+    LDA !custom_menu_cursor
+    STA !sa1_adjustment
+
+    LDA #menu_main
+    JSR set_menu_and_cursor
+    RTS
+
 menu_about:
-  dw text_about, $0006, menu_main
-  db bank(text)
-  dw text_about_1, option_noop
-  dw text_about_2, option_noop
-  dw text_about_3, .aero_sound
-  dw text_about_4, option_noop
-  dw text_about_5, option_noop
-  dw text_back, back_one
+  dw text2_about_1, $000B, menu_main
+  db bank(text2)
+  dw text2_about_2, option_noop
+  dw text2_about_3, .aero_sound
+  dw text2_about_4, option_noop
+  dw text2_about_5, .scout_sound
+  dw text2_about_6, option_noop
+  dw text2_about_7, option_noop
+  dw text2_about_8, option_noop
+  dw text2_about_9, option_noop
+  dw text2_about_A, option_noop
+  dw text2_about_B, option_noop
+  dw text2_back, back_one
   .aero_sound:
     SEP #$30
     LDA #$54
     STA !current_sfx_long
     REP #$30
     RTS
+  .scout_sound:
+    SEP #$30
+    LDA #$20
+    STA !current_sfx_long
+    REP #$30
+    RTS
+  ;.and_more:
+  ;  SEP #$20
+  ;  LDA #$2E
+  ;  JSL !load_music
+  ;  REP #$20
+  ;  RTS
 
 menu_autoboot:
   dw text_autoboot, $0003, menu_main
@@ -1179,11 +1217,7 @@ text:
   .on: %text("On", "オン")
 
   .about: %text("About this hack", "この　ハック　について")
-    ..1: %text("Credits", "クレジット")
-    ..2: %text("  Lead Programmer", "  チーフプログラマー")
-    ..3: %en_jp_text("    aero.paws")
-    ..4: %text("  Menu Programmer", "  メニュープログラマー")
-    ..5: %text("    scout", "    スカウト")
+  .sa1adjustment:  %text("SA-1 Adjustment", "SA-1　ちょうせい")
 
   .autoboot: %text("Skip Title Screen", "タイトルがめん　を　とばす")
     ..off: %text("Off", "とばない")
@@ -1237,6 +1271,29 @@ text:
     ..opta:  %text("Chalk", "モノトーン")
   
   .noflash: %text("Boss Screen Flashing", "ボスを　たおす　あとの　ちらつき")
+
+org $02FC30
+
+text2:
+  .back: %text("Back", "もどる")
+  .off: %text("Off", "オフ")
+
+  .about: %text("About this hack", "この　ハック　について")
+    ..1: %text("Credits", "クレジット")
+    ..2: %text("Lead Programmer", "チーフプログラマー")
+    ..3: %en_jp_text("  aero.paws")
+    ..4: %text("Menu Programmer", "メニュープログラマー")
+    ..5: %text("  scout", "  スカウト")
+    ..6: %text("Thank You","ありがとうございました")
+    ..7: %en_jp_text("  theJuice")
+    ..8: %en_jp_text("  GoldenEpsilon")
+    ..9: %text("  WaddleDX", "  まどら")
+    ..A: %en_jp_text("  RGMechEx")
+    ..B: %en_jp_text("               and more...")
+
+  .sa1adjustment: %text("SA-1 Adjustment", "SA-1　ちょうせい")
+    ..1: %en_jp_text("MiSTer (+$XXXX cycles)")
+    ..2: %en_jp_text("FXPAK (+$1388 cycles)")
 
 assert pc() <= $29FFFF
 pullpc

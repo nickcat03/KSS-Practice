@@ -8,9 +8,8 @@ pullpc
 
 sa1_code:
     ; run artificial cycles
-    !sa1_adjustment = #$0000
-
-    LDA !sa1_adjustment
+    LDX !sa1_adjustment
+    LDA sa1_table,X
     INC A
     - DEC A
     BNE -
@@ -42,3 +41,8 @@ sa1_code:
     PLA
     PLP
     RTL
+
+sa1_table:
+    dw $0000
+    dw $FFFF
+    dw $1388
