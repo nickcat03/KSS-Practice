@@ -632,39 +632,72 @@ macro tail_mapping()
         
 endmacro
 
+macro text_raw(str)
+  %text_mapping()
+  db "<str>"
+endmacro
+
+macro tail_raw(str)
+  %tail_mapping()
+  db "<str>"
+endmacro
+
 macro en(str)
-        %text_mapping()
-        db "<str>", $FE
-        %tail_mapping()
-        db "<str>", $FF
-        fill align 2
+  %text_raw(<str>)
+  db $FE
+  %tail_raw(<str>)
+  db $FF
 endmacro
 
 macro jp(str)
-        %tail_mapping()
-        db "<str>", $FE
-        %text_mapping()
-        db "<str>", $FF
-        fill align 2
+  %tail_raw(<str>)
+  db $FE
+  %text_raw(<str>)
+  db $FF
 endmacro
 
 macro text(en_text, jp_text)
-        dw ?en_label
-        dw ?jp_label
+  dw ?en_label
+  dw ?jp_label
 
-        ?en_label: %en("<en_text>")
-        ?jp_label: %jp("<jp_text>")
+  ?en_label: %en("<en_text>")
+  ?jp_label: %jp("<jp_text>")
+endmacro
+
+macro text_with_label(en_text, jp_text, addr, display_func)
+  dw ?en_label
+  dw ?jp_label
+
+  ?en_label:
+    %text_raw(<str>)
+    db $FE
+    %tail_raw(<str>)
+    db $FC
+    dl <addr>
+    dw <display_func>
+    db $FF
+  ?jp_label: %jp("<jp_text>")
+    %tail_raw(<str>)
+    db $FE
+    %text_raw(<str>)
+    db $FC
+    dl <addr>
+    dw <display_func>
+    db $FF
 endmacro
 
 macro lang_swap_text(jp_text, en_text)
-        dw ?en_label
-        dw ?jp_label
+  dw ?en_label
+  dw ?jp_label
 
-        ?en_label: db $FD
-                %jp("<jp_text>")
-        ?jp_label: db $FE
-                %text_mapping()
-                db "<en_text>", $FE
-                %tail_mapping()
-                db $00, "<en_text>", $FF
+  ?en_label:
+    db $FD
+    %jp("<jp_text>")
+
+  ?jp_label:
+    db $FE
+    %text_raw(<en_text>)
+    db $FE, $00
+    %tail_raw(<en_text>)
+    db $FF
 endmacro

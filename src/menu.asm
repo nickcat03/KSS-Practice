@@ -1121,7 +1121,6 @@ text:
   .on: %text("On", "ON")
 
   .main:     %text("Main Menu", "マイン　メンユー")
-  .nothing:  %text("Do nothing", "なにを　しない")
   .color:    %text("Kirby Color", "カービィの いろ")
   .language: %lang_swap_text("にほんご　メニュー", "English menu")
 
