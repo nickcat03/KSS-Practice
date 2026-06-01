@@ -820,7 +820,7 @@ finalize_apuio:
   TXA
   + REP #$20
   RTS
-  
+
 
 clear_tile:
 dw $2000
@@ -889,14 +889,15 @@ back_one:
 
 
 menu_main:
-  dw text_main, $0006, $0000
+  dw text_main, $0007, $0000
   db bank(text)
   dw text_warp, .opt1_code
   dw text_mww_abilities, .opt2_code
   dw text_color, .opt3_code
   dw text_audio, .opt4_code
-  dw text_autoboot, .opt5_code
-  dw text_language, .opt6_code
+  dw text_noflash, .opt5_code
+  dw text_autoboot, .opt6_code
+  dw text_language, .opt7_code
   .opt1_code:
     LDA #menu_warp
     JSR set_menu_and_cursor
@@ -914,10 +915,14 @@ menu_main:
     JSR set_menu_and_cursor
     RTS
   .opt5_code:
-    LDA #menu_autoboot
+    LDA #menu_noflash
     JSR set_menu_and_cursor
     RTS
   .opt6_code:
+    LDA #menu_autoboot
+    JSR set_menu_and_cursor
+    RTS
+  .opt7_code:
     LDA !custom_menu_language
     EOR #$0001
     STA !custom_menu_language
@@ -1117,6 +1122,18 @@ menu_audio:
     JSR set_menu_and_cursor
     RTS
 
+menu_noflash:
+  dw text_noflash, $0002, menu_main
+  db bank(text)
+  dw text_on, .noflash_code
+  dw text_off, .noflash_code
+  .noflash_code:
+    LDA !custom_menu_cursor
+    STA !toggle_screen_flash
+    LDA #menu_main
+    JSR set_menu_and_cursor
+    RTS
+
 menu_autoboot:
   dw text_autoboot, $0002, menu_main
   db bank(text)
@@ -1184,6 +1201,7 @@ text:
     ..opt9:  %text("Brown", "チョコレート")
     ..opta:  %text("Chalk", "モノトーン")
   
+  .noflash: %text("Boss Screen Flashing", "ボスを　たおす　あとの　ちらつき")
   .autoboot: %text("Skip Title Screen", "タイトル　がめん　を　とばす")
 
 assert pc() <= $29FFFF

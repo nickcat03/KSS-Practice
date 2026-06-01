@@ -7,32 +7,6 @@ org $00BBCC
 
 pullpc
 
-; game reset long jump in bank $00
-check_reset:
-  JSR !check_game_reset
-  RTL
-
-check_gamemode_on_change:
-  TAX
-  LDA !is_warping
-  BEQ +
-
-  LDX #$0003
-
-  + STX !game_mode
-  RTS
-
-check_gamemode_on_coordinates_load:
-  LDA !is_warping
-  BNE +
-
-  STZ $332A
-  RTS
-
-  + LDA #$0000
-  STA !is_warping
-  RTS
-
 init:
   LDA #$0000
   STA !custom_menu_enabled

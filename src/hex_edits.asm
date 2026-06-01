@@ -108,12 +108,12 @@ ORG $1EF1EF
     db $80
 
 ; Stop Red Screen Flashing
-ORG $27E529
-    RTS
-ORG $27E547
-    RTS
-ORG $27E565
-    RTS
+;ORG $27E529
+;    RTS
+;ORG $27E547
+;    RTS
+;ORG $27E565    ; gray flashing
+;    RTS
 
 ; Change Arena timer color
 ;ORG $598680
