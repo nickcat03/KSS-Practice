@@ -847,7 +847,7 @@ db $03, $FE, $07, $02, $F7, $40, $00, $00
 ; End of table
 db $FF
 
-menu_header: %text("KSS Practice Hack ★ 05/31/2026","スパデラ れんしゅう　ハック ★ ３１/０５/２０２６")
+menu_header: %text("KSS Practice Hack ★ 05/31/2026","スパデラ れんしゅう　ハック    ★ ３１/０５/２０２６")
 
 option_noop:
   RTS
