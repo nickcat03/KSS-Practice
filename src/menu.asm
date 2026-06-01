@@ -889,7 +889,7 @@ back_one:
 
 
 menu_main:
-  dw text_main, $0007, $0000
+  dw text_main, $0008, $0000
   db bank(text)
   dw text_warp, .opt1_code
   dw text_mww_abilities, .opt2_code
@@ -897,7 +897,8 @@ menu_main:
   dw text_audio, .opt4_code
   dw text_noflash, .opt5_code
   dw text_autoboot, .opt6_code
-  dw text_language, .opt7_code
+  dw text_about, .opt7_code
+  dw text_language, .opt8_code
   .opt1_code:
     LDA #menu_warp
     JSR set_menu_and_cursor
@@ -923,6 +924,10 @@ menu_main:
     JSR set_menu_and_cursor
     RTS
   .opt7_code:
+    LDA #menu_about
+    JSR set_menu_and_cursor
+    RTS
+  .opt8_code:
     LDA !custom_menu_language
     EOR #$0001
     STA !custom_menu_language
@@ -1056,12 +1061,13 @@ menu_warp_mww:
     RTS
 
 menu_mww_abilities:
-  dw text_mww_abilities, $0004, menu_main
+  dw text_mww_abilities, $0005, menu_main
   db bank(text)
   dw text_mww_abilities_opt1, .setmwwability_code
   dw text_mww_abilities_opt2, .setmwwability_code
   dw text_mww_abilities_opt3, .setmwwability_code
   dw text_mww_abilities_opt4, .setmwwability_code
+  dw text_back, back_one
   .setmwwability_code
     LDA !custom_menu_cursor
     STA !mww_ability_route
@@ -1103,11 +1109,12 @@ menu_colors:
     RTS
 
 menu_audio:
-  dw text_audio, $0003, menu_main
+  dw text_audio, $0004, menu_main
   db bank(text)
   dw text_audio_opt1, .stereomono_code
   dw text_audio_opt2, .stereomono_code
   dw text_off, .audiooff_code
+  dw text_back, back_one
   .stereomono_code:
     SEP #$20
     LDA !custom_menu_cursor
@@ -1134,11 +1141,22 @@ menu_noflash:
     JSR set_menu_and_cursor
     RTS
 
-menu_autoboot:
-  dw text_autoboot, $0002, menu_main
+menu_about:
+  dw text_about, $0006, menu_main
   db bank(text)
-  dw text_off, .autoboot_code
-  dw text_on, .autoboot_code
+  dw text_about_1, option_noop
+  dw text_about_2, option_noop
+  dw text_about_3, option_noop
+  dw text_about_4, option_noop
+  dw text_about_5, option_noop
+  dw text_back, back_one
+
+menu_autoboot:
+  dw text_autoboot, $0003, menu_main
+  db bank(text)
+  dw text_autoboot_off, .autoboot_code
+  dw text_autoboot_on, .autoboot_code
+  dw text_back, back_one
   .autoboot_code:
     LDA !custom_menu_cursor
     STA !autoboot_corkboard
@@ -1151,8 +1169,19 @@ org $29F780
 
 text:
   .back: %text("Back", "もどる")
-  .off: %text("Off", "OFF")
-  .on: %text("On", "ON")
+  .off: %text("Off", "オフ")
+  .on: %text("On", "オン")
+
+  .about: %text("About this hack", "この　ハック　について")
+    ..1: %text("Credits", "クレジット")
+    ..2: %text("  Lead Programmer", "  チーフプログラマー")
+    ..3: %en_jp_text("    aero.paws")
+    ..4: %text("  Menu Programmer", "  メニュープログラマー")
+    ..5: %text("    scout", "    スカウト")
+
+  .autoboot: %text("Skip Title Screen", "タイトルがめん　を　とばす")
+    ..off: %text("Off", "とばない")
+    ..on: %text("On", "とばす")
 
   .main:     %text("Main Menu", "マイン　メンユー")
   .color:    %text("Kirby Color", "カービィの いろ")
@@ -1179,15 +1208,15 @@ text:
   .warp:    %text("Warp Menu", "ワープ　メニュー")
     ..dynafight: %text("Dyna Boss","ダィナブレィドと　たたかう")
 
-  .mww_abilities: %text("MWW Abilities", "MWW Abilities")
-    ..opt1: %text("No change", "No change")
-    ..opt2: %text("Any%", "Any%")
-    ..opt3: %text("Any% (Plasma)", "Any% (Plasma)")
+  .mww_abilities: %text("MWW Abilities", "ぎんが　コピーのうりょく")
+    ..opt1: %text("Use Save Data", "セーブ　とおり")
+    ..opt2: %text("Any%", "ANY%")
+    ..opt3: %text("Any% (Plasma)", "ANY% （プラズマ）")
     ..opt4: %text("100%", "100%")
 
-  .audio: %text("Audio Settings", "Audio Settings")
-    ..opt1: %text("Stereo", "Stereo")
-    ..opt2: %text("Mono", "Mono")
+  .audio: %text("Audio Settings", "オーディオ　せってい")
+    ..opt1: %text("Stereo", "ステレオ")
+    ..opt2: %text("Mono", "モノラル")
 
   .colors
     ..opt1:  %text("Default", "おまかせ　（スタンダード）")
@@ -1202,7 +1231,6 @@ text:
     ..opta:  %text("Chalk", "モノトーン")
   
   .noflash: %text("Boss Screen Flashing", "ボスを　たおす　あとの　ちらつき")
-  .autoboot: %text("Skip Title Screen", "タイトル　がめん　を　とばす")
 
 assert pc() <= $29FFFF
 pullpc

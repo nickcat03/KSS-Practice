@@ -72,7 +72,8 @@ macro text_mapping()
 
         ; Symbols / Punctuation
         ' ' = $00
-        ',' = $e6
+        ',' = $B6
+        '.' = $B6
         ''' = $C5
         '!' = $F1
         '?' = $EE
@@ -389,7 +390,8 @@ macro tail_mapping()
 
         ; Symbols / Punctuation
         ' ' = $00
-        ',' = $f6
+        '.' = $00
+        ',' = $C6
         ''' = $00
         '!' = $00
         '?' = $00
@@ -643,16 +645,16 @@ macro tail_raw(str)
 endmacro
 
 macro en(str)
-  %text_raw(<str>)
+  %text_raw("<str>")
   db $FE
-  %tail_raw(<str>)
+  %tail_raw("<str>")
   db $FF
 endmacro
 
 macro jp(str)
-  %tail_raw(<str>)
+  %tail_raw("<str>")
   db $FE
-  %text_raw(<str>)
+  %text_raw("<str>")
   db $FF
 endmacro
 
@@ -662,6 +664,19 @@ macro text(en_text, jp_text)
 
   ?en_label: %en("<en_text>")
   ?jp_label: %jp("<jp_text>")
+endmacro
+
+macro en_jp_text(text)
+  dw ?en_label
+  dw ?jp_label
+
+  ?en_label: %en("<text>")
+  ?jp_label:
+    db $FE
+    %text_raw("<text>")
+    db $FE, $00
+    %tail_raw("<text>")
+    db $FF
 endmacro
 
 macro text_with_label(en_text, jp_text, addr, display_func)
@@ -696,8 +711,8 @@ macro lang_swap_text(jp_text, en_text)
 
   ?jp_label:
     db $FE
-    %text_raw(<en_text>)
+    %text_raw("<en_text>")
     db $FE, $00
-    %tail_raw(<en_text>)
+    %tail_raw("<en_text>")
     db $FF
 endmacro
