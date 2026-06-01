@@ -778,11 +778,11 @@ ORG $01DF960
     romk_metaknight_boss: dw $0602, $0002, $003C, $0084
 
     ; Milky Way Wishes
-    mww_ghameleo_arm:     dw $0408, $0002, $003C, $009C
-    mww_heavy_lobster:    dw $0408, $0002, $003C, $009C
-    mww_wham_bam:         dw $0408, $0002, $003C, $009C
+    mww_ghameleo_arm:     dw $0106, $0002, $003C, $009C
+    mww_heavy_lobster:    dw $0505, $0002, $003C, $0084
+    mww_wham_bam:         dw $0304, $0002, $003C, $009C
     mww_fatty_whale:      dw $0408, $0002, $003C, $009C
-    mww_battle_windows:   dw $0408, $0002, $003C, $009C
+    mww_battle_windows:   dw $0607, $0002, $003C, $009C
     mww_heart_of_nova:    dw $0801, $0001, $0000, $0000
     mww_marx:             dw $0802, $0001, $0000, $0000
 
