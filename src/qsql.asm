@@ -132,6 +132,7 @@ restore_state:
         LDA !is_shooting    ; if in nova shmup, ignore this completely
         BNE .merge
 
+        ; BUG : Reloading a different helper in Fatty Whale boss fight locks the game
         LDA !helper_ability_from_savestate
         BEQ .merge
         CMP #$FF    ; if there wasn't a helper in the last state don't do anything
