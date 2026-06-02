@@ -8,7 +8,8 @@ pullpc
 
 sa1_code:
     ; run artificial cycles
-    LDX !sa1_adjustment
+    LDA !sa1_adjustment
+    TAX
     LDA sa1_table,X
     INC A
     - DEC A
@@ -44,8 +45,13 @@ sa1_code:
 
 sa1_table:
     dw $0000
-    dw $1600
-    dw $1B00
-    dw $2000
-    dw $2500
-    dw $2A00
+    dw $0BC0
+    dw $0E10
+    dw $1060
+    dw $12B0
+    dw $1500
+    dw $1750
+    dw $19A0
+    dw $1BF0
+    dw $1E40
+    dw $2090

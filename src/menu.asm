@@ -78,6 +78,11 @@ open_custom_menu:
   STA $00305B
   STA $00305D
 
+  ; clear screen darken filter
+  STA $003076
+  STA $003078
+  STA $00307A
+
   ; max brightness
   LDA #$000F
   STA $00305F
@@ -420,6 +425,14 @@ save_registers:
   LDA $00305D
   STA $40F6CE
 
+  ; background darken
+  LDA $003076
+  STA $40F6D0
+  LDA $003078
+  STA $40F6D2
+  LDA $00307A
+  STA $40F6D4
+
   ; layer select
   LDA $003072
   STA $40F6EE
@@ -499,6 +512,14 @@ restore_registers:
   STA $00305B
   LDA $40F6CE
   STA $00305D
+
+  ; background darken
+  LDA $40F6D0
+  STA $003076
+  LDA $40F6D2
+  STA $003078
+  LDA $40F6D4
+  STA $00307A
 
   ; layer select
   LDA $40F6EE
@@ -1223,15 +1244,20 @@ menu_noflash:
     RTS
 
 menu_sa1adjustment:
-  dw text2_sa1adjustment, $0006, menu_main
-  db bank(text2)
-  dw text2_off, .sa1_code
-  dw text2_sa1adjustment_1, .sa1_code
-  dw text2_sa1adjustment_2, .sa1_code
-  dw text2_sa1adjustment_3, .sa1_code
-  dw text2_sa1adjustment_4, .sa1_code
-  dw text2_sa1adjustment_5, .sa1_code
-  dw text2_back, back_one
+  dw text3_sa1adjustment, $000C, menu_main
+  db bank(text3)
+  dw text3_off, .sa1_code
+  dw text3_sa1adjustment_1, .sa1_code
+  dw text3_sa1adjustment_2, .sa1_code
+  dw text3_sa1adjustment_3, .sa1_code
+  dw text3_sa1adjustment_4, .sa1_code
+  dw text3_sa1adjustment_5, .sa1_code
+  dw text3_sa1adjustment_6, .sa1_code
+  dw text3_sa1adjustment_7, .sa1_code
+  dw text3_sa1adjustment_8, .sa1_code
+  dw text3_sa1adjustment_9, .sa1_code
+  dw text3_sa1adjustment_A, .sa1_code
+  dw text3_back, back_one
   .sa1_code
     LDA !custom_menu_cursor
     ASL
@@ -1375,13 +1401,24 @@ text2:
     ..A: %en_jp_text("  RGMechEx")
     ..B: %en_jp_text("               and more...")
 
+ORG $03F820
+
+text3:
+  .back: %text("Back", "もどる")
+  .off: %text("Off", "オフ")
+
   .sa1adjustment: %text("SA-1 Adjustment", "SA-1　ちょうせい")
-    ..1: %en_jp_text("+$1600")
-    ..2: %en_jp_text("+$1B00")
-    ..3: %en_jp_text("+$2000")
-    ..4: %en_jp_text("+$2500")
-    ..5: %en_jp_text("+$2A00")
-    
+  ..1: %en_jp_text("+$0BC0")
+  ..2: %en_jp_text("+$0E10")
+  ..3: %en_jp_text("+$1060")
+  ..4: %en_jp_text("+$12B0")
+  ..5: %en_jp_text("+$1500")
+  ..6: %en_jp_text("+$1750")
+  ..7: %en_jp_text("+$19A0")
+  ..8: %en_jp_text("+$1BF0")
+  ..9: %en_jp_text("+$1E40")
+  ..A: %en_jp_text("+$2090")
+
 
 assert pc() <= $29FFFF
 pullpc
