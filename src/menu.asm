@@ -827,6 +827,7 @@ ORG $01DF960
     gco_wham_bam:         dw $0039, $0002, $01D4, $009C
 
     ; Revenge of Meta Knight
+    romk_whispy_woods:    dw $0103, $0002, $003C, $0084
     romk_combo_cannon:    dw $0305, $0002, $0024, $0084
     romk_reactor:         dw $0505, $0002, $0024, $0084
     romk_metaknight_boss: dw $0602, $0002, $003C, $0084
@@ -925,7 +926,7 @@ db $03, $FE, $07, $02, $F7, $40, $00, $00
 ; End of table
 db $FF
 
-menu_header: %text("KSS Practice Hack ★ 06/01/2026","スパデラ れんしゅう　ハック    ★ ０６/０１/２０２６")
+menu_header: %text("KSS Practice Hack ★ 06/02/2026","スパデラ れんしゅう　ハック    ★ ０６/０２/２０２６")
 
 option_noop:
   RTS
@@ -1102,21 +1103,26 @@ menu_warp_gco:
     RTS
 
 menu_warp_romk:
-  dw text_romk, $0004, menu_warp
+  dw text_romk, $0005, menu_warp
   db bank(text)
-  dw text_combo, .opt1_code
-  dw text_reactor, .opt2_code
-  dw text_meta, .opt3_code
+  dw text_whispy, .opt1_code
+  dw text_combo, .opt2_code
+  dw text_reactor, .opt3_code
+  dw text_meta, .opt4_code
   dw text_back, back_one
   .opt1_code:
-    LDA.w #romk_combo_cannon
+    LDA.w #romk_whispy_woods
     JSL warp_to_level
     RTS
   .opt2_code:
-    LDA.w #romk_reactor
+    LDA.w #romk_combo_cannon
     JSL warp_to_level
     RTS
   .opt3_code:
+    LDA.w #romk_reactor
+    JSL warp_to_level
+    RTS
+  .opt4_code:
     LDA.w #romk_metaknight_boss
     JSL warp_to_level
     RTS
@@ -1268,7 +1274,7 @@ menu_sa1adjustment:
     RTS
 
 menu_about:
-  dw text2_about_1, $000B, menu_main
+  dw text2_about_1, $000A, menu_main
   db bank(text2)
   dw text2_about_2, option_noop
   dw text2_about_3, .aero_sound
@@ -1280,7 +1286,6 @@ menu_about:
   dw text2_about_9, option_noop
   dw text2_about_A, option_noop
   dw text2_about_B, option_noop
-  dw text2_back, back_one
   .aero_sound:
     SEP #$30
     LDA #$54
@@ -1342,18 +1347,19 @@ text:
   .nova:    %text("Nova","ノヴァ")
   .marx:    %text("Marx","マルク")
   .whale:   %text("Fatty Whale","ファッティ ホエール")
-  .crystal: %text("Crystal Area", "Crystal Area")
+  .crystal: %text("Crystal Area", "すいしょうの　はたけ")
   .windows: %text("Battle Windows","バトル ウィンドウズ")
   .tower:   %text("Old Tower","こだい　の　とう")
   .garden:  %text("Garden","しんぴ　の　らくえん")
-  .whambam: %text("Wham Bam", "Wham Bam")
+  .whambam: %text("Wham Bam", "ワムバムロック")
 
+  .whispy:  %text("Whispy", "ウィスピー")
   .combo:   %text("Combo Cannon","にれん しゅほう")
   .reactor: %text("Reactor","リアクター")
   .meta:    %text("Meta Knight","メタナイト")
 
-  .ghameleo: %text("Ghameleo", "Ghameleo")
-  .lobster: %text("Lobster", "Lobster")
+  .ghameleo: %text("Ghameleo Arm", "ガメレオアーム")
+  .lobster: %text("Heavy Lobster", "ヘビーロブスター")
 
   .warp:    %text("Warp Menu", "ワープ　メニュー")
     ..dynafight: %text("Dyna Boss","ダィナブレィドと　たたかう")
@@ -1362,7 +1368,7 @@ text:
     ..opt1: %text("Use Save Data", "セーブ　とおり")
     ..opt2: %text("Any%", "ANY%")
     ..opt3: %text("Any% (Plasma)", "ANY% （プラズマ）")
-    ..opt4: %text("100%", "100%")
+    ..opt4: %en_jp_text("100%")
 
   .audio: %text("Audio Settings", "オーディオ　せってい")
     ..opt1: %text("Stereo", "ステレオ")
@@ -1385,23 +1391,21 @@ text:
 org $02FC30
 
 text2:
-  .back: %text("Back", "もどる")
-  .off: %text("Off", "オフ")
-
   .about: %text("About this hack", "この　ハック　について")
     ..1: %text("Credits", "クレジット")
     ..2: %text("Lead Programmer", "チーフプログラマー")
-    ..3: %en_jp_text("  aero.paws")
+    ..3: %en_jp_text("  Aero   🐾  aeropaws.dog")
     ..4: %text("Menu Programmer", "メニュープログラマー")
-    ..5: %text("  scout", "  スカウト")
-    ..6: %text("Thank You","ありがとうございました")
-    ..7: %en_jp_text("  theJuice")
-    ..8: %en_jp_text("  GoldenEpsilon")
-    ..9: %text("  WaddleDX", "  まどら")
-    ..A: %en_jp_text("  RGMechEx")
+    ..5: %en_jp_text("  scout  🐇  bittybunny.com", "  スカウト   🐇  bittybunny.com")
+    ..6: %text("Thank You","スペシャルサンクス")
+    ..7: %en_jp_text("  theJuice   GoldenEpsilon")
+    ..8: %text("  Mikan      Yotta","  みかん        Yotta")
+    ..9: %text("  zzzHonki   WaddleDX","  ぷーれ        まどら")
+    ..A: %en_jp_text("  Ankou      RGMechEx   ")
     ..B: %en_jp_text("               and more...")
 
-ORG $03F820
+;まどら
+ORG $03F820 
 
 text3:
   .back: %text("Back", "もどる")

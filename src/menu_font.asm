@@ -90,6 +90,10 @@ macro text_mapping()
         ')' = $E3
         '%' = $3C
         '$' = $3F
+        '_' = $DF
+
+        '🐇' = $DA
+        '🐾' = $DB
 
         ; -- Japanese --
         ; Hiragana
@@ -409,6 +413,10 @@ macro tail_mapping()
         ')' = $00
         '%' = $00
         '$' = $00
+        '_' = $00
+
+        '🐇' = $00
+        '🐾' = $00
 
         ; -- Japanese --
         ; Hiragana
