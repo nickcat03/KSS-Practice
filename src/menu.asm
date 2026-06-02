@@ -1396,7 +1396,7 @@ text2:
     ..2: %text("Lead Programmer", "チーフプログラマー")
     ..3: %en_jp_text("  Aero   🐾  aeropaws.dog")
     ..4: %text("Menu Programmer", "メニュープログラマー")
-    ..5: %en_jp_text("  scout  🐇  bittybunny.com", "  スカウト   🐇  bittybunny.com")
+    ..5: %en_jp_text("  scout  🐇  bittybunny.com")
     ..6: %text("Thank You","スペシャルサンクス")
     ..7: %en_jp_text("  theJuice   GoldenEpsilon")
     ..8: %text("  Mikan      Yotta","  みかん        Yotta")

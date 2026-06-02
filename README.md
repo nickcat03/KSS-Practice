@@ -6,7 +6,7 @@ This page hosts the source code for the Kirby Super Star speedrunning practice h
 You may use [Lunar IPS](http://fusoya.eludevisibility.org/lips/) or [Floating IPS](https://www.romhacking.net/utilities/1040/) to patch the ROM using the stable patches. The patch is expecting a Japanese 1.0 ROM file.
 
 1. Clone the repository (click the big green button at the top)
-2. Download [asar](https://github.com/RPGHacker/asar) and place it in the project folder.
+2. Compile [asar 2.0](https://github.com/RPGHacker/asar/tree/asar_2_beta) and place it in the project folder.
 3. Place a Japanese 1.0 ROM of Kirby Super Star in the project folder, and name it "original.sfc".
 4. Run make_file.bat (Windows) or make_file.sh (Unix).
 5. You should now have "patched.sfc" which is the patched file.
