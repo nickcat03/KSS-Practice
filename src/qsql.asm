@@ -14,6 +14,7 @@
 save_state:
 
     SEP #$30
+
     LDA !sfx_save_state          ;Sound effect played
     STA !current_sfx
     JSL !play_sfx
@@ -96,6 +97,10 @@ save_state:
 restore_state: 
 
     SEP #$30
+    
+    LDA #$01
+    STA !active_frames  ; avoid game hanging if room is reset while loading something else
+
     LDA !sfx_load_state          ;Sound effect played
     STA !current_sfx
     JSL !play_sfx
@@ -128,6 +133,7 @@ restore_state:
         BNE .merge
 
         LDA !helper_ability_from_savestate
+        BEQ .merge
         CMP #$FF    ; if there wasn't a helper in the last state don't do anything
         BEQ .merge
 
@@ -223,6 +229,7 @@ restore_state:
     STA !sound_buffer
     LDA !save_sound_bank_1
     STA !sound_bank_1
+
     REP #$30
     LDA !save_sound_bank_2
     STA !sound_bank_2
