@@ -44,5 +44,8 @@ sa1_code:
 
 sa1_table:
     dw $0000
-    dw $0A6E
-    dw $300C
+    dw $1600
+    dw $1B00
+    dw $2000
+    dw $2500
+    dw $2A00

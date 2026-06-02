@@ -31,7 +31,7 @@ init:
 
   ; set sa-1 adjustment to zero if it is in an invalid range
   LDA !sa1_adjustment
-  CMP #$0005
+  CMP #$000B
   BCC +
   LDA #$0000
   STA !sa1_adjustment

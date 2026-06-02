@@ -904,7 +904,7 @@ db $03, $FE, $07, $02, $F7, $40, $00, $00
 ; End of table
 db $FF
 
-menu_header: %text("KSS Practice Hack ★ 05/31/2026","スパデラ れんしゅう　ハック    ★ ０５/３１/２０２６")
+menu_header: %text("KSS Practice Hack ★ 06/01/2026","スパデラ れんしゅう　ハック    ★ ０６/０１/２０２６")
 
 option_noop:
   RTS
@@ -1223,11 +1223,14 @@ menu_noflash:
     RTS
 
 menu_sa1adjustment:
-  dw text2_sa1adjustment, $0004, menu_main
+  dw text2_sa1adjustment, $0006, menu_main
   db bank(text2)
   dw text2_off, .sa1_code
   dw text2_sa1adjustment_1, .sa1_code
   dw text2_sa1adjustment_2, .sa1_code
+  dw text2_sa1adjustment_3, .sa1_code
+  dw text2_sa1adjustment_4, .sa1_code
+  dw text2_sa1adjustment_5, .sa1_code
   dw text2_back, back_one
   .sa1_code
     LDA !custom_menu_cursor
@@ -1373,8 +1376,12 @@ text2:
     ..B: %en_jp_text("               and more...")
 
   .sa1adjustment: %text("SA-1 Adjustment", "SA-1　ちょうせい")
-    ..1: %en_jp_text("MiSTer (+$XXXX cycles)")
-    ..2: %en_jp_text("FXPAK (+$300C cycles)")
+    ..1: %en_jp_text("+$1600")
+    ..2: %en_jp_text("+$1B00")
+    ..3: %en_jp_text("+$2000")
+    ..4: %en_jp_text("+$2500")
+    ..5: %en_jp_text("+$2A00")
+    
 
 assert pc() <= $29FFFF
 pullpc
