@@ -147,12 +147,17 @@ mww_map:
     LDA !game_mode
     CMP #$06                            ; check if on world map screen
     BNE .merge
+    LDA !screen_brightness              ; to prevent this from running on every single frame
+    CMP #$0F
+    BEQ .skip_abilities 
 
     LDX !mww_current_planet
     JSL convert_planet_id
     JSL mww_assign_starting_abilities
+    BRA .merge                          ; prevent movement while loading into level
 
-    JSR mww_multiply_map_movement_speed
+    .skip_abilities
+        JSR mww_multiply_map_movement_speed
 
     .merge:
         REP #$30
@@ -336,9 +341,9 @@ mww_planets_100_order: db $05, $01, $00, $03, $06, $02, $07, $04, $08
 
 ; These tables are explicitly for 100% route.
 ;                   Hotbeat    Mecheye    Cavios     ???        Floria     Aqualis    Halfmoon   Nova       
-ability_table_1: db %00000000, %00000000, %00000000, %01101000, %01101000, %01101100, %01111110, %11111111
+ability_table_1: db %00000000, %00000000, %00100000, %01101000, %01101000, %01101100, %01111110, %11111111
 ability_table_2: db %10001000, %10001010, %10001010, %10001010, %10001010, %10001111, %10011111, %11111111
-ability_table_3: db %00000010, %00010010, %00010010, %00010111, %00011111, %00011111, %11111111, %11111111
+ability_table_3: db %00000010, %00010010, %00010011, %00010111, %00011111, %00011111, %11111111, %11111111
 
 ; For any%, the only RAM value that needs to be changed is the one with Hammer and Plasma ($7B1B)
 ;                     Hotbeat    Mecheye    Cavios     Aqualis    Floria     Halfmoon   Nova       ???
