@@ -1374,7 +1374,7 @@ text2:
 
   .sa1adjustment: %text("SA-1 Adjustment", "SA-1　ちょうせい")
     ..1: %en_jp_text("MiSTer (+$XXXX cycles)")
-    ..2: %en_jp_text("FXPAK (+$1388 cycles)")
+    ..2: %en_jp_text("FXPAK (+$300C cycles)")
 
 assert pc() <= $29FFFF
 pullpc
