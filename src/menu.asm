@@ -1220,7 +1220,7 @@ menu_audio:
   db bank(text)
   dw text_audio_opt1, .stereomono_code
   dw text_audio_opt2, .stereomono_code
-  dw text_off, .audiooff_code
+  dw text_audio_opt3, .audiooff_code
   dw text_back, back_one
   .stereomono_code:
     SEP #$20
@@ -1373,6 +1373,7 @@ text:
   .audio: %text("Audio Settings", "オーディオ　せってい")
     ..opt1: %text("Stereo", "ステレオ")
     ..opt2: %text("Mono", "モノラル")
+    ..opt3: %text("No Music", "おんがく　なし")
 
   .colors
     ..opt1:  %text("Default", "おまかせ　（スタンダード）")
