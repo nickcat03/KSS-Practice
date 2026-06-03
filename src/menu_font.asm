@@ -689,6 +689,19 @@ macro en_jp_text(text)
     db $FF
 endmacro
 
+macro en_jp_different_text(en_text, jp_text)
+  dw ?en_label
+  dw ?jp_label
+
+  ?en_label: %en("<en_text>")
+  ?jp_label:
+    db $FE
+    %text_raw("<jp_text>")
+    db $FE, $00
+    %tail_raw("<jp_text>")
+    db $FF
+endmacro
+
 macro text_with_label(en_text, jp_text, addr, display_func)
   dw ?en_label
   dw ?jp_label

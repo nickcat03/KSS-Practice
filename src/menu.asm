@@ -1326,7 +1326,7 @@ text:
   .off: %text("Off", "オフ")
   .on: %text("On", "オン")
 
-  .about: %text("About this hack", "この　ハック　について")
+  .about: %text("Credits", "クレジット")
   .sa1adjustment:  %text("SA-1 Adjustment", "SA-1　ちょうせい")
 
   .autoboot: %text("Skip Title Screen", "タイトルがめん　を　とばす")
@@ -1349,8 +1349,8 @@ text:
   .whale:   %text("Fatty Whale","ファッティ ホエール")
   .crystal: %text("Crystal Area", "すいしょうの　はたけ")
   .windows: %text("Battle Windows","バトル ウィンドウズ")
-  .tower:   %text("Old Tower","こだい　の　とう")
-  .garden:  %text("Garden","しんぴ　の　らくえん")
+  .tower:   %text("Old Tower","こだいの　とう")
+  .garden:  %text("Garden","しんぴの　らくえん")
   .whambam: %text("Wham Bam", "ワムバムロック")
 
   .whispy:  %text("Whispy", "ウィスピー")
@@ -1386,17 +1386,17 @@ text:
     ..opt9:  %text("Brown", "チョコレート")
     ..opta:  %text("Chalk", "モノトーン")
   
-  .noflash: %text("Boss Screen Flashing", "ボスを　たおす　あとの　ちらつき")
+  .noflash: %text("Boss Screen Flashing", "ボスを　たおすときの　てんめつ")
 
 org $02FC30
 
 text2:
-  .about: %text("About this hack", "この　ハック　について")
+  .about: 
     ..1: %text("Credits", "クレジット")
     ..2: %text("Lead Programmer", "チーフプログラマー")
     ..3: %en_jp_text("  Aero   🐾  aeropaws.dog")
     ..4: %text("Menu Programmer", "メニュープログラマー")
-    ..5: %en_jp_text("  scout  🐇  bittybunny.com")
+    ..5: %en_jp_different_text("  scout  🐇  bittybunny.com","  スカウト   🐇  bittybunny.com")
     ..6: %text("Thank You","スペシャルサンクス")
     ..7: %en_jp_text("  theJuice   GoldenEpsilon")
     ..8: %text("  Mikan      Yotta","  みかん        Yotta")
