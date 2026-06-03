@@ -1001,11 +1001,11 @@ menu_main:
     RTS
 
 menu_warp:
-  dw text_warp, $0007, menu_main
+  dw text_warp, $0005, menu_main
   db bank(text)
-  dw text_spring, .opt1_code
+;  dw text_spring, .opt1_code
   dw text_dyna, .opt2_code
-  dw text_gourmet, .opt3_code
+;  dw text_gourmet, .opt3_code
   dw text_gco, .opt4_code
   dw text_romk, .opt5_code
   dw text_mww, .opt6_code
