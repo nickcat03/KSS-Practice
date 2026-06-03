@@ -6,6 +6,8 @@ pullpc
 
 nmi_code:
     REP #$30
+    LDA !custom_menu_enabled    ; do not run any savestate code if the practice menu is open
+    BNE vblank_return_to_main_routine
 
     ; Ghost test
     ;JSL $06F25E

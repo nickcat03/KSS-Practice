@@ -8,6 +8,16 @@ ORG $15B644
 ORG $15B831
     LDA #$007F
 
+; Remove original code for clearing gamemode on boot (custom init code is overriding this)
+; LDA #$0000 -> NOP
+ORG $00BBF7
+    NOP #3
+
+; Remove original code for resetting subgame cursor on boot
+; STZ $7A8F -> NOP
+ORG $00D7E1
+    NOP #3
+
 ; Make file deletion instant
 ; LDA #$00B4 -> LDA #$0000
 ORG $078736
@@ -15,13 +25,8 @@ ORG $078736
 
 ; Make death animation instant
 ; $B4 -> $01
-;ORG $088D9D
-;    db $01
-
-; Set lives to 99 (purely cosmetic)
-; LDA #$0003 -> LDA #$0063
-ORG $00D873
-    LDA #$0063
+ORG $088D9D
+    db $01
 
 ; Don't decrease lives counter
 ; DEC $737A -> NOP
@@ -93,6 +98,10 @@ ORG $00CB6C
 ; DEC $73A0 -> NOP
 ORG $00C227
     NOP #3
+; Make RoMK timer reaching zero not kill you (usually for warping into RoMK room from other subgame)
+; BEQ -> BRA
+ORG $029078
+    db $80
 
 ; Always spawn Chests and Copy Essences
 ; all BEQ -> BRA 
@@ -104,12 +113,12 @@ ORG $1EF1EF
     db $80
 
 ; Stop Red Screen Flashing
-ORG $27E529
-    RTS
-ORG $27E547
-    RTS
-ORG $27E565
-    RTS
+;ORG $27E529
+;    RTS
+;ORG $27E547
+;    RTS
+;ORG $27E565    ; gray flashing
+;    RTS
 
 ; Change Arena timer color
 ;ORG $598680

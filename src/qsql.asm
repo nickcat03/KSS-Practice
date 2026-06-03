@@ -4,7 +4,6 @@
 !sfx_save_state = #$0C
 !sfx_load_state = #$10
 !sfx_room_reset = #$28
-!sfx_warp_elsewhere = #$48
 
 !temp_stack_pointer_location = $40FFE0
 !music_from_savestate = $408FCA     ; current music RAM ($33CA) from the savestate data
@@ -15,6 +14,7 @@
 save_state:
 
     SEP #$30
+
     LDA !sfx_save_state          ;Sound effect played
     STA !current_sfx
     JSL !play_sfx
@@ -88,11 +88,6 @@ save_state:
  
     JSR disable_vblank
 
-    LDA #$01
-    STA !QSQL_transfer_mode             ; Tell SA-1 to save stack pointer
-    LDA #$02
-    STA !QSQL_offset
-
     REP #$30
 
     STZ !temp_pointer   ; clear address for loading SA-1 stack pointer
@@ -102,6 +97,10 @@ save_state:
 restore_state: 
 
     SEP #$30
+    
+    LDA #$01
+    STA !active_frames  ; avoid game hanging if room is reset while loading something else
+
     LDA !sfx_load_state          ;Sound effect played
     STA !current_sfx
     JSL !play_sfx
@@ -133,7 +132,9 @@ restore_state:
         LDA !is_shooting    ; if in nova shmup, ignore this completely
         BNE .merge
 
+        ; BUG : Reloading a different helper in Fatty Whale boss fight locks the game
         LDA !helper_ability_from_savestate
+        BEQ .merge
         CMP #$FF    ; if there wasn't a helper in the last state don't do anything
         BEQ .merge
 
@@ -225,15 +226,11 @@ restore_state:
 
     JSR disable_vblank
 
-    LDA #$02
-    STA !QSQL_transfer_mode         ; Tell SA-1 to restore stack pointer
-    LDA #$02
-    STA !QSQL_offset
-
     LDA !save_sound_buffer          ; apply previous sound buffer so consecutive sound plays
     STA !sound_buffer
     LDA !save_sound_bank_1
     STA !sound_bank_1
+
     REP #$30
     LDA !save_sound_bank_2
     STA !sound_bank_2
@@ -254,18 +251,26 @@ restore_state:
 !room_graphics_state = $408EF6
 
 ; using random spots in WRAM for these because they're temporary and we're loading the state anyway
-!current_background = $000300
-!state_background = $000302
-!current_tileset = $000304
-!state_tileset = $000306
+!current_fatty_whale = $000300
+!state_fatty_whale = $000302
+!current_background = $000304
+!state_background = $000306
+!current_tileset = $000308
+!state_tileset = $00030A
 
 compare_level_data:
     ; this routine is purely meant for saving values so that later we could see if we actually need to load them in
     ; having these values load in on every state load is redundant and makes loads extremely slow
     ; this verifies that we only load the level graphics if we actually need them
 
+    ; see if fatty whale is in the current room
+    SEP #$30
+    LDA !subgame
+    LDX !room_number
+    JSR check_fatty_whale
+    STA !current_fatty_whale
+
     ; store current room graphics
-    SEP #$20
     LDA.w !room_graphics+2
     PHA
     PLB
@@ -300,22 +305,31 @@ compare_level_data:
     LDA #$00
     PHA
     PLB   ; Set data bank back to zero (this is what the original routine uses)
-    REP #$20
+    REP #$30
 
     RTS
 
 restore_level_data:
     .prepare_level_restore
-
         LDA #$8000      ; Prevents an infinite loop when loading background data
         STA !screen_fade
 
+        ; check fatty whale status
+        SEP #$30
+        LDA !subgame
+        LDX !room_number
+        JSR check_fatty_whale
+        STA !state_fatty_whale
+        BNE .reload_background  ; skip consumables reload if Fatty Whale exists
+
     .reload_consumables
-        ; always run, it doesn't waste many cycles and there are some edge cases that are impractical to check for
+        ; always run (unless fatty whale check skips it), it doesn't waste many cycles and there are some edge cases that are impractical to check for
         ; ironically enough it's probably a good thing this runs because then the state would load too quickly
+        REP #$30
         JSL load_consumables
 
     .reload_background
+        REP #$30
         LDA.w !state_background
         CMP.w !current_background
         BEQ .reload_tileset
@@ -327,7 +341,22 @@ restore_level_data:
         BEQ .end_level_restore
         JSL load_tileset
 
+    ; Load Fatty Whale last so we ensure its graphics always override the buffer
+    .reload_fatty_whale
+        SEP #$30
+        LDA !state_fatty_whale
+        BNE .load_fatty_whale_room
+        BRA .end_level_restore
+
+        .load_fatty_whale_room
+            ; see if we are already in a room where Fatty Whale graphics are loaded, so we don't need to reload them again.
+            LDA !current_fatty_whale
+            BNE .end_level_restore
+            REP #$30
+            JSL $D52924
+    
     .end_level_restore
+        REP #$30
         RTS
 
     pushpc
@@ -344,7 +373,38 @@ restore_level_data:
             RTL
     pullpc
 
+check_fatty_whale:
+    ; check subgame
+    CMP #$03
+    BEQ .gco
+    CMP #$05
+    BEQ .mww
+    CMP #$06
+    BEQ .arena
+    BRA .false
 
+    .gco
+    CPX #$37
+    BEQ .true
+    BRA .false
+
+    .mww
+    CPX #$08
+    BEQ .true
+    BRA .false
+
+    .arena
+    CPX #$09
+    BEQ .true
+    BRA .false
+
+    .true
+        LDA #$01
+        RTS
+
+    .false
+        LDA #$00
+        RTS
 
 ; Save stuff such as HP, ability, invincibility timer, RNG, etc.
 auto_save_on_room_load:
@@ -521,8 +581,8 @@ restore_on_room_restart:
     STA !helper_inv_flash
     
     ; audio
-    LDA !store_ability_sfx
-    STA !current_ability_sfx
+    ;LDA !store_ability_sfx
+    ;STA !current_ability_sfx
 
     SEP #$20
     REP #$10
@@ -575,16 +635,9 @@ restore_current_room:
         JSR enable_vblank
 
         SEP #$30
-        LDA !subgame
-        CMP #$03
-        BNE +
-        JSR .warp_somewhere_else
-        BRA ++
-        + 
         LDA !sfx_room_reset
         STA !current_sfx
         JSR .reload_saved_values
-        ++
 
         JSL !play_sfx
         SEP #$20
@@ -615,66 +668,6 @@ restore_current_room:
         BRA ++
         + JSR auto_save_on_room_load
         ++ SEP #$30
-        RTS
-
-    .warp_somewhere_else:
-        REP #$20
-        LDA !p1controller_hold
-        AND #$0820
-        CMP #$0820
-        BNE +
-        LDX #$37            ; Fatty Whale
-        STX !room_to_respawn_into
-        LDA #$003C
-        STA !kirby_x_respawn
-        LDA #$009C
-        STA !kirby_y_respawn
-        BRA .finalize_warp
-        + LDA !p1controller_hold 
-        AND #$0120
-        CMP #$0120
-        BNE +
-        LDX #$36            ; Battle Windows
-        STX !room_to_respawn_into
-        LDA #$003C
-        STA !kirby_x_respawn
-        LDA #$009C
-        STA !kirby_y_respawn
-        BRA .finalize_warp
-        + LDA !p1controller_hold 
-        AND #$0420
-        CMP #$0420
-        BNE +
-        LDX #$13            ; Old Tower
-        STX !room_to_respawn_into
-        LDA #$012C
-        STA !kirby_x_respawn
-        LDA #$0054
-        STA !kirby_y_respawn
-        BRA .finalize_warp
-        + LDA !p1controller_hold 
-        AND #$0220
-        CMP #$0220
-        BNE +
-        LDX #$4C            ; Garden
-        STX !room_to_respawn_into
-        LDA #$00B4
-        STA !kirby_x_respawn
-        LDA #$0054
-        STA !kirby_y_respawn
-        BRA .finalize_warp
-        + JSR .reload_saved_values
-        LDA !sfx_room_reset
-        STA !current_sfx
-        RTS
-
-    .finalize_warp:
-        SEP #$30
-        LDA #$02
-        STA !replay_cutscene            ; use the "second" respawn coordinates
-        STZ !is_reloading_room
-        LDA !sfx_warp_elsewhere
-        STA !current_sfx
         RTS
 
 enable_vblank:

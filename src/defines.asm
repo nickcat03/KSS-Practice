@@ -21,6 +21,7 @@
 !sound_bank_2               = $00AB
 !current_music              = $33CA
 !current_sfx                = $33CB
+!current_sfx_long           = $0033CB
 !volume                     = $33CC
 !stereo_mono                = $33CD
 
@@ -28,13 +29,18 @@
 !selected_file              = $6D56
 !timer_for_various_file_select_things   = $6724
 !game_mode                  = $7390
+!advance_game_mode          = $7392
 !subgame                    = $32EA
+!room_number                = $32F2
+!level_number               = $32EE     ; dyna level, romk chapter, mww planet
+!level_number_long          = $0032EE
 !corkboard_cursor           = $7A85
 !subgame_menu_cursor        = $7B23
 !romk_chapter               = $7A67
 !romk_chapter_to_be_loaded  = $7B25
 !cutscene_loaded            = $33C6
 !file_delete_menu           = $679E
+!map_to_load_into           = $73AE
 
 ;Milky Way Wishes 
 !mww_current_planet         = $7A6B
@@ -66,6 +72,8 @@
 !kirby_y_pos                = $6A02
 !kirby_x_respawn            = $330C
 !kirby_y_respawn            = $3310
+!kirby_x_respawn_long       = $00330C
+!kirby_y_respawn_long       = $003310
 !room_to_respawn_into       = $32F2
 !camera_lock                = $7368
 !room_size_x                = $3366
@@ -81,8 +89,11 @@
 ; various miscellaneous things
 !animation_timer        = $6E4C
 !reload_room            = $7392
+!reload_room_long       = $007392
 !screen_fade            = $30A1
+!screen_fade_long       = $0030A1
 !screen_brightness      = $305F
+!screen_brightness_long = $00305F
 !replay_cutscene        = $332A     ; this variable might do more than just handle cutscenes
 !move_cam_hud           = $3330     ;/ these...
 !is_paused              = $7368     ;\ ... two seem to do the same thing?
@@ -142,11 +153,10 @@
 ; blank addresses used for storing information
 !respawn_timer              = $7B5A
 !temp_pointer               = $7B5C
-!mww_ability_route          = $7B5E
+!mww_ability_route          = $7B71
 !mww_planet_rta             = $7B60
 !QSQL_timer                 = $7B62
-!QSQL_transfer_mode         = $7B64
-!QSQL_offset                = $7B66
+!QSQL_transfer              = $7B64
 !is_reloading_room          = $7B68
 !toggle_free_move           = $7B70
 !mute_toggle                = $7B7E
@@ -154,6 +164,17 @@
 !save_sound_bank_1          = $40FFEA
 !save_sound_bank_2          = $40FFFB
 !toggle_custom_colors       = $40FFFD
+!custom_menu_enabled        = $40FFC0
+!custom_menu_language       = $40FFC2
+!custom_menu_pointer        = $40FFC4
+!custom_menu_cursor         = $40FFC6
+!custom_menu_action         = $40FFC8
+!custom_menu_subgame_warp   = $40FFCA
+!is_warping                 = $40FFCC
+!autoboot_corkboard         = $40FFCE
+!toggle_screen_flash        = $40FFD0
+!sa1_adjustment             = $40FFD2
+!custom_menu_level_table    = $66       ; called as $3766 in menu code
 
 ; for saving certain values on room reload 
 !room_reload_storage                = $40FF40
@@ -186,6 +207,7 @@
 
 ; subroutines
 !reset_game                 = $BCE7
+!check_game_reset           = $BCDE
 !update_romk_vram           = $07E55D
 !assign_ability_data        = $029C71
 !assign_helper_data         = $029D2F
@@ -196,14 +218,14 @@
 !update_tileset_kirby_pos   = $0085EA
 ;!update_soundbank           = $00D2F0          ;$00D1D0
 !global_jump_pointer        = $633E
-!pass_frame                 = $00BC81
 !pause_game_loop            = $00A2D4
 !resume_game_loop           = $00A2EF
 !close_pause_menu           = $CF9AB2
-!load_font                  = $1FB416
 !draw_text                  = $1FB449
 !draw_pause_menu            = $CF999B
 !dim_screen                 = $C005C7
+!update_layers_input        = $008A06
+!sa1_executesnes            = $008C6D
 
 ; internal dma queue
 !write_to_dma_buffer        = $00875a
@@ -224,6 +246,7 @@
 ; useless subroutines that ill keep here anyway cuz theyre nice to have somewhere
 !debug_reload_display       = $DBE7
 !play_sfx                   = $D155
+!play_sfx_long              = $00D155
 
 ; controller buttons
 !btn_b      = $8000
@@ -237,4 +260,4 @@
 !btn_a      = $0080
 !btn_x      = $0040
 !btn_l      = $0020
-!btl_r      = $0010
+!btn_r      = $0010

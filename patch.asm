@@ -18,23 +18,31 @@ incsrc "graphics/graphics.asm"
 
 ; All of these are ran together because they are all going to be placed in the blank space in ROM
 ORG $00F140
+incsrc "src/init.asm"
 incsrc "src/cpu.asm"
-;incsrc "src/every_frame.asm"
+incsrc "src/every_frame.asm"
 incsrc "src/gameplay.asm"
-;incsrc "src/menu.asm"
 incsrc "src/file_select.asm"
 incsrc "src/subgame_title.asm"
 incsrc "src/map_screens.asm"
 incsrc "src/free_movement.asm"
 incsrc "src/abilities.asm"
 incsrc "src/kirby_colors.asm"
-;incsrc "src/subroutines.asm"
-incsrc "src/tables.asm"
+incsrc "src/subroutines.asm"
 ;incsrc "src/hblank.asm"
 incsrc "src/room_reload.asm"
 incsrc "src/nmi.asm"
 incsrc "src/qsql.asm"
 incsrc "src/mute_toggle.asm"
+
+; make sure we don't overflow
+assert pc() <= $00FFBF
+
+; larger free space for menu code
+org $19F1A0
+incsrc "src/menu_font.asm"
+incsrc "src/menu.asm"
+assert pc() < $1A0000
 
 ; make sure the ROM is expanded to the full 1MBit
 ORG !_F+$1FFFFF
